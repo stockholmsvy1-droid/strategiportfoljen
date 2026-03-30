@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Strategiportföljen">
+  <meta name="theme-color" content="#1e3a5f">
+  <title>Strategiportföljen</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --bg: #f0f2f5;
+      --card: #ffffff;
+      --primary: #1e3a5f;
+      --primary-mid: #2563eb;
+      --primary-light: #dbeafe;
+      --accent: #0ea5e9;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --warning: #d97706;
+      --warning-light: #fef3c7;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --text: #111827;
+      --text-mid: #374151;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --radius: 10px;
+      --touch: 48px; /* Minsta touch-yta */
+      --kat1: #1e40af;
+      --kat2: #15803d;
+      --kat3: #7c3aed;
+      --kat4: #0891b2;
+      --kat5: #b45309;
+      --kat6: #be185d;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── Header ── */
+    header {
+      background: var(--primary); color: white;
+      display: flex; align-items: flex-end; justify-content: space-between;
+      padding: 0 20px 10px;
+      padding-top: calc(10px + env(safe-area-inset-top));
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+      min-height: calc(54px + env(safe-area-inset-top));
+    }
+    header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.03em; display: flex; align-items: center; gap: 8px; }
+    .header-badge { font-size: 0.68rem; background: var(--accent); padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+    .header-actions { display: flex; gap: 8px; }
+
+    /* ── Knappar ── */
+    .btn {
+      padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer;
+      font-size: 0.85rem; font-weight: 600; transition: all 0.15s;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      min-height: var(--touch); user-select: none;
+    }
+    .btn-white { background: white; color: var(--primary); }
+    .btn-white:active { background: #e0e7ff; }
+    .btn-outline { background: transparent; color: white; border: 1.5px solid rgba(255,255,255,0.45); }
+    .btn-outline:active { background: rgba(255,255,255,0.15); }
+    .btn-primary { background: var(--primary-mid); color: white; }
+    .btn-primary:active { background: #1d4ed8; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:active { background: #b91c1c; }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:active { background: #15803d; }
+    .btn-ghost { background: #f3f4f6; color: var(--text-mid); }
+    .btn-ghost:active { background: #e5e7eb; }
+    .btn-sm { padding: 6px 12px; font-size: 0.8rem; min-height: 38px; }
+    .btn-lg { padding: 14px 24px; font-size: 1rem; min-height: 56px; border-radius: 10px; }
+
+    /* ── Desktop Navigation ── */
+    nav {
+      background: white; border-bottom: 1px solid var(--border);
+      display: flex; padding: 0 16px; gap: 2px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    nav::-webkit-scrollbar { display: none; }
+    nav button {
+      background: none; border: none; padding: 14px 16px; cursor: pointer;
+      font-size: 0.88rem; color: var(--muted); border-bottom: 3px solid transparent;
+      font-weight: 500; white-space: nowrap; transition: color 0.15s;
+      min-height: var(--touch);
+    }
+    nav button.aktiv { color: var(--primary); border-bottom-color: var(--primary); font-weight: 700; }
+    nav button:active:not(.aktiv) { color: var(--text); }
+
+    /* ── Bottom Navigation (mobil/iPad stående) ── */
+    .nav-bottom {
+      display: none; position: fixed; bottom: 0; left: 0; right: 0;
+      background: white; border-top: 1px solid var(--border); z-index: 150;
+      padding-bottom: env(safe-area-inset-bottom);
+      box-shadow: 0 -2px 12px rgba(0,0,0,0.1);
+    }
+    .nav-bottom-inner { display: flex; justify-content: space-around; }
+    .nav-bottom-knapp {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 8px 4px 10px;
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); font-size: 0.62rem; font-weight: 600; gap: 3px;
+      min-height: 56px; user-select: none;
+    }
+    .nb-ikon { font-size: 1.3rem; line-height: 1; }
+    .nav-bottom-knapp.aktiv { color: var(--primary); }
+
+    /* ── Mer-meny ── */
+    .mer-meny {
+      display: none; position: fixed;
+      bottom: calc(56px + env(safe-area-inset-bottom));
+      left: 0; right: 0; background: white;
+      border-top: 1px solid var(--border); z-index: 149;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.15); padding: 8px 0;
+    }
+    .mer-meny.visa { display: block; }
+    .mer-meny-knapp {
+      display: flex; align-items: center; gap: 14px;
+      width: 100%; padding: 16px 24px; background: none; border: none;
+      font-size: 1rem; font-weight: 500; color: var(--text); cursor: pointer;
+      min-height: var(--touch);
+    }
+    .mer-meny-knapp:active { background: var(--primary-light); }
+    .mm-ikon { font-size: 1.3rem; width: 28px; text-align: center; }
+    .mer-meny-overlay { display: none; position: fixed; inset: 0; z-index: 148; }
+    .mer-meny-overlay.visa { display: block; }
+
+    /* ── Layout ── */
+    main { max-width: 1200px; margin: 0 auto; padding: 20px 18px 32px; }
+    .sektion { display: none; }
+    .sektion.aktiv { display: block; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--card); border-radius: var(--radius); padding: 20px 22px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07); border: 1px solid var(--border);
+    }
+    .card-titel {
+      font-size: 0.95rem; font-weight: 700; margin-bottom: 16px; color: var(--text);
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .card-titel-text { display: flex; align-items: center; gap: 8px; }
+
+    /* ── Grids ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .grid-auto { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
+    .mb16 { margin-bottom: 16px; }
+    .mb20 { margin-bottom: 20px; }
+    .mb24 { margin-bottom: 24px; }
+    .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+
+    /* ── Nyckeltal ── */
+    .nyckeltal {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 16px 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .nyckeltal .label { font-size: 0.73rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .nyckeltal .value { font-size: 1.5rem; font-weight: 800; }
+    .nyckeltal .sub { font-size: 0.79rem; color: var(--muted); margin-top: 4px; }
+    .pos { color: var(--success); }
+    .neg { color: var(--danger); }
+
+    /* ── Diagram ── */
+    .diagram-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px; }
+    .diagram-wrap { position: relative; height: 260px; }
+
+    /* ── Tabeller ── */
+    .tabell-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+    th {
+      text-align: left; padding: 11px 13px; background: #f9fafb;
+      border-bottom: 2px solid var(--border); font-size: 0.74rem;
+      text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); white-space: nowrap;
+    }
+    td { padding: 11px 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    .tom-rad td { text-align: center; color: var(--muted); padding: 40px; font-size: 0.9rem; }
+
+    /* ── Formulär ── */
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin-bottom: 16px; }
+    .fält label { display: block; font-size: 0.74rem; font-weight: 600; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .fält input, .fält select, .fält textarea {
+      width: 100%; padding: 11px 13px; border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: 1rem; outline: none; transition: border-color 0.15s;
+      font-family: inherit; background: white; min-height: var(--touch);
+      -webkit-appearance: none; appearance: none;
+    }
+    .fält input:focus, .fält select:focus, .fält textarea:focus { border-color: var(--primary-mid); }
+    .fält textarea { resize: vertical; min-height: 90px; }
+    .form-knappar { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    /* ── Badges ── */
+    .badge { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 0.74rem; font-weight: 700; }
+    .badge-pos { background: var(--success-light); color: #15803d; }
+    .badge-neg { background: var(--danger-light); color: #b91c1c; }
+    .badge-neutral { background: #f3f4f6; color: var(--muted); }
+    .badge-warning { background: var(--warning-light); color: var(--warning); }
+
+    /* ── Kategori-badges ── */
+    .kat-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px; font-size: 0.73rem; font-weight: 700; white-space: nowrap; }
+    .kat-1 { background: #dbeafe; color: var(--kat1); }
+    .kat-2 { background: #dcfce7; color: var(--kat2); }
+    .kat-3 { background: #ede9fe; color: var(--kat3); }
+    .kat-4 { background: #e0f2fe; color: var(--kat4); }
+    .kat-5 { background: #fef3c7; color: var(--kat5); }
+    .kat-6 { background: #fce7f3; color: var(--kat6); }
+
+    /* ── Signal-prickar ── */
+    .signal-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .signal-grön { background: var(--success); }
+    .signal-gul { background: var(--warning); }
+    .signal-röd { background: var(--danger); }
+
+    /* ── Kategori-kort ── */
+    .kat-kort { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+    .kat-kort-header { padding: 16px 20px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+    .kat-kort-namn { font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
+    .kat-kort-siffror { text-align: right; }
+    .kat-kort-siffror .vikt { font-size: 1.3rem; font-weight: 800; }
+    .kat-kort-siffror .mal { font-size: 0.78rem; color: var(--muted); }
+    .kat-kort-body { padding: 14px 20px 18px; }
+    .vikt-bar-track { background: #f3f4f6; border-radius: 4px; height: 7px; position: relative; }
+    .vikt-bar-fill { height: 7px; border-radius: 4px; transition: width 0.4s; }
+    .vikt-bar-mal { position: absolute; top: -3px; width: 2px; height: 13px; background: var(--text-mid); border-radius: 1px; }
+
+    /* ── Import ── */
+    .import-knapp-stor {
+      display: flex; align-items: center; gap: 16px;
+      padding: 18px 22px; background: #f9fafb; border: 2px dashed var(--border);
+      border-radius: var(--radius); cursor: pointer; width: 100%;
+      transition: all 0.2s; text-align: left; min-height: 80px;
+      font-family: inherit;
+    }
+    .import-knapp-stor:active { background: var(--primary-light); border-color: var(--primary-mid); }
+    .import-knapp-stor.drag-over { background: var(--primary-light); border-color: var(--primary-mid); }
+    .import-ikon { font-size: 2rem; flex-shrink: 0; }
+    .import-text strong { display: block; font-size: 0.97rem; color: var(--text); margin-bottom: 3px; }
+    .import-text span { font-size: 0.82rem; color: var(--muted); }
+
+    .import-grupp-rubrik {
+      font-size: 0.78rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--muted);
+      margin-bottom: 12px; padding-bottom: 6px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    /* Status-panel */
+    .status-rad {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 0; border-bottom: 1px solid var(--border); font-size: 0.88rem;
+    }
+    .status-rad:last-child { border-bottom: none; }
+    .status-ikon { font-size: 1.2rem; flex-shrink: 0; width: 28px; text-align: center; }
+    .status-info { flex: 1; }
+    .status-info strong { display: block; font-size: 0.88rem; }
+    .status-info span { font-size: 0.8rem; color: var(--muted); }
+    .status-badge { padding: 3px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
+    .status-ok { background: var(--success-light); color: #15803d; }
+    .status-gammal { background: var(--warning-light); color: var(--warning); }
+    .status-saknas { background: #f3f4f6; color: var(--muted); }
+
+    .import-logg {
+      background: #1e293b; color: #94a3b8; border-radius: var(--radius);
+      padding: 14px 16px; font-family: monospace; font-size: 0.82rem;
+      max-height: 180px; overflow-y: auto; margin-top: 14px; line-height: 1.7;
+    }
+    .import-logg .ok { color: #4ade80; }
+    .import-logg .fel { color: #f87171; }
+    .import-logg .info { color: #60a5fa; }
+
+    /* ── Beslutslogg ── */
+    .vecka-kort { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 14px; }
+    .vecka-kort-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .vecka-etikett { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* ── Kassa ── */
+    .kassa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .saldo-box { text-align: center; padding: 28px 20px; }
+    .saldo-belopp { font-size: 2.2rem; font-weight: 800; color: var(--primary); }
+
+    /* ── Modal ── */
+    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+    .modal-backdrop.visa { display: flex; }
+    .modal { background: white; border-radius: 14px; padding: 28px; width: 100%; max-width: 500px; box-shadow: 0 8px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
+    .modal h3 { font-size: 1.1rem; margin-bottom: 20px; }
+    .modal-knappar { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+    /* ── Banner ── */
+    .banner { padding: 13px 16px; border-radius: 9px; font-size: 0.88rem; margin-bottom: 18px; display: flex; align-items: flex-start; gap: 10px; line-height: 1.5; }
+    .banner-info { background: var(--primary-light); color: var(--primary); border: 1px solid #bfdbfe; }
+    .banner-warning { background: var(--warning-light); color: var(--warning); border: 1px solid #fde68a; }
+    .banner-success { background: var(--success-light); color: #15803d; border: 1px solid #bbf7d0; }
+
+    /* ── Chip ── */
+    .chip { font-size: 0.73rem; color: var(--muted); background: #f3f4f6; padding: 3px 8px; border-radius: 5px; }
+
+    /* ── Kortvy (mobil innehav/transaktioner) ── */
+    .mobil-kort-lista { display: none; }
+    .mobil-kort { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 15px 16px; margin-bottom: 10px; }
+    .mobil-kort-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    .mobil-kort-namn { font-weight: 700; font-size: 0.97rem; }
+    .mobil-kort-rad { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #f3f4f6; font-size: 0.85rem; }
+    .mobil-kort-rad:last-of-type { border-bottom: none; }
+    .mobil-kort-rad .etikett { color: var(--muted); }
+    .mobil-kort-åtgärder { display: flex; gap: 8px; margin-top: 12px; }
+    .mobil-kort-åtgärder .btn { flex: 1; }
+    .tx-mobil-kort { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 13px 15px; margin-bottom: 9px; }
+    .tx-mobil-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .tx-mobil-info { font-size: 0.82rem; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+
+    /* ── Handledning ── */
+    .hjalp-nav {
+      display: flex; gap: 0; border-bottom: 2px solid var(--border);
+      margin-bottom: 28px; overflow-x: auto; scrollbar-width: none;
+    }
+    .hjalp-nav::-webkit-scrollbar { display: none; }
+    .hjalp-flik {
+      padding: 12px 20px; background: none; border: none; cursor: pointer;
+      font-size: 0.9rem; color: var(--muted); border-bottom: 3px solid transparent;
+      white-space: nowrap; font-weight: 500; margin-bottom: -2px; transition: color 0.15s;
+      min-height: 44px;
+    }
+    .hjalp-flik.aktiv { color: var(--primary); border-bottom-color: var(--primary); font-weight: 700; }
+    .hjalp-kapitel { display: none; }
+    .hjalp-kapitel.aktiv { display: block; }
+    .hjalp-rubrik { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin-bottom: 6px; }
+    .hjalp-ingress { color: var(--muted); font-size: 0.97rem; margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+    .hjalp-h2 { font-size: 1.15rem; font-weight: 700; color: var(--primary); margin: 28px 0 12px; }
+    .hjalp-h3 { font-size: 1rem; font-weight: 700; margin: 18px 0 8px; }
+    .hjalp-p { font-size: 0.93rem; margin-bottom: 13px; line-height: 1.65; }
+    .hjalp-ul { margin: 0 0 14px 20px; font-size: 0.93rem; }
+    .hjalp-ul li { margin-bottom: 7px; line-height: 1.5; }
+    .hjalp-ol { margin: 0 0 14px 20px; font-size: 0.93rem; }
+    .hjalp-ol li { margin-bottom: 8px; line-height: 1.5; }
+    .hjalp-ruta { border-radius: 9px; padding: 14px 18px; margin: 14px 0; font-size: 0.91rem; line-height: 1.55; }
+    .hjalp-ruta-info { background: var(--primary-light); border-left: 4px solid var(--primary-mid); }
+    .hjalp-ruta-tips { background: var(--success-light); border-left: 4px solid var(--success); }
+    .hjalp-ruta-varning { background: var(--warning-light); border-left: 4px solid var(--warning); }
+    .hjalp-ruta-fara { background: var(--danger-light); border-left: 4px solid var(--danger); }
+    .hjalp-ruta-titel { font-weight: 700; margin-bottom: 6px; }
+    .hjalp-tabell { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 0.88rem; }
+    .hjalp-tabell th { text-align: left; padding: 9px 12px; background: #f9fafb; border-bottom: 2px solid var(--border); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+    .hjalp-tabell td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+    .hjalp-tabell tr:last-child td { border-bottom: none; }
+    .steg-lista { list-style: none; margin: 0 0 20px; padding: 0; }
+    .steg-lista li { display: flex; gap: 14px; align-items: flex-start; padding: 13px 0; border-bottom: 1px solid var(--border); }
+    .steg-lista li:last-child { border-bottom: none; }
+    .steg-nr { width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: white; font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+    .steg-txt strong { display: block; margin-bottom: 3px; font-size: 0.94rem; }
+    .steg-txt span { font-size: 0.87rem; color: var(--text-mid); line-height: 1.5; }
+    .rutin-kort { background: white; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin: 14px 0; }
+    .rutin-header { background: var(--primary); color: white; padding: 12px 18px; font-weight: 700; font-size: 0.93rem; }
+    .rutin-body { padding: 14px 18px; }
+    .rutin-body ol { margin: 0 0 0 18px; font-size: 0.91rem; }
+    .rutin-body li { margin-bottom: 8px; line-height: 1.5; }
+    .signal-tabell { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.9rem; }
+    .signal-tabell th { text-align: left; padding: 9px 12px; background: #f9fafb; border-bottom: 2px solid var(--border); font-size: 0.76rem; text-transform: uppercase; color: var(--muted); }
+    .signal-tabell td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+    .signal-tabell tr:last-child td { border-bottom: none; }
+    code { background: #f3f4f6; color: var(--primary); padding: 2px 7px; border-radius: 5px; font-size: 0.85em; font-family: monospace; }
+    .kat-rad { display: flex; align-items: flex-start; gap: 14px; padding: 14px 18px; border-radius: var(--radius); background: white; border: 1px solid var(--border); margin-bottom: 10px; }
+    .kat-rad-ikon { font-size: 1.6rem; flex-shrink: 0; }
+    .kat-badge-liten { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; margin-left: 6px; }
+
+    /* ════════════════════════════════════
+       RESPONSIV DESIGN
+    ════════════════════════════════════ */
+
+    /* iPad Pro 12.9" liggande (1366px) — full layout, touch-optimerad */
+    @media (max-width: 1366px) {
+      main { padding: 18px 16px 28px; }
+    }
+
+    /* iPad Pro stående och mindre */
+    @media (max-width: 1024px) {
+      main { padding: 16px 14px 80px; }
+      nav { display: none; }
+      .nav-bottom { display: block; }
+      .diagram-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* iPad mini / tablet stående */
+    @media (max-width: 768px) {
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+      .diagram-grid { grid-template-columns: 1fr; }
+      .diagram-wrap { height: 220px; }
+      .kassa-grid { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .hjalp-flik { padding: 12px 14px; font-size: 0.84rem; }
+    }
+
+    /* iPhone */
+    @media (max-width: 480px) {
+      header h1 { font-size: 0.9rem; }
+      .grid-2, .grid-3, .grid-auto { grid-template-columns: 1fr 1fr; }
+      #nyckeltal-grid { grid-template-columns: 1fr 1fr !important; }
+      .nyckeltal .value { font-size: 1.1rem; }
+      .nyckeltal { padding: 12px 13px; }
+      .tabell-wrap table { display: none; }
+      .mobil-kort-lista { display: block; }
+      .diagram-grid { grid-template-columns: 1fr; }
+      #importera .grid-3 { grid-template-columns: 1fr; }
+      #kategori-grid { grid-template-columns: 1fr !important; }
+      .modal-backdrop.visa { align-items: flex-end; }
+      .modal { border-radius: 14px 14px 0 0; }
+      main { padding: 12px 10px 76px; }
+    }
+
+    /* iPad Pro 12.9" liggande — behåll desktop-nav */
+    @media (min-width: 1025px) {
+      .nav-bottom { display: none !important; }
+      nav { display: flex !important; }
+      main { padding: 22px 20px 36px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <h1>📈 Strategiportföljen <span class="header-badge">v2</span></h1>
+  <div class="header-actions">
+    <button class="btn btn-outline btn-sm" onclick="exporteraExcel()">⬇ Excel</button>
+    <button class="btn btn-white btn-sm" onclick="visaSektion('hjalp',null);synkNavKnappar('hjalp')">? Hjälp</button>
+  </div>
+</header>
+
+<!-- ══ DESKTOP NAV ══ -->
+<nav id="desktopNav">
+  <button class="aktiv" onclick="visaSektion('dashboard',this)">🏠 Dashboard</button>
+  <button onclick="visaSektion('kategorier',this)">🗂 Kategorier</button>
+  <button onclick="visaSektion('innehav',this)">📋 Innehav</button>
+  <button onclick="visaSektion('importera',this)">⬆ Importera</button>
+  <button onclick="visaSektion('transaktioner',this)">🔄 Transaktioner</button>
+  <button onclick="visaSektion('beslutslogg',this)">📓 Beslutslogg</button>
+  <button onclick="visaSektion('kassa',this)">💰 Kassa</button>
+  <button onclick="visaSektion('hjalp',this)">❓ Hjälp</button>
+</nav>
+
+<!-- ══ MOBIL BOTTOM NAV ══ -->
+<div class="nav-bottom">
+  <div class="nav-bottom-inner">
+    <button class="nav-bottom-knapp aktiv" onclick="mobilNav('dashboard',0)"><span class="nb-ikon">🏠</span>Start</button>
+    <button class="nav-bottom-knapp" onclick="mobilNav('kategorier',1)"><span class="nb-ikon">🗂</span>Kategorier</button>
+    <button class="nav-bottom-knapp" onclick="mobilNav('importera',2)"><span class="nb-ikon">⬆</span>Importera</button>
+    <button class="nav-bottom-knapp" onclick="mobilNav('innehav',3)"><span class="nb-ikon">📋</span>Innehav</button>
+    <button class="nav-bottom-knapp" onclick="växlaMerMeny()" id="merKnapp"><span class="nb-ikon">⋯</span>Mer</button>
+  </div>
+</div>
+<div class="mer-meny-overlay" id="merOverlay" onclick="stängMerMeny()"></div>
+<div class="mer-meny" id="merMeny">
+  <button class="mer-meny-knapp" onclick="mobilNav('transaktioner',-1);stängMerMeny()"><span class="mm-ikon">🔄</span>Transaktioner</button>
+  <button class="mer-meny-knapp" onclick="mobilNav('beslutslogg',-1);stängMerMeny()"><span class="mm-ikon">📓</span>Beslutslogg</button>
+  <button class="mer-meny-knapp" onclick="mobilNav('kassa',-1);stängMerMeny()"><span class="mm-ikon">💰</span>Kassa</button>
+  <button class="mer-meny-knapp" onclick="mobilNav('hjalp',-1);stängMerMeny()"><span class="mm-ikon">❓</span>Hjälp</button>
+</div>
+
+<main>
+
+<!-- ══ DASHBOARD ══ -->
+<section id="dashboard" class="sektion aktiv">
+  <div class="grid-auto mb24" id="nyckeltal-grid">
+    <div class="nyckeltal"><div class="label">Totalt portföljvärde</div><div class="value" id="nk-total">— kr</div><div class="sub" id="nk-total-sub"></div></div>
+    <div class="nyckeltal"><div class="label">Innehavens värde</div><div class="value" id="nk-innehav">— kr</div><div class="sub" id="nk-innehav-sub"></div></div>
+    <div class="nyckeltal"><div class="label">Total avkastning</div><div class="value" id="nk-avkastning">— kr</div><div class="sub" id="nk-avkastning-sub"></div></div>
+    <div class="nyckeltal"><div class="label">Utdelningar totalt</div><div class="value" id="nk-utdelning">— kr</div></div>
+    <div class="nyckeltal"><div class="label">Realiserat resultat</div><div class="value" id="nk-realiserat">— kr</div></div>
+    <div class="nyckeltal"><div class="label">Kassasaldo</div><div class="value" id="nk-kassa">— kr</div></div>
+  </div>
+  <div class="diagram-grid mb20">
+    <div class="card"><div class="card-titel"><span class="card-titel-text">Fördelning per kategori</span></div><div class="diagram-wrap"><canvas id="diagramKategori"></canvas></div></div>
+    <div class="card"><div class="card-titel"><span class="card-titel-text">Värdeutveckling</span></div><div class="diagram-wrap"><canvas id="diagramHistorik"></canvas></div></div>
+  </div>
+  <div class="card mb20"><div class="card-titel"><span class="card-titel-text">Kategorivikter vs mål</span></div><div id="dashboard-vikter"></div></div>
+  <div class="card">
+    <div class="card-titel"><span class="card-titel-text">Innehav – översikt</span></div>
+    <div class="tabell-wrap">
+      <table id="tabellDashboard">
+        <thead><tr><th>Namn</th><th>Kategori</th><th>Antal</th><th>GAV (SEK)</th><th>Akt. kurs</th><th>Värde</th><th>Vinst/Förlust</th><th>%</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="mobil-kort-lista" id="dashKortLista"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ KATEGORIER ══ -->
+<section id="kategorier" class="sektion">
+  <div class="banner banner-info mb20">ℹ️ <span><strong>Grön</strong> = över MA200. <strong>Gul</strong> = nära MA200 (±5%). <strong>Röd</strong> = under MA200 — sälj enligt strategin (gäller kat. 3–5).</span></div>
+  <div id="kategori-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;"></div>
+</section>
+
+<!-- ══ INNEHAV ══ -->
+<section id="innehav" class="sektion">
+  <div class="card mb20">
+    <div class="card-titel"><span class="card-titel-text">Lägg till / redigera innehav</span></div>
+    <div class="form-grid">
+      <div class="fält"><label>Namn</label><input id="f-namn" placeholder="t.ex. Ericsson" autocomplete="off"/></div>
+      <div class="fält"><label>Ticker</label><input id="f-ticker" placeholder="t.ex. ERIC B" autocomplete="off"/></div>
+      <div class="fält"><label>Kategori</label>
+        <select id="f-kategori">
+          <option value="1">1 – Ankaret (Index)</option>
+          <option value="2">2 – Kassaflödet (Utdelning)</option>
+          <option value="3">3 – Infrastrukturen (Chip)</option>
+          <option value="4">4 – Hjärnan (AI Mjukvara)</option>
+          <option value="5">5 – Skölden (Försvar)</option>
+          <option value="6">6 – Berättelser (Kryddor)</option>
+        </select>
+      </div>
+      <div class="fält"><label>Antal</label><input id="f-antal" type="number" min="0" step="any" placeholder="100" inputmode="decimal"/></div>
+      <div class="fält"><label>GAV (SEK)</label><input id="f-köpkurs" type="number" min="0" step="any" placeholder="85.50" inputmode="decimal"/></div>
+      <div class="fält"><label>Akt. kurs (SEK)</label><input id="f-aktuelkurs" type="number" min="0" step="any" placeholder="92.00" inputmode="decimal"/></div>
+      <div class="fält"><label>MA200 (SEK)</label><input id="f-ma200" type="number" min="0" step="any" placeholder="80.00" inputmode="decimal"/></div>
+      <div class="fält"><label>Köpdatum</label><input id="f-datum" type="date"/></div>
+      <div class="fält"><label>Valuta</label>
+        <select id="f-valuta"><option>SEK</option><option>USD</option><option>EUR</option><option>NOK</option><option>DKK</option><option>GBP</option><option>CAD</option></select>
+      </div>
+      <div class="fält"><label>Notat</label><input id="f-notat" placeholder="Valfri kommentar" autocomplete="off"/></div>
+    </div>
+    <input type="hidden" id="f-redigera-id" value=""/>
+    <div class="form-knappar">
+      <button class="btn btn-primary" onclick="sparaInnehav()">💾 Spara</button>
+      <button class="btn btn-ghost" onclick="avbrytRedigering()">✕ Rensa</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="flex-between mb16">
+      <div class="card-titel" style="margin:0"><span class="card-titel-text">Mina innehav</span></div>
+      <input id="innehavSok" placeholder="🔍 Sök aktie..." style="padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:0.92rem;outline:none;width:200px;min-height:44px" oninput="renderInnehav()">
+    </div>
+    <div class="tabell-wrap">
+      <table id="tabellInnehav">
+        <thead><tr><th>Namn</th><th>Kat.</th><th>Valuta</th><th>Antal</th><th>GAV</th><th>Kurs</th><th>MA200</th><th>Signal</th><th>Kostnadsbas</th><th>Markn.värde</th><th>Vinst/Förlust</th><th>%</th><th>Utd.</th><th>Åtgärder</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="mobil-kort-lista" id="innehavKortLista"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ IMPORTERA ══ -->
+<section id="importera" class="sektion">
+
+  <!-- Statuspanel -->
+  <div id="import-status-panel" class="card mb20">
+    <div class="card-titel"><span class="card-titel-text">📋 Importstatus</span></div>
+    <div id="import-status-innehall">
+      <p style="color:var(--muted);font-size:0.87rem">Inga importer registrerade ännu.</p>
+    </div>
+  </div>
+
+  <div class="banner banner-info mb20">
+    📱 <span><strong>På iPad:</strong> Öppna <strong>avanza.se i Safari</strong> (inte Avanza-appen) → exportera filen → den sparas i Filer-appen → tryck på import-knappen nedan och välj filen.</span>
+  </div>
+
+  <!-- Veckovisa filer -->
+  <p class="import-grupp-rubrik">📅 Veckovisa filer från Avanza</p>
+  <div class="grid-2 mb20">
+    <div class="card">
+      <div class="card-titel"><span class="card-titel-text">📊 Positioner</span></div>
+      <p style="font-size:0.84rem;color:var(--muted);margin-bottom:14px;line-height:1.5">Avanza (Safari) → Min ekonomi → Innehav → <strong>Exportera</strong><br>Fil: <code>positioner_DATUM.csv</code></p>
+      <button class="import-knapp-stor" onclick="document.getElementById('filPositioner').click()"
+        ondragover="dragOver(event,this)" ondragleave="dragLeave(this)" ondrop="dropFil(event,'positioner',this)">
+        <span class="import-ikon">📂</span>
+        <div class="import-text"><strong>Tryck för att välja fil</strong><span>Uppdaterar kurser och innehav</span></div>
+      </button>
+      <input type="file" id="filPositioner" accept=".csv" style="display:none" onchange="läsFil(event,'positioner')">
+    </div>
+
+    <div class="card">
+      <div class="card-titel"><span class="card-titel-text">🔄 Transaktioner</span></div>
+      <p style="font-size:0.84rem;color:var(--muted);margin-bottom:14px;line-height:1.5">Avanza (Safari) → Min ekonomi → Transaktioner → <strong>Exportera transaktioner</strong><br>Fil: <code>transaktioner_DATUM.csv</code></p>
+      <button class="import-knapp-stor" onclick="document.getElementById('filTransaktioner').click()"
+        ondragover="dragOver(event,this)" ondragleave="dragLeave(this)" ondrop="dropFil(event,'transaktioner',this)">
+        <span class="import-ikon">📂</span>
+        <div class="import-text"><strong>Tryck för att välja fil</strong><span>Köp, sälj, utdelningar och courtage</span></div>
+      </button>
+      <input type="file" id="filTransaktioner" accept=".csv" style="display:none" onchange="läsFil(event,'transaktioner')">
+    </div>
+  </div>
+
+  <!-- Historikfiler -->
+  <p class="import-grupp-rubrik">📚 Historik — importera en gång</p>
+  <div class="grid-2 mb20">
+    <div class="card">
+      <div class="card-titel"><span class="card-titel-text">📈 Inköpskurshistorik</span></div>
+      <p style="font-size:0.84rem;color:var(--muted);margin-bottom:14px;line-height:1.5">Avanza (Safari) → Innehav → <strong>Exportera inköpskurser</strong><br>Fil: <code>inkopskurs_DATUM.csv</code><br>Innehåller GAV-historik månadsvis sedan du startade.</p>
+      <button class="import-knapp-stor" onclick="document.getElementById('filInkopskurs').click()"
+        ondragover="dragOver(event,this)" ondragleave="dragLeave(this)" ondrop="dropFil(event,'inkopskurs',this)">
+        <span class="import-ikon">📂</span>
+        <div class="import-text"><strong>Tryck för att välja fil</strong><span>Uppdaterar GAV på befintliga innehav</span></div>
+      </button>
+      <input type="file" id="filInkopskurs" accept=".csv" style="display:none" onchange="läsFil(event,'inkopskurs')">
+    </div>
+
+    <div class="card">
+      <div class="card-titel"><span class="card-titel-text">📓 Investeringslogg (Excel)</span></div>
+      <p style="font-size:0.84rem;color:var(--muted);margin-bottom:14px;line-height:1.5">Din befintliga Excel-logg: <code>Investeringslogg_Martin_2026.xlsx</code><br>Importerar beslutsloggposter (V4–V13) och portföljvärdeshistorik till diagrammet.</p>
+      <button class="import-knapp-stor" onclick="document.getElementById('filExcelLogg').click()"
+        ondragover="dragOver(event,this)" ondragleave="dragLeave(this)" ondrop="dropFil(event,'excelLogg',this)">
+        <span class="import-ikon">📂</span>
+        <div class="import-text"><strong>Tryck för att välja fil</strong><span>Läser in historisk beslutslogg och diagram</span></div>
+      </button>
+      <input type="file" id="filExcelLogg" accept=".xlsx,.xls" style="display:none" onchange="läsFil(event,'excelLogg')">
+    </div>
+  </div>
+
+  <!-- Importlogg -->
+  <div class="card">
+    <div class="card-titel"><span class="card-titel-text">Importlogg</span>
+      <button class="btn btn-ghost btn-sm" onclick="rensaImportLogg()">Rensa</button>
+    </div>
+    <div class="import-logg" id="importLogg"><span class="info">Redo. Tryck på en av rutorna ovan för att välja fil.</span></div>
+  </div>
+</section>
+
+<!-- ══ TRANSAKTIONER ══ -->
+<section id="transaktioner" class="sektion">
+  <div class="card mb20">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <select id="tx-filter-typ" onchange="renderTransaktioner()" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:0.92rem;outline:none;min-height:48px;flex:1;min-width:140px">
+        <option value="">Alla typer</option>
+        <option value="Köp">Köp</option><option value="Sälj">Sälj</option>
+        <option value="Utdelning">Utdelning</option><option value="Insättning">Insättning</option>
+        <option value="Utländsk källskatt">Källskatt</option>
+      </select>
+      <input id="tx-filter-sok" placeholder="🔍 Sök värdepapper..." style="padding:11px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:0.92rem;outline:none;min-height:48px;flex:1;min-width:140px" oninput="renderTransaktioner()">
+      <input id="tx-filter-fran" type="date" onchange="renderTransaktioner()" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:0.92rem;outline:none;min-height:48px;flex:1;min-width:130px">
+      <input id="tx-filter-till" type="date" onchange="renderTransaktioner()" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:0.92rem;outline:none;min-height:48px;flex:1;min-width:130px">
+      <button class="btn btn-danger btn-sm" onclick="if(confirm('Rensa alla importerade transaktioner?')) rensaAvanzaTx()">Rensa</button>
+    </div>
+  </div>
+  <div class="grid-auto mb20" id="tx-analys-grid">
+    <div class="nyckeltal"><div class="label">Totalt köp</div><div class="value" id="tx-nk-kop">—</div></div>
+    <div class="nyckeltal"><div class="label">Totalt sälj</div><div class="value" id="tx-nk-salj">—</div></div>
+    <div class="nyckeltal"><div class="label">Utdelningar</div><div class="value" id="tx-nk-utd">—</div></div>
+    <div class="nyckeltal"><div class="label">Källskatt</div><div class="value neg" id="tx-nk-skatt">—</div></div>
+    <div class="nyckeltal"><div class="label">Realiserat</div><div class="value" id="tx-nk-res">—</div></div>
+    <div class="nyckeltal"><div class="label">Courtage</div><div class="value neg" id="tx-nk-crt">—</div></div>
+  </div>
+  <div class="card">
+    <div class="card-titel"><span class="card-titel-text">Transaktionshistorik</span><span id="tx-antal-badge" class="badge badge-neutral"></span></div>
+    <div class="tabell-wrap">
+      <table id="tabellTransaktioner">
+        <thead><tr><th>Datum</th><th>Konto</th><th>Typ</th><th>Värdepapper</th><th>Antal</th><th>Kurs</th><th>Belopp</th><th>Courtage</th><th>Resultat</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="mobil-kort-lista" id="txKortLista"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ BESLUTSLOGG ══ -->
+<section id="beslutslogg" class="sektion">
+  <div class="card mb20">
+    <div class="card-titel"><span class="card-titel-text">📝 Ny loggpost</span></div>
+    <div class="form-grid">
+      <div class="fält"><label>Vecka</label><input id="log-vecka" placeholder="t.ex. v13"/></div>
+      <div class="fält"><label>Datum</label><input id="log-datum" type="date"/></div>
+      <div class="fält"><label>Portföljvärde (SEK)</label><input id="log-varde" type="number" step="any" placeholder="900000" inputmode="decimal"/></div>
+    </div>
+    <div class="form-grid" style="grid-template-columns:1fr 1fr">
+      <div class="fält"><label>Tankar om marknaden</label><textarea id="log-tankar" placeholder="Vad händer på börsen? Vad tänker du?"></textarea></div>
+      <div class="fält"><label>Genomförda köp/sälj</label><textarea id="log-atgarder" placeholder="Vad har du gjort? Varför?"></textarea></div>
+    </div>
+    <div class="form-knappar">
+      <button class="btn btn-primary" onclick="sparaLoggpost()">💾 Spara loggpost</button>
+      <button class="btn btn-ghost" onclick="exporteraLoggExcel()">⬇ Exportera Excel</button>
+    </div>
+  </div>
+  <div id="logg-lista"></div>
+</section>
+
+<!-- ══ KASSA ══ -->
+<section id="kassa" class="sektion">
+  <div class="kassa-grid mb20">
+    <div class="card saldo-box">
+      <div style="font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Aktuellt kassasaldo</div>
+      <div class="saldo-belopp" id="kassaSaldo">0,00 kr</div>
+      <div style="margin-top:8px;font-size:0.82rem;color:var(--muted)" id="kassaSub"></div>
+    </div>
+    <div class="card">
+      <div class="card-titel"><span class="card-titel-text">Registrera transaktion</span></div>
+      <div class="form-grid" style="grid-template-columns:1fr 1fr">
+        <div class="fält" style="grid-column:1/-1"><label>Typ</label><select id="k-typ"><option value="insättning">Insättning</option><option value="uttag">Uttag</option></select></div>
+        <div class="fält"><label>Belopp (kr)</label><input id="k-belopp" type="number" min="0" step="any" placeholder="10000" inputmode="decimal"/></div>
+        <div class="fält"><label>Datum</label><input id="k-datum" type="date"/></div>
+        <div class="fält" style="grid-column:1/-1"><label>Notat</label><input id="k-notat" placeholder="Valfri kommentar"/></div>
+      </div>
+      <button class="btn btn-primary" onclick="sparaKassa()">Registrera</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-titel"><span class="card-titel-text">Kassahistorik</span></div>
+    <div class="tabell-wrap">
+      <table id="tabellKassa"><thead><tr><th>Datum</th><th>Typ</th><th>Belopp</th><th>Notat</th><th></th></tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+</section>
+
+<!-- ══ HJÄLP / HANDLEDNING ══ -->
+<section id="hjalp" class="sektion">
+  <div class="card">
+    <nav class="hjalp-nav">
+      <button class="hjalp-flik aktiv" onclick="visaHjalpKapitel('kom-igang',this)">🚀 Kom igång</button>
+      <button class="hjalp-flik" onclick="visaHjalpKapitel('ipad-import',this)">📱 Import på iPad</button>
+      <button class="hjalp-flik" onclick="visaHjalpKapitel('veckorutin',this)">📅 Veckorutin</button>
+      <button class="hjalp-flik" onclick="visaHjalpKapitel('flikarna',this)">📋 Flikarna</button>
+      <button class="hjalp-flik" onclick="visaHjalpKapitel('strategi',this)">📊 Strategi</button>
+      <button class="hjalp-flik" onclick="visaHjalpKapitel('github',this)">🌐 GitHub & URL</button>
+      <button class="hjalp-flik" onclick="visaHjalpKapitel('felsok',this)">🔧 Felsökning</button>
+      <button class="hjalp-flik" onclick="visaHjalpKapitel('faq',this)">❓ FAQ</button>
+    </nav>
+
+    <!-- KOM IGÅNG -->
+    <div class="hjalp-kapitel aktiv" id="hk-kom-igang">
+      <div class="hjalp-rubrik">🚀 Kom igång — första gången</div>
+      <div class="hjalp-ingress">Så här sätter du upp appen och får in dina innehav från Avanza.</div>
+      <ul class="steg-lista">
+        <li><div class="steg-nr">1</div><div class="steg-txt"><strong>Öppna appen</strong><span>Öppna filen portfölj.html i Safari (iPad/iPhone) eller valfri webbläsare (dator). Bokmärk sidan direkt.</span></div></li>
+        <li><div class="steg-nr">2</div><div class="steg-txt"><strong>Exportera positionsfilen från Avanza</strong><span>Gå till <strong>avanza.se i Safari</strong> (viktigt — inte Avanza-appen, som saknar exportfunktion). Logga in → Min ekonomi → Innehav → Exportera → välj alla konton. Filen sparas i Filer-appen.</span></div></li>
+        <li><div class="steg-nr">3</div><div class="steg-txt"><strong>Importera positionsfilen</strong><span>Gå till fliken <strong>Importera</strong> → tryck på "Positioner"-rutan → välj filen i Filer-appen. Appen läser in alla innehav och sätter kategori automatiskt.</span></div></li>
+        <li><div class="steg-nr">4</div><div class="steg-txt"><strong>Exportera transaktionsfilen</strong><span>Avanza i Safari → Min ekonomi → Transaktioner → välj "Sedan start" → Exportera transaktioner. Spara i Filer-appen.</span></div></li>
+        <li><div class="steg-nr">5</div><div class="steg-txt"><strong>Importera transaktionsfilen</strong><span>Importera-fliken → tryck på "Transaktioner"-rutan → välj filen. Köp, sälj, utdelningar och courtage analyseras automatiskt.</span></div></li>
+        <li><div class="steg-nr">6</div><div class="steg-txt"><strong>Kontrollera kategorier</strong><span>Gå till <strong>Innehav</strong>. Kontrollera att varje aktie hamnat i rätt kategori. Tryck Redigera för att ändra.</span></div></li>
+        <li><div class="steg-nr">7</div><div class="steg-txt"><strong>Lägg in MA200-värden</strong><span>För aktier i kategori 3–5 behöver du ange MA200. Slå upp på avanza.se (Diagram → MA 200) eller investing.com. Tryck Redigera på aktien och fyll i fältet.</span></div></li>
+        <li><div class="steg-nr">8</div><div class="steg-txt"><strong>Klart!</strong><span>Gå till Dashboard för en överblick. Gå till Kategorier för att se om portföljen är i balans med din strategi.</span></div></li>
+      </ul>
+      <div class="hjalp-ruta hjalp-ruta-varning">
+        <div class="hjalp-ruta-titel">⚠️ Viktigt om data</div>
+        All data sparas lokalt i Safaris minne (localStorage). Om du rensar webbhistoriken eller cookies försvinner datan. <strong>Exportera Excel regelbundet</strong> som säkerhetskopia — knappen finns uppe till höger.
+      </div>
+    </div>
+
+    <!-- IPAD IMPORT -->
+    <div class="hjalp-kapitel" id="hk-ipad-import">
+      <div class="hjalp-rubrik">📱 Importera filer på iPad</div>
+      <div class="hjalp-ingress">Steg-för-steg-guide för alla fyra importtyper — veckovisa filer och historik.</div>
+
+      <div class="hjalp-h2">Varför måste jag använda Safari, inte Avanza-appen?</div>
+      <div class="hjalp-p">Avanza-appen saknar exportfunktionen. Du måste gå till <strong>avanza.se i Safari</strong> för att kunna exportera CSV-filer.</div>
+
+      <div class="hjalp-ruta hjalp-ruta-info">
+        <div class="hjalp-ruta-titel">📋 Importstatus</div>
+        Importfliken visar alltid status för alla fyra filtyper — när de senast importerades och om något behöver uppdateras. Grön = OK, gul = dags att uppdatera.
+      </div>
+
+      <div class="hjalp-h2">📊 Positionsfilen — importera varje vecka</div>
+      <ol class="hjalp-ol">
+        <li>Öppna Safari → gå till <strong>avanza.se</strong> → logga in</li>
+        <li>Gå till <strong>Min ekonomi → Innehav</strong></li>
+        <li>Tryck <strong>Exportera</strong> → välj alla konton</li>
+        <li>Safari frågar var du vill spara → välj <strong>Spara i Filer</strong> → iCloud Drive eller Nedladdningar</li>
+        <li>Gå tillbaka till portföljappen → <strong>Importera → Positioner</strong></li>
+        <li>Tryck på knappen → välj filen i Filer-appen</li>
+      </ol>
+
+      <div class="hjalp-h2">🔄 Transaktionsfilen — importera varje vecka</div>
+      <ol class="hjalp-ol">
+        <li>Kvar på avanza.se i Safari → <strong>Min ekonomi → Transaktioner</strong></li>
+        <li>Välj datumintervall — "Sedan start" första gången, sedan bara senaste 2 veckorna</li>
+        <li>Välj "Alla konton"</li>
+        <li>Tryck <strong>Exportera transaktioner</strong> → spara i Filer-appen</li>
+        <li>Portföljappen → <strong>Importera → Transaktioner</strong> → välj filen</li>
+      </ol>
+      <div class="hjalp-ruta hjalp-ruta-tips">
+        <div class="hjalp-ruta-titel">💡 Dubbletter hanteras automatiskt</div>
+        Du kan importera samma transaktionsfil flera gånger utan problem — appen känner igen och hoppar över poster som redan finns.
+      </div>
+
+      <div class="hjalp-h2">📈 Inköpskurshistorik — importera en gång</div>
+      <ol class="hjalp-ol">
+        <li>Avanza i Safari → <strong>Min ekonomi → Innehav</strong></li>
+        <li>Leta efter <strong>Exportera inköpskurser</strong> (kan vara under en meny)</li>
+        <li>Filen heter <code>inkopskurs_DATUM.csv</code></li>
+        <li>Spara i Filer-appen → importera under <strong>Historik → Inköpskurshistorik</strong></li>
+        <li>Appen uppdaterar GAV på alla befintliga innehav baserat på historiska inköpspriser</li>
+      </ol>
+
+      <div class="hjalp-h2">📓 Investeringslogg (Excel) — importera en gång</div>
+      <div class="hjalp-p">Din befintliga Excel-logg <code>Investeringslogg_Martin_2026.xlsx</code> innehåller beslutsloggposter (V4–V13) och portföljvärden per vecka. Importera den för att få in all historik i appen.</div>
+      <ol class="hjalp-ol">
+        <li>Se till att filen finns i Filer-appen (iCloud Drive eller Nedladdningar)</li>
+        <li>Portföljappen → <strong>Importera → Investeringslogg (Excel)</strong></li>
+        <li>Tryck på knappen → välj <code>Investeringslogg_Martin_2026.xlsx</code></li>
+        <li>Appen läser in beslutsloggposter och historiska portföljvärden till diagrammet</li>
+        <li>Kontrollera under <strong>Beslutslogg</strong> att posterna ser rätt ut</li>
+      </ol>
+      <div class="hjalp-ruta hjalp-ruta-varning">
+        <div class="hjalp-ruta-titel">⚠️ Obs — Excel-filen måste vara .xlsx</div>
+        Se till att spara filen som .xlsx-format (inte .xls eller .csv) för att importen ska fungera.
+      </div>
+
+      <div class="hjalp-h2">Felmeddelanden — vad de betyder</div>
+      <table class="hjalp-tabell">
+        <thead><tr><th>Felmeddelande</th><th>Vad det betyder</th><th>Åtgärd</th></tr></thead>
+        <tbody>
+          <tr><td>❌ Fel filtyp!</td><td>Du har valt fel fil — t.ex. en Excel-fil när appen förväntar sig CSV</td><td>Välj rätt fil enligt instruktionen på knappen</td></tr>
+          <tr><td>❌ Fel filformat!</td><td>Filen är av rätt typ men innehåller inte förväntade kolumner</td><td>Exportera på nytt från rätt ställe på avanza.se</td></tr>
+          <tr><td>❌ Filen verkar vara tom</td><td>Filen laddades ner men innehåller ingen data</td><td>Exportera på nytt — välj rätt konto och datumintervall</td></tr>
+          <tr><td>⚠️ Filnamnet ser ovanligt ut</td><td>Varning — appen försöker ändå läsa filen</td><td>Kontrollera att du valt rätt fil</td></tr>
+          <tr><td>0 nya importerades</td><td>Alla transaktioner finns redan</td><td>Exportera en nyare fil med bredare datumintervall</td></tr>
+        </tbody>
+      </table>
+
+      <div class="hjalp-h2">Hitta filer i Filer-appen</div>
+      <div class="hjalp-p">Om du inte hittar filen: öppna <strong>Filer-appen</strong> → välj <strong>Nedladdningar</strong> (under "På min iPad") eller <strong>iCloud Drive</strong>. Avanza-filer hamnar vanligtvis i Nedladdningar. Safari-inställningar styr detta — gå till Inställningar → Safari → Nedladdningar för att ändra.</div>
+    </div>
+
+    <!-- VECKORUTIN -->
+    <div class="hjalp-kapitel" id="hk-veckorutin">
+      <div class="hjalp-rubrik">📅 Veckorutinen</div>
+      <div class="hjalp-ingress">Vad du gör varje vecka — tar ca 10–15 minuter.</div>
+
+      <div class="rutin-kort">
+        <div class="rutin-header">📤 Steg 1 — Exportera från Avanza (2–3 min)</div>
+        <div class="rutin-body"><ol>
+          <li>Öppna <strong>avanza.se i Safari</strong> på iPad eller dator</li>
+          <li>Min ekonomi → Innehav → <strong>Exportera</strong> → spara positionsfil</li>
+          <li>Min ekonomi → Transaktioner → välj senaste 2 veckorna → <strong>Exportera transaktioner</strong></li>
+        </ol></div>
+      </div>
+      <div class="rutin-kort">
+        <div class="rutin-header">⬆ Steg 2 — Importera i appen (2 min)</div>
+        <div class="rutin-body"><ol>
+          <li>Gå till fliken <strong>Importera</strong></li>
+          <li>Tryck Positioner → välj positionsfilen</li>
+          <li>Tryck Transaktioner → välj transaktionsfilen</li>
+          <li>Kontrollera importloggen</li>
+        </ol></div>
+      </div>
+      <div class="rutin-kort">
+        <div class="rutin-header">📊 Steg 3 — Kontrollera signaler (3 min)</div>
+        <div class="rutin-body"><ol>
+          <li>Gå till <strong>Kategorier</strong></li>
+          <li>Kolla röda signaler i kategori 3–5</li>
+          <li>Kolla viktbalansen — Övervikt eller Undervikt?</li>
+        </ol></div>
+      </div>
+      <div class="rutin-kort">
+        <div class="rutin-header">📓 Steg 4 — Skriv beslutslogg (5 min)</div>
+        <div class="rutin-body"><ol>
+          <li>Gå till <strong>Beslutslogg</strong></li>
+          <li>Fyll i vecka, datum och portföljvärde</li>
+          <li>Skriv om marknadsläget och vad du tänker</li>
+          <li>Notera köp/sälj och motivering</li>
+          <li>Tryck <strong>Spara loggpost</strong></li>
+        </ol></div>
+      </div>
+      <div class="rutin-kort">
+        <div class="rutin-header">💾 Steg 5 — Säkerhetskopiera (1 min, varannan vecka)</div>
+        <div class="rutin-body"><ol>
+          <li>Tryck <strong>Excel</strong> uppe till höger</li>
+          <li>Spara filen i iCloud Drive eller din portföljmapp</li>
+        </ol></div>
+      </div>
+      <div class="hjalp-ruta hjalp-ruta-tips">
+        <div class="hjalp-ruta-titel">💡 MA200 — uppdatera månadsvis</div>
+        MA200 förändras långsamt. Uppdatera värdena för kategori 3–5 ungefär en gång i månaden. Slå upp på avanza.se (aktiesidan → Diagram → lägg till MA 200) eller på investing.com.
+      </div>
+    </div>
+
+    <!-- FLIKARNA -->
+    <div class="hjalp-kapitel" id="hk-flikarna">
+      <div class="hjalp-rubrik">📋 Flikarna förklarade</div>
+      <div class="hjalp-ingress">Vad varje flik gör och hur du använder den.</div>
+
+      <div class="hjalp-h2">🏠 Dashboard</div>
+      <div class="hjalp-p">Startskärmen med en snabb överblick. Innehåller nyckeltalskort, diagram över kategorivikter och värdeutveckling, en viktjämförelse mot strategi-målen och en innehållstabell sorterad efter värde.</div>
+
+      <div class="hjalp-h2">🗂 Kategorier</div>
+      <div class="hjalp-p">Ett kort per kategori med aktuell vikt, målintervall och MA200-signaler. Här ser du snabbt om något kräver åtgärd.</div>
+      <table class="signal-tabell">
+        <thead><tr><th>Signal</th><th>Betydelse</th><th>Åtgärd</th></tr></thead>
+        <tbody>
+          <tr><td>🟢 Grön</td><td>Kursen mer än 5% över MA200</td><td>Behåll. Positiv trend.</td></tr>
+          <tr><td>🟡 Gul</td><td>Kursen inom 5% från MA200</td><td>Bevaka. Kan gå åt båda håll.</td></tr>
+          <tr><td>🔴 Röd</td><td>Kursen mer än 5% under MA200</td><td>Sälj enligt strategin.</td></tr>
+          <tr><td>⚪ Grå</td><td>MA200 inte angivet</td><td>Lägg in värdet under Innehav → Redigera.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="hjalp-h2">📋 Innehav</div>
+      <div class="hjalp-p">Alla aktier och fonder i en tabell. Här lägger du till, redigerar och tar bort innehav. Du kan också registrera utdelningar manuellt och söka bland innehaven.</div>
+
+      <div class="hjalp-h2">⬆ Importera</div>
+      <div class="hjalp-p">Importera CSV-filer från Avanza. Tre filtyper stöds: Positioner (uppdaterar kurser och volymer), Transaktioner (köp/sälj/utdelning) och Inköpskurshistorik (valfri). Appen känner igen dubbletter automatiskt.</div>
+
+      <div class="hjalp-h2">🔄 Transaktioner</div>
+      <div class="hjalp-p">Visar alla importerade transaktioner med analysrutor för köp, sälj, utdelningar, källskatt, realiserat resultat och courtage. Filtrera på typ, värdepapper och datumintervall.</div>
+
+      <div class="hjalp-h2">📓 Beslutslogg</div>
+      <div class="hjalp-p">Skriv veckoanteckningar om marknadsläget och dina beslut. Exportera loggen till Excel för din investeringsdagbok. Att dokumentera beslut är ett av de effektivaste sätten att bli en bättre investerare.</div>
+
+      <div class="hjalp-h2">💰 Kassa</div>
+      <div class="hjalp-p">Registrera likvida medel manuellt som ska räknas in i portföljvärdet — t.ex. pengar på sparkonto som du planerar att investera. Observera att detta inte är kopplat till Avanzas faktiska likvidsaldo.</div>
+    </div>
+
+    <!-- STRATEGI -->
+    <div class="hjalp-kapitel" id="hk-strategi">
+      <div class="hjalp-rubrik">📊 Strategi och kategorier</div>
+      <div class="hjalp-ingress">Din investeringsstrategi från januari 2026 — de 6 kategorierna och MA200-regeln.</div>
+
+      <div class="hjalp-h2">De 6 kategorierna</div>
+
+      <div class="kat-rad"><div class="kat-rad-ikon">⚓</div><div>
+        <strong>Kategori 1 — Ankaret <span class="kat-badge-liten" style="background:#dbeafe;color:#1e40af">Mål: 35–40%</span></strong>
+        <div class="hjalp-p" style="margin-top:6px">Indexfonder. Basen i portföljen. Fylls på successivt — säljs aldrig, inte ens i dipp. Avanza Zero är tyngsta posten och fungerar som jämförelseindex.</div>
+      </div></div>
+
+      <div class="kat-rad"><div class="kat-rad-ikon">💰</div><div>
+        <strong>Kategori 2 — Kassaflödet <span class="kat-badge-liten" style="background:#dcfce7;color:#15803d">Mål: 20–25%</span></strong>
+        <div class="hjalp-p" style="margin-top:6px">Stabila utdelare — banker, industribolag och internationella utdelare. Säljs inte vid dipp. Utdelningarna återinvesteras. Ingen MA200-regel.</div>
+      </div></div>
+
+      <div class="kat-rad"><div class="kat-rad-ikon">⚙️</div><div>
+        <strong>Kategori 3 — Infrastrukturen <span class="kat-badge-liten" style="background:#ede9fe;color:#7c3aed">Mål: 15–20%</span></strong>
+        <div class="hjalp-p" style="margin-top:6px">Chip och hårdvara — ASML, NVIDIA, Taiwan Semi, Micron. MA200-regel gäller: sälj om kursen går under MA200, köp tillbaka vid uppbrott.</div>
+      </div></div>
+
+      <div class="kat-rad"><div class="kat-rad-ikon">🧠</div><div>
+        <strong>Kategori 4 — Hjärnan <span class="kat-badge-liten" style="background:#e0f2fe;color:#0891b2">Mål: 8–12%</span></strong>
+        <div class="hjalp-p" style="margin-top:6px">AI-mjukvara — Alphabet m.fl. MA200-regel gäller.</div>
+      </div></div>
+
+      <div class="kat-rad"><div class="kat-rad-ikon">🛡️</div><div>
+        <strong>Kategori 5 — Skölden <span class="kat-badge-liten" style="background:#fef3c7;color:#b45309">Mål: 8–12%</span></strong>
+        <div class="hjalp-p" style="margin-top:6px">Försvarsindustri — SAAB, BAE, Kongsberg, Leonardo. Geopolitisk hedge. MA200-regel gäller.</div>
+      </div></div>
+
+      <div class="kat-rad"><div class="kat-rad-ikon">✨</div><div>
+        <strong>Kategori 6 — Berättelser <span class="kat-badge-liten" style="background:#fce7f3;color:#be185d">Mål: 0–5%</span></strong>
+        <div class="hjalp-p" style="margin-top:6px">Kryddor med högre risk. Håll portionen liten. Bevaka MA200 och var beredd att agera.</div>
+      </div></div>
+
+      <div class="hjalp-h2">MA200-regeln</div>
+      <div class="hjalp-p">MA200 (200-dagars glidande medelvärde) gäller för kategori 3, 4 och 5:</div>
+      <div class="hjalp-ruta hjalp-ruta-fara"><div class="hjalp-ruta-titel">🔴 Säljsignal</div>Kurs går under MA200 → sälj aktien. Var mekanisk — känslan att "den ska nog komma upp" är just det brus strategin är till för att undvika.</div>
+      <div class="hjalp-ruta hjalp-ruta-tips"><div class="hjalp-ruta-titel">🟢 Köpsignal</div>Kursen bryter upp över MA200 igen → köp tillbaka. Det är strategins sätt att komma in i uppgångar utan att sitta kvar under nedgångar.</div>
+
+      <div class="hjalp-h2">Revidera strategin</div>
+      <div class="hjalp-p">Ändra kategori på en aktie: Innehav → Redigera → välj ny kategori → Spara. Ändra alltid när du är lugn — inte i panik. Dokumentera alltid varför i Beslutsloggen.</div>
+    </div>
+
+    <!-- GITHUB -->
+    <div class="hjalp-kapitel" id="hk-github">
+      <div class="hjalp-rubrik">🌐 GitHub Pages — appen som webbsida</div>
+      <div class="hjalp-ingress">Publicera appen på internet så du kommer åt den från vilken enhet som helst via en URL.</div>
+
+      <div class="hjalp-h2">Vad är GitHub Pages?</div>
+      <div class="hjalp-p">GitHub Pages är en gratis funktion hos GitHub som publicerar din HTML-fil som en vanlig webbsida. När det är uppsatt får du en URL som du kan bokmärka på iPad, iPhone och dator.</div>
+      <div class="hjalp-ruta hjalp-ruta-info">
+        <div class="hjalp-ruta-titel">📌 Viktig notering om data</div>
+        Även om appen är tillgänglig via URL sparas data fortfarande lokalt i webbläsaren på varje enhet. Data synkroniseras inte automatiskt mellan iPad och dator — använd Excel-export för att flytta data.
+      </div>
+
+      <div class="hjalp-h2">Sätta upp GitHub Pages — steg för steg</div>
+      <ol class="hjalp-ol">
+        <li>Gå till <strong>github.com</strong> och logga in med ditt konto (stockholmsvy1-droid)</li>
+        <li>Öppna ditt portfölj-repo</li>
+        <li>Tryck på <strong>Settings</strong> (kugghjulet)</li>
+        <li>Scrolla ner till <strong>Pages</strong> i vänstermenyn</li>
+        <li>Under "Source" — välj <strong>Deploy from a branch</strong></li>
+        <li>Välj branch <strong>main</strong> och mapp <strong>/ (root)</strong></li>
+        <li>Tryck <strong>Save</strong></li>
+        <li>Vänta 1–2 minuter — uppdatera sidan</li>
+        <li>Din URL visas: <code>https://stockholmsvy1-droid.github.io/REPO-NAMN/portfölj.html</code></li>
+      </ol>
+
+      <div class="hjalp-h2">Lägga till appen på hemskärmen på iPad</div>
+      <ol class="hjalp-ol">
+        <li>Öppna appen-URL i Safari på iPad</li>
+        <li>Tryck på dela-ikonen (rutan med pil uppåt) i adressfältet</li>
+        <li>Välj <strong>"Lägg till på hemskärmen"</strong></li>
+        <li>Ge den ett namn, t.ex. "Portfölj"</li>
+        <li>Tryck <strong>Lägg till</strong></li>
+      </ol>
+      <div class="hjalp-p">Nu har du en ikon på hemskärmen som öppnar appen direkt i helskärm — precis som en vanlig app.</div>
+
+      <div class="hjalp-h2">Uppdatera appen via git</div>
+      <div class="hjalp-p">När du gjort ändringar i portfölj.html och pushar till GitHub uppdateras GitHub Pages automatiskt inom några minuter. Du behöver inte göra något annat.</div>
+      <div class="hjalp-ruta hjalp-ruta-tips">
+        <div class="hjalp-ruta-titel">💡 Alternativ — iCloud Drive</div>
+        Utan GitHub Pages kan du spara portfölj.html i iCloud Drive och öppna den i Safari på iPad via Filer-appen. Det fungerar lika bra men du måste kopiera filen manuellt varje gång du uppdaterar appen.
+      </div>
+    </div>
+
+    <!-- FELSÖKNING -->
+    <div class="hjalp-kapitel" id="hk-felsok">
+      <div class="hjalp-rubrik">🔧 Felsökning</div>
+      <div class="hjalp-ingress">Vanliga problem och hur du löser dem.</div>
+
+      <div class="hjalp-h2">Filen importeras men inget händer</div>
+      <div class="hjalp-ruta hjalp-ruta-varning"><div class="hjalp-ruta-titel">Möjliga orsaker</div>
+      <ul class="hjalp-ul" style="margin:6px 0 0">
+        <li>Du har valt fel fil — kontrollera att positionsfilen heter <code>positioner_DATUM.csv</code></li>
+        <li>Du exporterade från Avanza-appen istället för avanza.se i Safari — appen stöder inte export</li>
+        <li>Alla volymer är 0 — kontrollera att du valde rätt konto vid export</li>
+      </ul></div>
+
+      <div class="hjalp-h2">Safari frågar inte var jag vill spara filen</div>
+      <div class="hjalp-p">I Safari-inställningar: gå till <strong>Inställningar → Safari → Nedladdningar</strong> och välj iCloud Drive eller "På min iPad". Då frågar Safari alltid var filen ska sparas.</div>
+
+      <div class="hjalp-h2">Transaktionsfilen ger "0 nya importerade"</div>
+      <div class="hjalp-p">Du har troligen importerat samma fil tidigare. Appen känner igen dubbletter och hoppar över dem. Exportera en ny fil med ett bredare datumintervall från Avanza.</div>
+
+      <div class="hjalp-h2">En aktie hamnar i fel kategori</div>
+      <div class="hjalp-p">Gå till Innehav → hitta aktien → tryck Redigera → ändra kategori → Spara. Appen har en inbyggd lista för kända aktier men nya aktier hamnar i kategori 2 som standard om de inte känns igen.</div>
+
+      <div class="hjalp-h2">All data är borta</div>
+      <div class="hjalp-p">Data försvinner om du rensat webbhistoriken och valt "Cookier och webbplatsdata", öppnat appen i privat/inkognito-läge, eller bytt webbläsare. Förebygg detta med regelbundna Excel-exporter.</div>
+
+      <div class="hjalp-h2">Siffrorna stämmer inte med Avanza</div>
+      <div class="hjalp-p">Vanligaste orsaken: kurserna är gamla. Importera en ny positionsfil för att uppdatera. Små avvikelser kan också bero på valutakurser — appen arbetar alltid i SEK.</div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="hjalp-kapitel" id="hk-faq">
+      <div class="hjalp-rubrik">❓ Vanliga frågor</div>
+      <div class="hjalp-ingress">Svar på frågor som dyker upp ofta.</div>
+
+      <table class="hjalp-tabell">
+        <thead><tr><th>Fråga</th><th>Svar</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Kan appen hämta kurser automatiskt?</strong></td><td>Nej — kurser uppdateras när du importerar positionsfilen från Avanza. Det är ett medvetet val för att hålla appen enkel och utan inloggningskrav.</td></tr>
+          <tr><td><strong>Synkroniseras data mellan iPad och dator?</strong></td><td>Nej, data sparas lokalt i respektive webbläsare. Använd Excel-export för att flytta data mellan enheter.</td></tr>
+          <tr><td><strong>Kan jag använda appen utan internetanslutning?</strong></td><td>Appen fungerar offline efter att sidan laddats. Du behöver internet för att importera filer från Avanza och för att ladda ner diagrambiblioteket (Chart.js) första gången.</td></tr>
+          <tr><td><strong>Varför stämmer inte avkastningen med Avanzas siffror?</strong></td><td>Appen beräknar (marknadsvärde − kostnadsbas) / kostnadsbas. Avanza kan använda tidsviktad avkastning. Båda är korrekta men mäter olika saker.</td></tr>
+          <tr><td><strong>Varför visas inga MA200-signaler på kategori 1 och 2?</strong></td><td>Dessa kategorier säljs aldrig baserat på MA200 enligt strategin. Signaler visas bara för kategori 3–5.</td></tr>
+          <tr><td><strong>Kan jag använda appen med Nordnet?</strong></td><td>Appen är anpassad för Avanzas filformat. Nordnets filer fungerar inte direkt — men det går att lägga till stöd.</td></tr>
+          <tr><td><strong>Vad gör jag om en aktie splittats?</strong></td><td>Importera en ny positionsfil — appen uppdaterar automatiskt volym och kurs baserat på Avanzas exportdata.</td></tr>
+          <tr><td><strong>Kan jag exportera data till min Investeringslogg i Excel?</strong></td><td>Ja. Tryck "Excel" uppe till höger — filen innehåller flikar för Innehav, Transaktioner, Beslutslogg och Sammanfattning.</td></tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:32px;padding:20px;background:#f9fafb;border-radius:var(--radius);text-align:center">
+        <div style="font-size:1.3rem;margin-bottom:8px">📈</div>
+        <strong style="display:block;margin-bottom:4px">Strategiportföljen</strong>
+        <span style="font-size:0.84rem;color:var(--muted)">Byggd för Martin · Strategi från januari 2026 · Mars 2026</span>
+      </div>
+    </div>
+
+  </div><!-- /card -->
+</section>
+
+</main>
+
+<!-- Modal: Utdelning -->
+<div class="modal-backdrop" id="modalUtdelning">
+  <div class="modal">
+    <h3>Registrera utdelning</h3>
+    <div class="form-grid" style="grid-template-columns:1fr 1fr">
+      <div class="fält"><label>Belopp per aktie</label><input id="ud-belopp" type="number" min="0" step="any" inputmode="decimal"/></div>
+      <div class="fält"><label>Datum</label><input id="ud-datum" type="date"/></div>
+    </div>
+    <input type="hidden" id="ud-id"/>
+    <div class="modal-knappar">
+      <button class="btn btn-ghost" onclick="stangModal('modalUtdelning')">Avbryt</button>
+      <button class="btn btn-success" onclick="sparaUtdelning()">Spara</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  STRATEGI
+// ══════════════════════════════════════════════════════════
+const KATEGORIER = {
+  1:{namn:'Ankaret',undertitel:'Index',emoji:'⚓',färg:'#1e40af',målMin:35,målMax:40,signal:'ingen',beskrivning:'Indexfonder. Basen. Fylls på successivt, aldrig såld.'},
+  2:{namn:'Kassaflödet',undertitel:'Utdelning',emoji:'💰',färg:'#15803d',målMin:20,målMax:25,signal:'ingen',beskrivning:'Stabila utdelare. Utdelningarna återinvesteras. Säljs ej vid dipp.'},
+  3:{namn:'Infrastrukturen',undertitel:'Chip',emoji:'⚙️',färg:'#7c3aed',målMin:15,målMax:20,signal:'ma200',beskrivning:'Chip och hårdvara. Sälj om kursen går under MA200.'},
+  4:{namn:'Hjärnan',undertitel:'AI Mjukvara',emoji:'🧠',färg:'#0891b2',målMin:8,målMax:12,signal:'ma200',beskrivning:'AI-mjukvara. Sälj om kursen går under MA200.'},
+  5:{namn:'Skölden',undertitel:'Försvar',emoji:'🛡️',färg:'#b45309',målMin:8,målMax:12,signal:'ma200',beskrivning:'Försvarsindustri. Geopolitisk hedge. Sälj om kursen går under MA200.'},
+  6:{namn:'Berättelser',undertitel:'Kryddor',emoji:'✨',färg:'#be185d',målMin:0,målMax:5,signal:'ma200',beskrivning:'Kryddor med högre risk. Håll portionen liten.'}
+};
+
+const KATEGORI_KOPPLING = {
+  'Avanza Zero':1,'Avanza Global':1,'Länsförsäkringar Global Index':1,
+  'Plus Småbolag Sverige Index':1,'Spiltan Aktiefond Investmentbolag':1,
+  'ABB':2,'AstraZeneca':2,'AstraZeneca ADR':2,'Atlas Copco B':2,
+  'Carlsberg B':2,'Caterpillar':2,'Exchange Income Corp':2,'Exxon Mobil':2,
+  'Handelsbanken A':2,'Investor A':2,'Investor B':2,'Johnson & Johnson':2,
+  'NextEra Energy':2,'Nordea Bank':2,'SEB A':2,'SEB C':2,
+  'Sandvik':2,'Swedbank A':2,'Volvo B':2,'BlueNord':2,
+  'ASML HOLDING':3,'ASML Holding NV':3,'Micron Technology':3,'MICRON TECHNOLOGY':3,
+  'NVIDIA':3,'NVIDIA CORPORATION':3,'Taiwan Semicond Mfg Co':3,'TAIWAN SEMICONDUCTERS ADR':3,
+  'Alphabet Inc Class C':4,
+  'BAE Systems PLC':5,'Kongsberg Gruppen':5,'Leonardo S.p.A.':5,'Finmeccanica SPA':5,'SAAB B':5,
+  'International Petroleum Corp.':6,'Zomedica':6,'Klarna Group':6,
+};
+
+function hittaKategori(namn) {
+  if (!namn) return 2;
+  if (KATEGORI_KOPPLING[namn]) return KATEGORI_KOPPLING[namn];
+  const nl = namn.toLowerCase();
+  for (const [k,v] of Object.entries(KATEGORI_KOPPLING)) {
+    if (nl.includes(k.toLowerCase()) || k.toLowerCase().includes(nl)) return v;
+  }
+  return 2;
+}
+
+// ══════════════════════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════════════════════
+let data = {
+  innehav:[], kassaTransaktioner:[], avanzaTransaktioner:[],
+  beslutslogg:[], historik:[], senastImport:{}
+};
+
+function ladda() {
+  const s = localStorage.getItem('portfölj_v2');
+  if (s) {
+    data = JSON.parse(s);
+    if (!data.avanzaTransaktioner) data.avanzaTransaktioner = [];
+    if (!data.beslutslogg) data.beslutslogg = [];
+    if (!data.senastImport) data.senastImport = {};
+  }
+  // Migrera från V1
+  const v1 = localStorage.getItem('portfölj_v1');
+  if (v1 && data.innehav.length === 0) {
+    const d = JSON.parse(v1);
+    if (d.innehav?.length > 0) {
+      data.innehav = d.innehav.map(h => ({...h, kategori: hittaKategori(h.namn), ma200: 0}));
+      data.kassaTransaktioner = d.kassaTransaktioner || [];
+      data.historik = d.historik || [];
+      loggImport('info','Migrerade data från Version 1.');
+      spara();
+    }
+  }
+  const idag = new Date().toISOString().slice(0,10);
+  ['f-datum','k-datum','ud-datum','log-datum'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = idag;
+  });
+  const logVecka = document.getElementById('log-vecka');
+  if (logVecka) logVecka.value = 'v' + getVeckonummer(new Date());
+}
+
+function spara() {
+  const idag = new Date().toISOString().slice(0,10);
+  const tv = beräknaTotalVärde();
+  const fi = data.historik.find(h => h.datum === idag);
+  if (!fi) data.historik.push({datum:idag, totalVärde:tv});
+  else fi.totalVärde = tv;
+  localStorage.setItem('portfölj_v2', JSON.stringify(data));
+}
+
+function getVeckonummer(d) {
+  const dt = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const dn = dt.getUTCDay() || 7;
+  dt.setUTCDate(dt.getUTCDate() + 4 - dn);
+  const ys = new Date(Date.UTC(dt.getUTCFullYear(),0,1));
+  return Math.ceil((((dt-ys)/86400000)+1)/7);
+}
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+// ══════════════════════════════════════════════════════════
+//  BERÄKNINGAR
+// ══════════════════════════════════════════════════════════
+function beräknaInnehavVärde() { return data.innehav.reduce((s,h)=>s+h.antal*h.aktuelKurs,0); }
+function beräknaKostnadsbas() { return data.innehav.reduce((s,h)=>s+h.antal*h.köpkurs,0); }
+function beräknaKassasaldo() { return data.kassaTransaktioner.reduce((s,t)=>t.typ==='insättning'?s+t.belopp:s-t.belopp,0); }
+function beräknaTotalUtdelning() {
+  const m = data.innehav.reduce((s,h)=>s+(h.utdelningar||[]).reduce((u,d)=>u+d.belopp*h.antal,0),0);
+  const i = data.avanzaTransaktioner.filter(t=>t.typ==='Utdelning').reduce((s,t)=>s+(parseFloat(t.belopp)||0),0);
+  return m+i;
+}
+function beräknaTotalVärde() { return beräknaInnehavVärde()+beräknaKassasaldo(); }
+function beräknaRealiserat() { return data.avanzaTransaktioner.filter(t=>t.typ==='Sälj'&&t.resultat).reduce((s,t)=>s+(parseFloat(t.resultat)||0),0); }
+function beräknaKällskatt() { return data.avanzaTransaktioner.filter(t=>t.typ==='Utländsk källskatt').reduce((s,t)=>s+Math.abs(parseFloat(t.belopp)||0),0); }
+function beräknaCourtage() { return data.avanzaTransaktioner.filter(t=>t.courtage).reduce((s,t)=>s+(parseFloat(t.courtage)||0),0); }
+function beräknaKategorivärden() {
+  const r = {}; for (const k of Object.keys(KATEGORIER)) r[k]=0;
+  data.innehav.forEach(h=>{ const k=String(h.kategori||2); r[k]=(r[k]||0)+h.antal*h.aktuelKurs; });
+  return r;
+}
+function ma200Signal(h) {
+  if (!h.ma200||h.ma200===0) return 'okänd';
+  const p = (h.aktuelKurs-h.ma200)/h.ma200;
+  return p>=0.05?'grön':p>=-0.05?'gul':'röd';
+}
+
+// ══════════════════════════════════════════════════════════
+//  FORMAT
+// ══════════════════════════════════════════════════════════
+function kr(v,d=0) { if(isNaN(v))return'—'; return v.toLocaleString('sv-SE',{minimumFractionDigits:d,maximumFractionDigits:d})+' kr'; }
+function pct(v) { if(isNaN(v))return'—'; return (v>=0?'+':'')+v.toFixed(1)+'%'; }
+function färg(v) { return v>=0?'pos':'neg'; }
+function katBadge(k) { const kat=KATEGORIER[k]; if(!kat)return''; return `<span class="kat-badge kat-${k}">${kat.emoji} ${kat.namn}</span>`; }
+function parseSE(str) { if(!str&&str!==0)return 0; return parseFloat(String(str).replace(/\s/g,'').replace(',','.'))||0; }
+
+// ══════════════════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════════════════
+function visaSektion(id, knapp) {
+  document.querySelectorAll('.sektion').forEach(s=>s.classList.remove('aktiv'));
+  document.getElementById(id).classList.add('aktiv');
+  document.querySelectorAll('#desktopNav button').forEach(b=>b.classList.remove('aktiv'));
+  if (knapp) knapp.classList.add('aktiv');
+  if (id==='dashboard') ritaDiagram();
+  if (id==='kategorier') renderKategorier();
+}
+
+function synkNavKnappar(id) {
+  document.querySelectorAll('#desktopNav button').forEach(b => {
+    if (b.textContent.includes('Hjälp') || b.getAttribute('onclick')?.includes(id)) b.classList.add('aktiv');
+  });
+}
+
+function mobilNav(id, idx) {
+  visaSektion(id, null);
+  document.querySelectorAll('.nav-bottom-knapp').forEach(b=>b.classList.remove('aktiv'));
+  if (idx >= 0) document.querySelectorAll('.nav-bottom-knapp')[idx]?.classList.add('aktiv');
+  else document.getElementById('merKnapp')?.classList.add('aktiv');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function växlaMerMeny() {
+  const m=document.getElementById('merMeny'), o=document.getElementById('merOverlay');
+  const ö=m.classList.contains('visa');
+  m.classList.toggle('visa',!ö); o.classList.toggle('visa',!ö);
+}
+function stängMerMeny() {
+  document.getElementById('merMeny').classList.remove('visa');
+  document.getElementById('merOverlay').classList.remove('visa');
+}
+
+function visaHjalpKapitel(id, knapp) {
+  document.querySelectorAll('.hjalp-kapitel').forEach(k=>k.classList.remove('aktiv'));
+  document.querySelectorAll('.hjalp-flik').forEach(b=>b.classList.remove('aktiv'));
+  document.getElementById('hk-'+id)?.classList.add('aktiv');
+  if (knapp) knapp.classList.add('aktiv');
+}
+
+// ══════════════════════════════════════════════════════════
+//  RENDER — DASHBOARD
+// ══════════════════════════════════════════════════════════
+function renderDashboard() {
+  const iv=beräknaInnehavVärde(), kassa=beräknaKassasaldo(), kb=beräknaKostnadsbas();
+  const total=iv+kassa, vinst=iv-kb, vpct=kb>0?(vinst/kb)*100:0;
+  document.getElementById('nk-total').textContent=kr(total);
+  document.getElementById('nk-total-sub').textContent=`Kassa: ${kr(kassa)}`;
+  document.getElementById('nk-innehav').textContent=kr(iv);
+  document.getElementById('nk-innehav-sub').textContent=`Kostnadsbas: ${kr(kb)}`;
+  document.getElementById('nk-kassa').textContent=kr(kassa);
+  document.getElementById('nk-avkastning').innerHTML=`<span class="${färg(vinst)}">${kr(vinst)}</span>`;
+  document.getElementById('nk-avkastning-sub').innerHTML=`<span class="${färg(vpct)}">${pct(vpct)}</span>`;
+  document.getElementById('nk-utdelning').textContent=kr(beräknaTotalUtdelning());
+  const real=beräknaRealiserat();
+  document.getElementById('nk-realiserat').innerHTML=real!==0?`<span class="${färg(real)}">${kr(real)}</span>`:'—';
+
+  const tbody=document.querySelector('#tabellDashboard tbody');
+  const kortLista=document.getElementById('dashKortLista');
+  if (data.innehav.length===0) {
+    tbody.innerHTML='<tr class="tom-rad"><td colspan="8">Inga innehav. Gå till Importera för att läsa in från Avanza.</td></tr>';
+    if(kortLista)kortLista.innerHTML='<div style="text-align:center;color:var(--muted);padding:32px">Inga innehav ännu.</div>';
+  } else {
+    const s=[...data.innehav].sort((a,b)=>(b.antal*b.aktuelKurs)-(a.antal*a.aktuelKurs));
+    tbody.innerHTML=s.map(h=>{
+      const mv=h.antal*h.aktuelKurs, vf=mv-h.antal*h.köpkurs, vp=h.antal*h.köpkurs>0?(vf/(h.antal*h.köpkurs))*100:0;
+      return `<tr><td><strong>${h.namn}</strong></td><td>${katBadge(h.kategori||2)}</td><td>${(+h.antal).toLocaleString('sv-SE',{maximumFractionDigits:4})}</td><td>${kr(h.köpkurs,2)}</td><td>${kr(h.aktuelKurs,2)}</td><td><strong>${kr(mv)}</strong></td><td class="${färg(vf)}">${kr(vf)}</td><td><span class="badge ${vf>=0?'badge-pos':'badge-neg'}">${pct(vp)}</span></td></tr>`;
+    }).join('');
+    if(kortLista)kortLista.innerHTML=s.slice(0,20).map(h=>{
+      const mv=h.antal*h.aktuelKurs, vf=mv-h.antal*h.köpkurs, vp=h.antal*h.köpkurs>0?(vf/(h.antal*h.köpkurs))*100:0;
+      return `<div class="mobil-kort"><div class="mobil-kort-header"><div><div class="mobil-kort-namn">${h.namn}</div><div style="margin-top:4px">${katBadge(h.kategori||2)}</div></div><div class="${färg(vf)}" style="text-align:right;font-weight:700"><div>${pct(vp)}</div><div style="font-size:1rem">${kr(mv)}</div></div></div><div class="mobil-kort-rad"><span class="etikett">Antal</span><span>${(+h.antal).toLocaleString('sv-SE',{maximumFractionDigits:4})}</span></div><div class="mobil-kort-rad"><span class="etikett">GAV</span><span>${kr(h.köpkurs,2)}</span></div><div class="mobil-kort-rad"><span class="etikett">Akt. kurs</span><span>${kr(h.aktuelKurs,2)}</span></div><div class="mobil-kort-rad"><span class="etikett">Vinst/Förlust</span><span class="${färg(vf)}">${kr(vf)}</span></div></div>`;
+    }).join('');
+  }
+
+  // Vikter
+  const katV=beräknaKategorivärden(), tot=Object.values(katV).reduce((s,v)=>s+v,0);
+  const vDiv=document.getElementById('dashboard-vikter');
+  if(tot===0){vDiv.innerHTML='<p style="color:var(--muted);font-size:0.87rem">Inga innehav att visa.</p>';return;}
+  vDiv.innerHTML=Object.entries(KATEGORIER).map(([k,kat])=>{
+    const v=katV[k]||0, vp=tot>0?(v/tot)*100:0;
+    const mm=(kat.målMin+kat.målMax)/2, avv=vp-mm;
+    const avvT=avv>2?'Övervikt':avv<-2?'Undervikt':'OK';
+    const avvF=avv>5?'var(--warning)':avv<-5?'var(--danger)':'var(--success)';
+    return `<div style="display:grid;grid-template-columns:140px 1fr 70px 90px;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:6px;font-size:0.87rem;font-weight:600">${kat.emoji} ${kat.namn}</div><div style="position:relative"><div class="vikt-bar-track"><div class="vikt-bar-fill" style="width:${Math.min(100,vp)}%;background:${kat.färg}80"></div><div class="vikt-bar-mal" style="left:${Math.min(100,kat.målMax)}%"></div></div></div><div style="font-size:0.87rem;font-weight:700;text-align:right">${vp.toFixed(1)}%</div><div style="font-size:0.78rem;font-weight:700;color:${avvF};text-align:right">${avvT}</div></div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+//  RENDER — KATEGORIER
+// ══════════════════════════════════════════════════════════
+function renderKategorier() {
+  const katV=beräknaKategorivärden(), tot=Object.values(katV).reduce((s,v)=>s+v,0);
+  document.getElementById('kategori-grid').innerHTML=Object.entries(KATEGORIER).map(([k,kat])=>{
+    const innehav=data.innehav.filter(h=>String(h.kategori)===k);
+    const v=katV[k]||0, vp=tot>0?(v/tot)*100:0;
+    const mm=(kat.målMin+kat.målMax)/2, avv=vp-mm;
+    let avvBadge=avv>2?`<span class="badge badge-warning">Övervikt ${avv.toFixed(1)}%</span>`:avv<-2?`<span class="badge badge-neg">Undervikt ${Math.abs(avv).toFixed(1)}%</span>`:`<span class="badge badge-pos">OK</span>`;
+    const rader=innehav.length===0?'<p style="color:var(--muted);font-size:0.84rem;padding:6px 0">Inga innehav ännu.</p>':innehav.map(h=>{
+      const mv=h.antal*h.aktuelKurs, sig=kat.signal==='ma200'?ma200Signal(h):null;
+      const sH=sig?`<span class="signal-dot signal-${sig==='okänd'?'gul':sig}" style="flex-shrink:0" title="${sig==='grön'?'Över MA200':sig==='gul'?'Nära MA200':sig==='röd'?'Under MA200':'MA200 ej angivet'}"></span>`:'';
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:0.87rem"><span style="display:flex;align-items:center;gap:7px">${sH}<strong>${h.namn}</strong></span><span style="color:var(--muted)">${kr(mv)}</span></div>`;
+    }).join('');
+    const fw=Math.min(100,(vp/Math.max(kat.målMax,vp))*100);
+    return `<div class="kat-kort"><div class="kat-kort-header"><div class="kat-kort-namn"><span style="font-size:1.4rem">${kat.emoji}</span><div><div>${kat.namn}</div><div style="font-size:0.75rem;color:var(--muted);font-weight:400">${kat.undertitel}</div></div></div><div class="kat-kort-siffror"><div class="vikt">${vp.toFixed(1)}%</div><div class="mal">Mål: ${kat.målMin}–${kat.målMax}%</div></div></div><div class="kat-kort-body"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:0.78rem;color:var(--muted)">${kr(v)}</span>${avvBadge}</div><div class="vikt-bar-track" style="margin-bottom:12px"><div class="vikt-bar-fill" style="width:${fw}%;background:${kat.färg}"></div><div class="vikt-bar-mal" style="left:${Math.min(100,kat.målMax)}%"></div></div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;font-style:italic">${kat.beskrivning}</div>${rader}</div></div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+//  RENDER — INNEHAV
+// ══════════════════════════════════════════════════════════
+function renderInnehav() {
+  const sok=(document.getElementById('innehavSok')?.value||'').toLowerCase();
+  const fil=sok?data.innehav.filter(h=>h.namn.toLowerCase().includes(sok)||(h.ticker||'').toLowerCase().includes(sok)):data.innehav;
+  const s=[...fil].sort((a,b)=>String(a.kategori).localeCompare(String(b.kategori))||a.namn.localeCompare(b.namn));
+  const tbody=document.querySelector('#tabellInnehav tbody');
+  const kl=document.getElementById('innehavKortLista');
+  if(s.length===0){tbody.innerHTML='<tr class="tom-rad"><td colspan="14">Inga innehav.</td></tr>';if(kl)kl.innerHTML='<div style="text-align:center;color:var(--muted);padding:32px">Inga innehav.</div>';return;}
+  tbody.innerHTML=s.map(h=>{
+    const kb=h.antal*h.köpkurs,mv=h.antal*h.aktuelKurs,vf=mv-kb,vp=kb>0?(vf/kb)*100:0;
+    const ud=(h.utdelningar||[]).reduce((s,d)=>s+d.belopp*h.antal,0);
+    const kat=KATEGORIER[h.kategori]||KATEGORIER[2],sig=kat.signal==='ma200'?ma200Signal(h):null;
+    const sH=sig?`<span class="signal-dot signal-${sig==='okänd'?'gul':sig}"></span>`:'<span style="color:var(--muted)">—</span>';
+    return `<tr><td><strong>${h.namn}</strong>${h.notat?`<br><small style="color:var(--muted)">${h.notat}</small>`:''}</td><td>${katBadge(h.kategori||2)}</td><td><span class="chip">${h.valuta||'SEK'}</span></td><td>${(+h.antal).toLocaleString('sv-SE',{maximumFractionDigits:4})}</td><td>${kr(h.köpkurs,2)}</td><td>${kr(h.aktuelKurs,2)}</td><td>${h.ma200>0?kr(h.ma200,0):'—'}</td><td style="text-align:center">${sH}</td><td>${kr(kb)}</td><td><strong>${kr(mv)}</strong></td><td class="${färg(vf)}">${kr(vf)}</td><td><span class="badge ${vf>=0?'badge-pos':'badge-neg'}">${pct(vp)}</span></td><td>${ud>0?kr(ud):'—'}</td><td style="white-space:nowrap"><button class="btn btn-primary btn-sm" onclick="redigeraInnehav('${h.id}')">✏️</button> <button class="btn btn-success btn-sm" onclick="öppnaUtdelning('${h.id}')">💰</button> <button class="btn btn-danger btn-sm" onclick="raderaInnehav('${h.id}')">✕</button></td></tr>`;
+  }).join('');
+  if(kl)kl.innerHTML=s.map(h=>{
+    const kb=h.antal*h.köpkurs,mv=h.antal*h.aktuelKurs,vf=mv-kb,vp=kb>0?(vf/kb)*100:0;
+    const kat=KATEGORIER[h.kategori]||KATEGORIER[2],sig=kat.signal==='ma200'?ma200Signal(h):null;
+    const sT=sig==='grön'?'🟢':sig==='gul'?'🟡':sig==='röd'?'🔴':'';
+    return `<div class="mobil-kort"><div class="mobil-kort-header"><div><div class="mobil-kort-namn">${sT} ${h.namn}</div><div style="margin-top:5px">${katBadge(h.kategori||2)}</div></div><div class="${färg(vf)}" style="text-align:right;font-weight:700"><div style="font-size:0.85rem">${pct(vp)}</div><div>${kr(mv)}</div></div></div><div class="mobil-kort-rad"><span class="etikett">Antal</span><span>${(+h.antal).toLocaleString('sv-SE',{maximumFractionDigits:4})}</span></div><div class="mobil-kort-rad"><span class="etikett">GAV</span><span>${kr(h.köpkurs,2)}</span></div><div class="mobil-kort-rad"><span class="etikett">Akt. kurs</span><span>${kr(h.aktuelKurs,2)}</span></div>${h.ma200>0?`<div class="mobil-kort-rad"><span class="etikett">MA200</span><span>${kr(h.ma200,0)}</span></div>`:''}<div class="mobil-kort-rad"><span class="etikett">Vinst/Förlust</span><span class="${färg(vf)}">${kr(vf)}</span></div><div class="mobil-kort-åtgärder"><button class="btn btn-primary btn-sm" onclick="redigeraInnehav('${h.id}');window.scrollTo({top:0,behavior:'smooth'})">✏️ Redigera</button><button class="btn btn-success btn-sm" onclick="öppnaUtdelning('${h.id}')">💰</button><button class="btn btn-danger btn-sm" onclick="raderaInnehav('${h.id}')">✕</button></div></div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+//  RENDER — TRANSAKTIONER
+// ══════════════════════════════════════════════════════════
+function renderTransaktioner() {
+  const typF=document.getElementById('tx-filter-typ')?.value||'';
+  const sokF=(document.getElementById('tx-filter-sok')?.value||'').toLowerCase();
+  const frF=document.getElementById('tx-filter-fran')?.value||'';
+  const tiF=document.getElementById('tx-filter-till')?.value||'';
+  let tx=[...data.avanzaTransaktioner];
+  if(typF)tx=tx.filter(t=>t.typ===typF);
+  if(sokF)tx=tx.filter(t=>(t.värdepapper||'').toLowerCase().includes(sokF));
+  if(frF)tx=tx.filter(t=>t.datum>=frF);
+  if(tiF)tx=tx.filter(t=>t.datum<=tiF);
+  tx.sort((a,b)=>b.datum.localeCompare(a.datum));
+
+  const alla=data.avanzaTransaktioner;
+  document.getElementById('tx-nk-kop').textContent=kr(alla.filter(t=>t.typ==='Köp').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0));
+  document.getElementById('tx-nk-salj').textContent=kr(alla.filter(t=>t.typ==='Sälj').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0));
+  document.getElementById('tx-nk-utd').textContent=kr(alla.filter(t=>t.typ==='Utdelning').reduce((s,t)=>s+parseSE(t.belopp),0));
+  document.getElementById('tx-nk-skatt').textContent=kr(beräknaKällskatt());
+  const real=beräknaRealiserat();
+  document.getElementById('tx-nk-res').innerHTML=`<span class="${färg(real)}">${kr(real)}</span>`;
+  document.getElementById('tx-nk-crt').textContent=kr(beräknaCourtage());
+  const ab=document.getElementById('tx-antal-badge'); if(ab)ab.textContent=`${tx.length} rader`;
+
+  const tF={Köp:'badge-neutral',Sälj:'badge-neg',Utdelning:'badge-pos',Insättning:'badge-pos','Utländsk källskatt':'badge-warning','Återbetalning utländsk källskatt':'badge-pos'};
+  const tbody=document.querySelector('#tabellTransaktioner tbody');
+  const kl=document.getElementById('txKortLista');
+  if(tx.length===0){tbody.innerHTML='<tr class="tom-rad"><td colspan="9">Inga transaktioner. Importera en transaktions-CSV från Avanza.</td></tr>';if(kl)kl.innerHTML='<div style="text-align:center;color:var(--muted);padding:32px">Inga transaktioner att visa.</div>';return;}
+  tbody.innerHTML=tx.map(t=>{
+    const b=parseSE(t.belopp),r=t.resultat?parseSE(t.resultat):null;
+    return `<tr><td>${t.datum}</td><td><span style="font-size:0.73rem;color:var(--muted)">${t.konto||'—'}</span></td><td><span class="badge ${tF[t.typ]||'badge-neutral'}">${t.typ}</span></td><td><strong>${t.värdepapper||'—'}</strong></td><td>${t.antal||'—'}</td><td>${t.kurs||'—'}</td><td class="${b<0?'neg':b>0?'pos':''}">${b!==0?kr(Math.abs(b)):'—'}</td><td>${t.courtage?kr(parseSE(t.courtage)):'—'}</td><td class="${r!==null?färg(r):''}">${r!==null?kr(r):'—'}</td></tr>`;
+  }).join('');
+  if(kl){kl.innerHTML=tx.slice(0,80).map(t=>{
+    const b=parseSE(t.belopp),r=t.resultat?parseSE(t.resultat):null;
+    return `<div class="tx-mobil-kort"><div class="tx-mobil-header"><div><strong>${t.värdepapper||t.typ}</strong><span class="badge ${tF[t.typ]||'badge-neutral'}" style="margin-left:6px">${t.typ}</span></div><div class="${b<0?'neg':'pos'}" style="font-weight:700">${b!==0?kr(Math.abs(b)):'—'}</div></div><div class="tx-mobil-info"><span>📅 ${t.datum}</span>${t.antal?`<span>Antal: ${t.antal}</span>`:''} ${t.courtage?`<span>Courtage: ${kr(parseSE(t.courtage))}</span>`:''} ${r!==null?`<span class="${färg(r)}">Resultat: ${kr(r)}</span>`:''}</div></div>`;
+  }).join('');if(tx.length>80)kl.innerHTML+=`<div style="text-align:center;color:var(--muted);padding:14px;font-size:0.85rem">Visar 80 av ${tx.length}. Använd filter för att söka.</div>`;}
+}
+
+// ══════════════════════════════════════════════════════════
+//  RENDER — BESLUTSLOGG
+// ══════════════════════════════════════════════════════════
+function renderBeslutslogg() {
+  const lista=document.getElementById('logg-lista');
+  if(data.beslutslogg.length===0){lista.innerHTML='<div class="banner banner-info">📓 Inga loggposter ännu. Fyll i formuläret ovan.</div>';return;}
+  lista.innerHTML=[...data.beslutslogg].reverse().map(p=>`
+    <div class="vecka-kort"><div class="vecka-kort-header"><div><span class="vecka-etikett">${p.vecka||''}</span><div style="font-size:0.88rem;color:var(--text-mid)">${p.datum}</div></div><div style="display:flex;align-items:center;gap:10px">${p.värde?`<span style="font-weight:700;font-size:1.05rem">${kr(p.värde)}</span>`:''}<button class="btn btn-danger btn-sm" onclick="raderaLoggpost('${p.id}')">✕</button></div></div>${p.tankar?`<div style="margin-bottom:10px"><div style="font-size:0.73rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Tankar om marknaden</div><div style="font-size:0.88rem;line-height:1.6">${p.tankar.replace(/\n/g,'<br>')}</div></div>`:''} ${p.åtgärder?`<div><div style="font-size:0.73rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Genomförda köp/sälj</div><div style="font-size:0.88rem;line-height:1.6">${p.åtgärder.replace(/\n/g,'<br>')}</div></div>`:''}</div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+//  RENDER — KASSA
+// ══════════════════════════════════════════════════════════
+function renderKassa() {
+  const s=beräknaKassasaldo();
+  document.getElementById('kassaSaldo').textContent=kr(s,2);
+  const ins=data.kassaTransaktioner.filter(t=>t.typ==='insättning').reduce((s,t)=>s+t.belopp,0);
+  const ut=data.kassaTransaktioner.filter(t=>t.typ==='uttag').reduce((s,t)=>s+t.belopp,0);
+  document.getElementById('kassaSub').textContent=`Totalt insatt: ${kr(ins)} | Uttaget: ${kr(ut)}`;
+  const tbody=document.querySelector('#tabellKassa tbody');
+  if(data.kassaTransaktioner.length===0){tbody.innerHTML='<tr class="tom-rad"><td colspan="5">Inga kassatransaktioner.</td></tr>';return;}
+  tbody.innerHTML=[...data.kassaTransaktioner].reverse().map(t=>`<tr><td>${t.datum}</td><td><span class="badge ${t.typ==='insättning'?'badge-pos':'badge-neg'}">${t.typ}</span></td><td class="${t.typ==='insättning'?'pos':'neg'}">${t.typ==='insättning'?'+':'−'}${kr(t.belopp)}</td><td>${t.notat||'—'}</td><td><button class="btn btn-danger btn-sm" onclick="raderaKassa('${t.id}')">✕</button></td></tr>`).join('');
+}
+
+function renderAllt() { renderDashboard(); renderInnehav(); renderTransaktioner(); renderBeslutslogg(); renderKassa(); renderSenasteImport(); }
+
+// ══════════════════════════════════════════════════════════
+//  DIAGRAM
+// ══════════════════════════════════════════════════════════
+let chartK=null, chartH=null;
+function ritaDiagram() {
+  const cK=document.getElementById('diagramKategori')?.getContext('2d');
+  if(cK){if(chartK)chartK.destroy();const kV=beräknaKategorivärden();
+    chartK=new Chart(cK,{type:'doughnut',data:{labels:Object.entries(KATEGORIER).map(([k,kat])=>`${kat.emoji} ${kat.namn}`),datasets:[{data:Object.keys(KATEGORIER).map(k=>kV[k]||0),backgroundColor:Object.values(KATEGORIER).map(kat=>kat.färg),borderWidth:3,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:10}}}}});}
+  const cH=document.getElementById('diagramHistorik')?.getContext('2d');
+  if(cH){if(chartH)chartH.destroy();const hi=data.historik.slice(-90);
+    chartH=new Chart(cH,{type:'line',data:{labels:hi.map(h=>h.datum),datasets:[{label:'Portföljvärde',data:hi.map(h=>h.totalVärde),borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,0.07)',borderWidth:2,pointRadius:hi.length<20?4:1,fill:true,tension:0.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>(v/1000).toFixed(0)+'k kr'}}}}});}
+}
+
+// ══════════════════════════════════════════════════════════
+//  INNEHAV CRUD
+// ══════════════════════════════════════════════════════════
+function sparaInnehav() {
+  const namn=document.getElementById('f-namn').value.trim();
+  const ticker=document.getElementById('f-ticker').value.trim();
+  const kategori=parseInt(document.getElementById('f-kategori').value);
+  const antal=parseFloat(document.getElementById('f-antal').value);
+  const köpkurs=parseFloat(document.getElementById('f-köpkurs').value);
+  const aktuelKurs=parseFloat(document.getElementById('f-aktuelkurs').value);
+  const ma200=parseFloat(document.getElementById('f-ma200').value)||0;
+  const datum=document.getElementById('f-datum').value;
+  const valuta=document.getElementById('f-valuta').value;
+  const notat=document.getElementById('f-notat').value.trim();
+  const redId=document.getElementById('f-redigera-id').value;
+  if(!namn||isNaN(antal)||isNaN(köpkurs)||isNaN(aktuelKurs)){alert('Fyll i Namn, Antal, GAV och Aktuell kurs.');return;}
+  if(redId){const h=data.innehav.find(x=>x.id===redId);Object.assign(h,{namn,ticker,kategori,antal,köpkurs,aktuelKurs,ma200,datum,valuta,notat});}
+  else{data.innehav.push({id:uid(),namn,ticker,kategori,antal,köpkurs,aktuelKurs,ma200,datum,valuta,notat,utdelningar:[]});}
+  spara();renderAllt();avbrytRedigering();
+}
+function raderaInnehav(id) {
+  const h=data.innehav.find(x=>x.id===id);if(!confirm(`Ta bort ${h.namn}?`))return;
+  data.innehav=data.innehav.filter(x=>x.id!==id);spara();renderAllt();
+}
+function redigeraInnehav(id) {
+  const h=data.innehav.find(x=>x.id===id);
+  document.getElementById('f-namn').value=h.namn;
+  document.getElementById('f-ticker').value=h.ticker||'';
+  document.getElementById('f-kategori').value=h.kategori||2;
+  document.getElementById('f-antal').value=h.antal;
+  document.getElementById('f-köpkurs').value=h.köpkurs;
+  document.getElementById('f-aktuelkurs').value=h.aktuelKurs;
+  document.getElementById('f-ma200').value=h.ma200||'';
+  document.getElementById('f-datum').value=h.datum||'';
+  document.getElementById('f-valuta').value=h.valuta||'SEK';
+  document.getElementById('f-notat').value=h.notat||'';
+  document.getElementById('f-redigera-id').value=id;
+  visaSektion('innehav',null);
+  document.querySelectorAll('#desktopNav button').forEach(b=>{if(b.textContent.includes('Innehav'))b.classList.add('aktiv');});
+  document.querySelectorAll('.nav-bottom-knapp').forEach((b,i)=>{b.classList.toggle('aktiv',i===3);});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function avbrytRedigering() {
+  ['f-namn','f-ticker','f-notat','f-ma200'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['f-antal','f-köpkurs','f-aktuelkurs'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('f-valuta').value='SEK';
+  document.getElementById('f-kategori').value='2';
+  document.getElementById('f-datum').value=new Date().toISOString().slice(0,10);
+  document.getElementById('f-redigera-id').value='';
+}
+
+// ══════════════════════════════════════════════════════════
+//  UTDELNING
+// ══════════════════════════════════════════════════════════
+function öppnaUtdelning(id) {
+  document.getElementById('ud-id').value=id;
+  document.getElementById('ud-belopp').value='';
+  document.getElementById('ud-datum').value=new Date().toISOString().slice(0,10);
+  document.getElementById('modalUtdelning').classList.add('visa');
+}
+function sparaUtdelning() {
+  const id=document.getElementById('ud-id').value;
+  const belopp=parseFloat(document.getElementById('ud-belopp').value);
+  const datum=document.getElementById('ud-datum').value;
+  if(isNaN(belopp)||belopp<=0){alert('Ange ett giltigt belopp.');return;}
+  const h=data.innehav.find(x=>x.id===id);
+  if(!h.utdelningar)h.utdelningar=[];
+  h.utdelningar.push({belopp,datum});
+  stangModal('modalUtdelning');spara();renderAllt();
+}
+
+// ══════════════════════════════════════════════════════════
+//  KASSA
+// ══════════════════════════════════════════════════════════
+function sparaKassa() {
+  const typ=document.getElementById('k-typ').value;
+  const belopp=parseFloat(document.getElementById('k-belopp').value);
+  const datum=document.getElementById('k-datum').value;
+  const notat=document.getElementById('k-notat').value.trim();
+  if(isNaN(belopp)||belopp<=0){alert('Ange ett giltigt belopp.');return;}
+  if(typ==='uttag'&&belopp>beräknaKassasaldo()){alert('Otillräckligt kassasaldo.');return;}
+  data.kassaTransaktioner.push({id:uid(),typ,belopp,datum,notat});
+  document.getElementById('k-belopp').value='';document.getElementById('k-notat').value='';
+  spara();renderAllt();
+}
+function raderaKassa(id) {
+  if(!confirm('Ta bort kassatransaktionen?'))return;
+  data.kassaTransaktioner=data.kassaTransaktioner.filter(t=>t.id!==id);
+  spara();renderAllt();
+}
+
+// ══════════════════════════════════════════════════════════
+//  BESLUTSLOGG
+// ══════════════════════════════════════════════════════════
+function sparaLoggpost() {
+  const vecka=document.getElementById('log-vecka').value.trim();
+  const datum=document.getElementById('log-datum').value;
+  const värde=parseFloat(document.getElementById('log-varde').value)||0;
+  const tankar=document.getElementById('log-tankar').value.trim();
+  const åtgärder=document.getElementById('log-atgarder').value.trim();
+  if(!datum){alert('Ange ett datum.');return;}
+  data.beslutslogg.push({id:uid(),vecka,datum,värde,tankar,åtgärder});
+  document.getElementById('log-tankar').value='';
+  document.getElementById('log-atgarder').value='';
+  document.getElementById('log-varde').value='';
+  spara();renderBeslutslogg();
+}
+function raderaLoggpost(id) {
+  if(!confirm('Ta bort loggposten?'))return;
+  data.beslutslogg=data.beslutslogg.filter(p=>p.id!==id);
+  spara();renderBeslutslogg();
+}
+
+// ══════════════════════════════════════════════════════════
+//  IMPORT
+// ══════════════════════════════════════════════════════════
+function dragOver(e,el){e.preventDefault();el.classList.add('drag-over');}
+function dragLeave(el){el.classList.remove('drag-over');}
+function dropFil(e,typ,el){e.preventDefault();el.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f)behandlaFil(f,typ);}
+function läsFil(e,typ){const f=e.target.files[0];if(f)behandlaFil(f,typ);e.target.value='';}
+
+function behandlaFil(fil, typ) {
+  loggImport('info', `Läser: ${fil.name} (${(fil.size/1024).toFixed(1)} KB)`);
+
+  // Filvalidering
+  const ärCSV = fil.name.toLowerCase().endsWith('.csv');
+  const ärXLSX = fil.name.toLowerCase().endsWith('.xlsx') || fil.name.toLowerCase().endsWith('.xls');
+
+  if (typ === 'excelLogg' && !ärXLSX) {
+    loggImport('fel', `❌ Fel filtyp! Välj en Excel-fil (.xlsx). Du valde: ${fil.name}`);
+    loggImport('info', 'Tips: Filen heter "Investeringslogg_Martin_2026.xlsx"');
+    return;
+  }
+  if (typ !== 'excelLogg' && !ärCSV) {
+    loggImport('fel', `❌ Fel filtyp! Välj en CSV-fil. Du valde: ${fil.name}`);
+    loggImport('info', 'Tips: Exportera från avanza.se i Safari — inte Avanza-appen.');
+    return;
+  }
+
+  // Filnamns-hints för att hjälpa användaren välja rätt
+  const filNamn = fil.name.toLowerCase();
+  if (typ === 'positioner' && !filNamn.includes('position')) {
+    loggImport('info', `⚠️ Filnamnet ser ovanligt ut. Positionsfilen brukar heta "positioner_DATUM.csv". Försöker ändå...`);
+  }
+  if (typ === 'transaktioner' && !filNamn.includes('transaktion')) {
+    loggImport('info', `⚠️ Filnamnet ser ovanligt ut. Transaktionsfilen brukar heta "transaktioner_DATUM.csv". Försöker ändå...`);
+  }
+  if (typ === 'inkopskurs' && !filNamn.includes('inkop')) {
+    loggImport('info', `⚠️ Filnamnet ser ovanligt ut. Inköpskursfilen brukar heta "inkopskurs_DATUM.csv". Försöker ändå...`);
+  }
+
+  if (ärXLSX) {
+    const r = new FileReader();
+    r.onload = e => {
+      try {
+        const wb = XLSX.read(e.target.result, {type:'binary'});
+        importeraExcelLogg(wb, fil.name);
+      } catch(err) {
+        loggImport('fel', `❌ Kunde inte läsa Excel-filen: ${err.message}`);
+      }
+    };
+    r.readAsBinaryString(fil);
+  } else {
+    const r = new FileReader();
+    r.onload = e => {
+      try {
+        const t = e.target.result;
+        // Kontrollera att filen inte är tom
+        if (!t || t.trim().length < 10) {
+          loggImport('fel', '❌ Filen verkar vara tom. Exportera på nytt från Avanza.');
+          return;
+        }
+        if (typ==='positioner') importeraPositioner(t);
+        else if (typ==='transaktioner') importeraTransaktioner(t);
+        else if (typ==='inkopskurs') importeraInkopskurs(t);
+      } catch(err) {
+        loggImport('fel', `❌ Fel vid läsning: ${err.message}`);
+        loggImport('info', 'Tips: Kontrollera att du exporterat rätt filtyp från Avanza.');
+      }
+    };
+    r.readAsText(fil, 'UTF-8');
+  }
+}
+
+function parseCSV(text) {
+  const rensad=text.replace(/^\uFEFF/,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  const rader=rensad.trim().split('\n');if(rader.length<2)return[];
+  const header=rader[0].split(';').map(h=>h.trim());
+  return rader.slice(1).map(rad=>{const cols=rad.split(';');const obj={};header.forEach((h,i)=>obj[h]=(cols[i]||'').trim());return obj;}).filter(r=>Object.values(r).some(v=>v));
+}
+
+function importeraPositioner(text) {
+  const rader = parseCSV(text);
+  // Validera att det är rätt filtyp
+  const forstaRad = rader[0];
+  if (!forstaRad || (!forstaRad['Namn'] && !forstaRad['namn'] && !forstaRad['Volym'])) {
+    loggImport('fel', '❌ Fel filformat! Det här verkar inte vara en positionsfil.');
+    loggImport('info', 'Rätt fil: Avanza → Min ekonomi → Innehav → Exportera → positioner_DATUM.csv');
+    return;
+  }
+  loggImport('info', `Positioner: ${rader.length} rader`);
+  let upd=0,nya=0,ok=0;
+  rader.forEach(r=>{
+    const namn=r['Namn']||'',kortnamn=r['Kortnamn']||'';
+    const volym=parseSE(r['Volym']||0),mv=parseSE(r['Marknadsvärde']||0);
+    const gav=parseSE(r['GAV (SEK)']||r['GAV']||0),valuta=r['Valuta']||'SEK',isin=r['ISIN']||'';
+    if(!namn||volym===0)return;
+    const kurs=volym>0?mv/volym:0;
+    const bef=data.innehav.find(h=>h.namn===namn||h.ticker===kortnamn||(isin&&h.isin===isin));
+    if(bef){bef.antal=volym;bef.aktuelKurs=kurs;bef.köpkurs=gav||bef.köpkurs;bef.valuta=valuta;if(isin)bef.isin=isin;upd++;}
+    else{const kat=hittaKategori(namn);if(kat===2&&!KATEGORI_KOPPLING[namn])ok++;
+      data.innehav.push({id:uid(),namn,ticker:kortnamn,kategori:kat,antal:volym,köpkurs:gav,aktuelKurs:kurs,ma200:0,datum:new Date().toISOString().slice(0,10),valuta,isin,notat:'',utdelningar:[]});nya++;}
+  });
+  data.senastImport.positioner = new Date().toISOString().slice(0,10);
+  loggImport('ok', `✓ Positioner: ${upd} uppdaterade, ${nya} nya`);
+  if (ok>0) loggImport('info', `ℹ️ ${ok} aktier utan känd kategori — kontrollera under Innehav`);
+  if (upd===0 && nya===0) {
+    loggImport('fel', '⚠️ Inga innehav importerades. Kontrollera att rätt konton valdes vid export.');
+  }
+  spara(); renderAllt(); renderStatusPanel();
+}
+
+function importeraTransaktioner(text) {
+  const rader = parseCSV(text);
+  // Validera filtyp
+  const forstaRad = rader[0];
+  if (!forstaRad || !forstaRad['Typ av transaktion']) {
+    loggImport('fel', '❌ Fel filformat! Det här verkar inte vara en transaktionsfil.');
+    loggImport('info', 'Rätt fil: Avanza → Min ekonomi → Transaktioner → Exportera transaktioner');
+    return;
+  }
+  loggImport('info', `Transaktioner: ${rader.length} rader`);
+  const renadeRader=rader.filter(r=>(r['Datum']||'').match(/^\d{4}-\d{2}-\d{2}$/));
+  const bef=new Set(data.avanzaTransaktioner.map(t=>`${t.datum}|${t.typ}|${t.värdepapper}|${t.belopp}`));
+  let imp=0,dubb=0;
+  renadeRader.forEach(r=>{
+    const key=`${r['Datum']}|${r['Typ av transaktion']}|${r['Värdepapper/beskrivning']}|${r['Belopp']}`;
+    if(bef.has(key)){dubb++;return;}
+    data.avanzaTransaktioner.push({datum:r['Datum'],konto:r['Konto'],typ:r['Typ av transaktion'],värdepapper:r['Värdepapper/beskrivning'],antal:r['Antal'],kurs:r['Kurs'],belopp:r['Belopp'],transaktionsvaluta:r['Transaktionsvaluta'],courtage:r['Courtage'],valutakurs:r['Valutakurs'],instrumentvaluta:r['Instrumentvaluta'],isin:r['ISIN'],resultat:r['Resultat']});
+    imp++;
+  });
+  data.senastImport.transaktioner = new Date().toISOString().slice(0,10);
+  loggImport('ok', `✓ Transaktioner: ${imp} nya, ${dubb} dubbletter hoppade över`);
+  if (imp===0 && dubb===0) loggImport('info', 'ℹ️ Inga transaktioner hittades. Välj ett bredare datumintervall vid export.');
+  if (imp===0 && dubb>0) loggImport('info', 'ℹ️ Alla transaktioner finns redan. Exportera en nyare fil om du gjort affärer.');
+  spara(); renderAllt(); renderStatusPanel();
+}
+
+function importeraInkopskurs(text) {
+  const rader = parseCSV(text);
+  const forstaRad = rader[0];
+  if (!forstaRad || !forstaRad['Inköpskurs (SEK)']) {
+    loggImport('fel', '❌ Fel filformat! Det här verkar inte vara en inköpskursfil.');
+    loggImport('info', 'Rätt fil: Avanza → Innehav → Exportera inköpskurser → inkopskurs_DATUM.csv');
+    return;
+  }
+  loggImport('info', `Inköpskurser: ${rader.length} rader`);
+  const senaste={};
+  rader.forEach(r=>{const isin=r['ISIN'],datum=r['Datum'];if(!isin||!datum||!datum.match(/^\d{4}-\d{2}-\d{2}$/))return;if(!senaste[isin]||datum>senaste[isin].datum)senaste[isin]=r;});
+  let upd=0;
+  Object.values(senaste).forEach(r=>{const h=data.innehav.find(x=>x.isin===r['ISIN']);const gav=parseSE(r['Inköpskurs (SEK)']);if(h&&gav>0){h.köpkurs=gav;upd++;}});
+  data.senastImport.inkopskurs = new Date().toISOString().slice(0,10);
+  loggImport('ok', `✓ Inköpskurser: ${upd} innehav uppdaterade med historisk GAV`);
+  spara(); renderAllt(); renderStatusPanel();
+}
+
+function importeraExcelLogg(wb, filnamn) {
+  loggImport('info', `Läser Excel-logg: ${filnamn}`);
+  let loggImporterade = 0;
+  let historikImporterade = 0;
+
+  // Gå igenom alla flikar — leta efter Beslutslogg och Portföljläge-flikar
+  wb.SheetNames.forEach(sheetNamn => {
+    const ws = wb.Sheets[sheetNamn];
+    const rader = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+    if (rader.length < 2) return;
+
+    // Beslutslogg-flik
+    if (sheetNamn === 'Beslutslogg') {
+      rader.slice(1).forEach(rad => {
+        const vecka = String(rad[0]||'').trim();
+        const datum = String(rad[1]||'').trim();
+        const värde = parseFloat(rad[2])||0;
+        const tankar = String(rad[3]||'').trim();
+        const åtgärder = String(rad[4]||'').trim();
+        if (!datum || datum.length < 6) return;
+        // Normalisera datum
+        let datumStr = datum;
+        if (datum.includes('-') && datum.length >= 8) datumStr = datum.slice(0,10);
+        // Kolla om posten redan finns
+        const finns = data.beslutslogg.find(p => p.datum === datumStr && p.vecka === vecka);
+        if (finns) return;
+        data.beslutslogg.push({id:uid(), vecka, datum:datumStr, värde, tankar, åtgärder});
+        loggImporterade++;
+      });
+    }
+
+    // Portföljläge-flikar (V4, V5, ... V13) — hämta totalvärde och datum för historikdiagram
+    if (sheetNamn.startsWith('Portföljläget') || sheetNamn.startsWith('Portfölj')) {
+      rader.forEach(rad => {
+        const cell0 = String(rad[0]||'').trim();
+        const cell1 = String(rad[1]||'').trim();
+        // Leta efter "Totalt"-rad med ett värde
+        if (cell0.toLowerCase().includes('totalt') && rad[1]) {
+          const totalVärde = parseFloat(String(rad[1]).replace(',','.').replace(/\s/g,''));
+          if (totalVärde > 0) {
+            // Hitta datum i flikens namn eller i rader
+            let datum = '';
+            // Sök datum i raden eller nearby
+            rader.forEach(r2 => {
+              const d = String(r2[1]||'');
+              if (d.match(/\d{4}-\d{2}-\d{2}/)) datum = d.slice(0,10);
+            });
+            if (datum && totalVärde > 10000) {
+              const finns = data.historik.find(h => h.datum === datum);
+              if (!finns) {
+                data.historik.push({datum, totalVärde});
+                historikImporterade++;
+              }
+            }
+          }
+        }
+      });
+    }
+  });
+
+  data.senastImport.excelLogg = new Date().toISOString().slice(0,10);
+  loggImport('ok', `✓ Excel-logg: ${loggImporterade} beslutsloggposter importerade`);
+  if (historikImporterade > 0) loggImport('ok', `✓ Historik: ${historikImporterade} portföljvärden tillagda i diagrammet`);
+  if (loggImporterade === 0) loggImport('info', 'ℹ️ Inga nya loggposter hittades — de kanske redan finns eller flikarna har annat format.');
+  spara(); renderAllt(); renderStatusPanel();
+}
+
+function loggImport(typ, text) {
+  const div=document.getElementById('importLogg'); if(!div)return;
+  const r=document.createElement('div'); r.className=typ;
+  r.textContent=`[${new Date().toLocaleTimeString('sv-SE')}] ${text}`;
+  div.appendChild(r); div.scrollTop=div.scrollHeight;
+}
+function rensaImportLogg() { const d=document.getElementById('importLogg');if(d)d.innerHTML='<span class="info">Logg rensad.</span>'; }
+function rensaAvanzaTx() { data.avanzaTransaktioner=[];spara();renderTransaktioner(); }
+
+function renderStatusPanel() {
+  const el = document.getElementById('import-status-innehall');
+  if (!el) return;
+  const imp = data.senastImport;
+  const idag = new Date().toISOString().slice(0,10);
+
+  function dagarSedan(datum) {
+    if (!datum) return null;
+    const diff = new Date(idag) - new Date(datum);
+    return Math.floor(diff / (1000*60*60*24));
+  }
+
+  function statusBadge(datum, maxDagar) {
+    const d = dagarSedan(datum);
+    if (d === null) return `<span class="status-badge status-saknas">Ej importerad</span>`;
+    if (d > maxDagar) return `<span class="status-badge status-gammal">⚠️ ${d} dagar sedan</span>`;
+    return `<span class="status-badge status-ok">✓ ${d === 0 ? 'Idag' : d === 1 ? 'Igår' : d + ' dagar sedan'}</span>`;
+  }
+
+  const rader = [
+    { ikon:'📊', namn:'Positioner', datum: imp.positioner, maxDagar: 7, info: 'Uppdatera veckovis' },
+    { ikon:'🔄', namn:'Transaktioner', datum: imp.transaktioner, maxDagar: 7, info: 'Uppdatera veckovis' },
+    { ikon:'📈', namn:'Inköpskurshistorik', datum: imp.inkopskurs, maxDagar: 365, info: 'Importera en gång' },
+    { ikon:'📓', namn:'Investeringslogg (Excel)', datum: imp.excelLogg, maxDagar: 365, info: 'Importera en gång för historik' },
+  ];
+
+  el.innerHTML = rader.map(r => `
+    <div class="status-rad">
+      <div class="status-ikon">${r.ikon}</div>
+      <div class="status-info">
+        <strong>${r.namn}</strong>
+        <span>${r.datum ? `Senaste: ${r.datum}` : r.info}</span>
+      </div>
+      ${statusBadge(r.datum, r.maxDagar)}
+    </div>
+  `).join('');
+}
+
+// Alias för bakåtkompatibilitet
+function renderSenasteImport() { renderStatusPanel(); }
+
+// ══════════════════════════════════════════════════════════
+//  EXCEL EXPORT
+// ══════════════════════════════════════════════════════════
+function exporteraExcel() {
+  const wb=XLSX.utils.book_new();
+  const ir=[['Namn','Ticker','Kategori','Valuta','Antal','GAV (SEK)','Akt. kurs','MA200','Kostnadsbas','Marknadsvärde','Vinst/Förlust','Avkastning %'],...data.innehav.map(h=>{const kb=h.antal*h.köpkurs,mv=h.antal*h.aktuelKurs,vf=mv-kb,kat=KATEGORIER[h.kategori]||KATEGORIER[2];return[h.namn,h.ticker||'',`${kat.emoji} ${kat.namn}`,h.valuta||'SEK',h.antal,h.köpkurs,h.aktuelKurs,h.ma200||0,kb,mv,vf,kb>0?parseFloat(((vf/kb)*100).toFixed(2)):0];})];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ir),'Innehav');
+  if(data.avanzaTransaktioner.length>0){const tr=[['Datum','Konto','Typ','Värdepapper','Antal','Kurs','Belopp','Courtage','Resultat'],...data.avanzaTransaktioner.map(t=>[t.datum,t.konto,t.typ,t.värdepapper,t.antal,t.kurs,t.belopp,t.courtage,t.resultat])];XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(tr),'Transaktioner');}
+  if(data.beslutslogg.length>0){const lr=[['Vecka','Datum','Portföljvärde','Tankar om marknaden','Genomförda köp/sälj'],...[...data.beslutslogg].sort((a,b)=>a.datum.localeCompare(b.datum)).map(p=>[p.vecka||'',p.datum,p.värde||'',p.tankar||'',p.åtgärder||''])];XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(lr),'Beslutslogg');}
+  const iv=beräknaInnehavVärde(),kassa=beräknaKassasaldo(),kb=beräknaKostnadsbas();
+  const sr=[['Nyckeltal','Värde'],['Datum',new Date().toLocaleDateString('sv-SE')],['Innehavens marknadsvärde',iv],['Kostnadsbas',kb],['Kassasaldo',kassa],['Totalt portföljvärde',iv+kassa],['Vinst/Förlust',iv-kb],['Avkastning %',kb>0?parseFloat(((iv-kb)/kb*100).toFixed(2)):0],['Utdelningar totalt',beräknaTotalUtdelning()],['Realiserat resultat',beräknaRealiserat()]];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(sr),'Sammanfattning');
+  XLSX.writeFile(wb,`portfölj_${new Date().toISOString().slice(0,10)}.xlsx`);
+}
+function exporteraLoggExcel() {
+  if(data.beslutslogg.length===0){alert('Inga loggposter att exportera.');return;}
+  const wb=XLSX.utils.book_new();
+  const r=[['Vecka','Datum','Portföljvärde (SEK)','Tankar om marknaden','Genomförda köp/sälj'],...[...data.beslutslogg].sort((a,b)=>a.datum.localeCompare(b.datum)).map(p=>[p.vecka||'',p.datum,p.värde||'',p.tankar||'',p.åtgärder||''])];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(r),'Beslutslogg');
+  XLSX.writeFile(wb,`beslutslogg_${new Date().toISOString().slice(0,10)}.xlsx`);
+}
+
+// ══════════════════════════════════════════════════════════
+//  MODAL
+// ══════════════════════════════════════════════════════════
+function stangModal(id){document.getElementById(id).classList.remove('visa');}
+document.querySelectorAll('.modal-backdrop').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('visa');});});
+
+// ══════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════
+ladda();
+renderAllt();
+ritaDiagram();
+renderStatusPanel();
+</script>
+</body>
+</html>
