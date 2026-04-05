@@ -10,10 +10,12 @@ Personlig portföljapp byggd för iPad och dator. Öppnas direkt i webbläsaren 
 
 - Visar portföljens värde, avkastning och fördelning per kategori
 - Importerar positioner och transaktioner direkt från Avanza (CSV)
-- Beräknar nettoinsatt kapital och tillgänglig likviditet
-- Visar MA200-signaler med **Tvådagarsregel** — säljsignal kräver två dagars stängning under medelvärdet
-- Visar **Nödutgångar** (90 % av GAV) som hård stopp eller mjuk analys
-- Visualiserar **Gummibandet** — hur långt kursen sträckt sig från MA200
+- Beräknar nettoinsatt kapital och tillgänglig likviditet (inkl. Avanza-kassa från positionsfil)
+- **FX-motor:** separerar bolagsvinst från valutavinst för utländska innehav
+- Visar MA200-signaler i **lokal valuta** — jämför USD mot USD, SEK mot SEK
+- **Tvådagarsregel** — säljsignal kräver två dagars stängning under MA200 (kat. 3–6)
+- **Nödutgångar** (90 % av GAV) — hård stopp (kat. 3–6) eller mjuk analys (kat. 1–2)
+- **Gummibandet** — visar hur långt kursen sträckt sig från MA200
 - Beslutslogg för veckovisa anteckningar
 - Exporterar data som Excel-säkerhetskopia
 
@@ -31,6 +33,21 @@ Personlig portföljapp byggd för iPad och dator. Öppnas direkt i webbläsaren 
 | 6 | ✨ Berättelser | Kryddor / teman | 0–5 % |
 
 Kategori 3–6 styrs av MA200-regeln med tvådagarsbekräftelse. Kategori 1–2 säljs aldrig vid dipp.
+
+---
+
+## FX-motorn (v2.02)
+
+För utländska innehav (t.ex. NVIDIA i USD) beräknar appen automatiskt:
+
+| Begrepp | Formel |
+|---------|--------|
+| Historical FX | `GAV_SEK / GAV_Lokal` — hämtas från positionsfilen |
+| Lokal kurs nu | `Kurs_SEK / Historical_FX` |
+| Bolagsvinst | `(Lokal_nu − GAV_Lokal) × Antal × FX` |
+| Valutavinst | `Total_SEK − Bolagsvinst` |
+
+MA200 anges alltid i **lokal valuta** (USD för amerikanska aktier, SEK för svenska).
 
 ---
 
@@ -59,6 +76,6 @@ Gå sedan till **Importera**-fliken i appen och välj filen.
 
 ## Version
 
-**v2.01** — april 2026
+**v2.02** — april 2026
 
 Byggt för Martin · Strategi från januari 2026
