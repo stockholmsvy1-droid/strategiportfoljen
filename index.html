@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Strategiportföljen">
   <meta name="theme-color" content="#1e3a5f">
-  <title>Strategiportföljen v2.01</title>
+  <title>Strategiportföljen v2.02</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231e3a5f'/%3E%3Cpolyline points='3,25 9,17 15,21 21,11 29,5' stroke='%230ea5e9' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='29' cy='5' r='2.5' fill='%234ade80'/%3E%3C/svg%3E">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
@@ -174,6 +174,15 @@
 
     /* ── Tabeller ── */
     .tabell-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    /* Sticky första kolumn i innehavstabellen */
+    #tabellInnehav th:first-child,
+    #tabellInnehav td:first-child {
+      position: sticky; left: 0; z-index: 2;
+      background: inherit;
+    }
+    #tabellInnehav thead th:first-child { background: #f9fafb; z-index: 3; }
+    #tabellInnehav tbody tr:hover td:first-child { background: #f9fafb; }
+    #tabellInnehav tbody td:first-child { background: #ffffff; box-shadow: 2px 0 4px rgba(0,0,0,0.07); }
     table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
     th {
       text-align: left; padding: 11px 13px; background: #f9fafb;
@@ -426,7 +435,7 @@
 
 <!-- ══ HEADER ══ -->
 <header>
-  <h1>📈 Strategiportföljen <span class="header-badge">v2.01</span></h1>
+  <h1>📈 Strategiportföljen <span class="header-badge">v2.02</span></h1>
   <div class="header-actions">
     <button class="btn btn-outline btn-sm" onclick="exporteraExcel()">⬇ Excel</button>
     <button class="btn btn-white btn-sm" onclick="visaSektion('hjalp',null);synkNavKnappar('hjalp')">? Hjälp</button>
@@ -519,7 +528,8 @@
       <div class="fält"><label>Antal</label><input id="f-antal" type="number" min="0" step="any" placeholder="100" inputmode="decimal"/></div>
       <div class="fält"><label>GAV (SEK)</label><input id="f-köpkurs" type="number" min="0" step="any" placeholder="85.50" inputmode="decimal"/></div>
       <div class="fält"><label>Akt. kurs (SEK)</label><input id="f-aktuelkurs" type="number" min="0" step="any" placeholder="92.00" inputmode="decimal"/></div>
-      <div class="fält"><label>MA200 (SEK)</label><input id="f-ma200" type="number" min="0" step="any" placeholder="80.00" inputmode="decimal"/></div>
+      <div class="fält"><label>MA200 (lokal valuta)</label><input id="f-ma200" type="number" min="0" step="any" placeholder="80.00" inputmode="decimal"/></div>
+      <div class="fält"><label>GAV (lokal valuta)</label><input id="f-gav-lokal" type="number" min="0" step="any" placeholder="Auto från import" inputmode="decimal" title="Fylls automatiskt vid import. Manuellt: ange inköpspris i bolagets valuta (t.ex. USD/EUR)."/></div>
       <div class="fält"><label>Köpdatum</label><input id="f-datum" type="date"/></div>
       <div class="fält"><label>Valuta</label>
         <select id="f-valuta"><option>SEK</option><option>USD</option><option>EUR</option><option>NOK</option><option>DKK</option><option>GBP</option><option>CAD</option></select>
@@ -736,7 +746,7 @@
   <div class="card">
     <nav class="hjalp-nav">
       <button class="hjalp-flik aktiv" onclick="visaHjalpKapitel('kom-igang',this)">🚀 Kom igång</button>
-      <button class="hjalp-flik" onclick="visaHjalpKapitel('nyheter',this)">✨ Nyheter v2.01</button>
+      <button class="hjalp-flik" onclick="visaHjalpKapitel('nyheter',this)">✨ Nyheter v2.02</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('ipad-import',this)">📱 Import på iPad</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('veckorutin',this)">📅 Veckorutin</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('flikarna',this)">📋 Flikarna</button>
@@ -766,12 +776,32 @@
       </div>
     </div>
 
-    <!-- NYHETER v2.01 -->
+    <!-- NYHETER v2.02 -->
     <div class="hjalp-kapitel" id="hk-nyheter">
-      <div class="hjalp-rubrik">✨ Nyheter i version 2.01</div>
-      <div class="hjalp-ingress">Alla förbättringar i denna uppdatering — ny strategisk logik, bättre visualisering och förbättrad datakontroll.</div>
+      <div class="hjalp-rubrik">✨ Nyheter i version 2.02</div>
+      <div class="hjalp-ingress">Alla förbättringar i v2.02 — FX-dekomponering, lokal MA200-jämförelse och kassaidentifiering från positionsfil.</div>
 
-      <div class="hjalp-h2">🛡️ Tvådagarsregeln för MA200 (kat. 3–6)</div>
+      <div class="hjalp-h2">💱 Valutahantering &amp; FX-dekomponering (v2.02)</div>
+<div class="hjalp-p">Appen kan nu skilja på <strong>bolagsvinst</strong> och <strong>valutavinst</strong> för utländska innehav.</div>
+<table class="hjalp-tabell">
+  <thead><tr><th>Begrepp</th><th>Formel</th><th>Innebär</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Historical FX</strong></td><td><code>GAV_SEK / GAV_Lokal</code></td><td>Implicit växelkurs vid köptillfället — hämtas från positionsfilen automatiskt.</td></tr>
+    <tr><td><strong>Lokal kurs nu</strong></td><td><code>Kurs_SEK / Historical_FX</code></td><td>Aktuellt pris i lokal valuta (USD, EUR osv.). Används för MA200-jämförelse.</td></tr>
+    <tr><td><strong>Bolagsvinst</strong></td><td><code>(Lokal_nu - GAV_Lokal) × Antal × FX</code></td><td>Vinst driven av bolagets faktiska kursutveckling.</td></tr>
+    <tr><td><strong>Valutavinst</strong></td><td><code>Total_SEK - Bolagsvinst</code></td><td>Vinst driven av SEK-försämring mot lokal valuta.</td></tr>
+  </tbody>
+</table>
+<div class="hjalp-ruta hjalp-ruta-info">
+  <div class="hjalp-ruta-titel">Hur syns det i appen?</div>
+  I <strong>Innehav</strong>-tabellen visas vinst/förlust med en uppdelning: 🏢 = bolagsvinst, 💱 = valutavinst. Hovra över fältet för tooltip med exakta tal.
+</div>
+<div class="hjalp-ruta hjalp-ruta-info">
+  <div class="hjalp-ruta-titel">MA200 anges nu i <em>lokal valuta</em></div>
+  För NVIDIA anger du MA200 i USD, för SAAB i SEK. Appen räknar om till jämförbar lokal kurs automatiskt. Fältet i formuläret heter när "MA200 (lokal valuta)".
+</div>
+
+<div class="hjalp-h2">🛡️ Tvådagarsregeln för MA200 (kat. 3–6)</div>
       <div class="hjalp-p">Säljsignal (röd) visas nu <strong>först efter två importtillfällen</strong> med stängning under MA200. Dag 1 visas som gul "bevaka"-signal. Dag 2+ aktiverar röd säljsignal.</div>
       <div class="hjalp-ruta hjalp-ruta-info">
         <div class="hjalp-ruta-titel">Hur fungerar det i praktiken?</div>
@@ -924,7 +954,7 @@
         <div class="rutin-header">📊 Steg 3 — Kontrollera signaler (3 min)</div>
         <div class="rutin-body"><ol>
           <li>Gå till <strong>Kategorier</strong></li>
-          <li>Kolla röda signaler i kategori 3–5</li>
+          <li>Kolla röda signaler i kategori 3–6</li>
           <li>Kolla viktbalansen — Övervikt eller Undervikt?</li>
         </ol></div>
       </div>
@@ -947,7 +977,7 @@
       </div>
       <div class="hjalp-ruta hjalp-ruta-tips">
         <div class="hjalp-ruta-titel">💡 MA200 — uppdatera månadsvis</div>
-        MA200 förändras långsamt. Uppdatera värdena för kategori 3–5 ungefär en gång i månaden. Slå upp på avanza.se (aktiesidan → Diagram → lägg till MA 200) eller på investing.com.
+        MA200 förändras långsamt. Uppdatera värdena för kategori 3–6 ungefär en gång i månaden. <strong>Ange alltid MA200 i lokal valuta</strong> (USD för amerikanska aktier, SEK för svenska). Slå upp på avanza.se (aktiesidan → Diagram → lägg till MA 200) eller på investing.com.
       </div>
     </div>
 
@@ -1186,7 +1216,7 @@
           <tr><td><strong>Synkroniseras data mellan iPad och dator?</strong></td><td>Nej, data sparas lokalt i respektive webbläsare. Använd Excel-export för att flytta data mellan enheter.</td></tr>
           <tr><td><strong>Kan jag använda appen utan internetanslutning?</strong></td><td>Appen fungerar offline efter att sidan laddats. Du behöver internet för att importera filer från Avanza och för att ladda ner diagrambiblioteket (Chart.js) första gången.</td></tr>
           <tr><td><strong>Varför stämmer inte avkastningen med Avanzas siffror?</strong></td><td>Appen beräknar (marknadsvärde − kostnadsbas) / kostnadsbas. Avanza kan använda tidsviktad avkastning. Båda är korrekta men mäter olika saker.</td></tr>
-          <tr><td><strong>Varför visas inga MA200-signaler på kategori 1 och 2?</strong></td><td>Dessa kategorier säljs aldrig baserat på MA200 enligt strategin. Signaler visas bara för kategori 3–5.</td></tr>
+          <tr><td><strong>Varför visas inga MA200-signaler på kategori 1 och 2?</strong></td><td>Dessa kategorier säljs aldrig baserat på MA200 enligt strategin. Signaler visas bara för kategori 3–6.</td></tr>
           <tr><td><strong>Kan jag använda appen med Nordnet?</strong></td><td>Appen är anpassad för Avanzas filformat. Nordnets filer fungerar inte direkt — men det går att lägga till stöd.</td></tr>
           <tr><td><strong>Vad gör jag om en aktie splittats?</strong></td><td>Importera en ny positionsfil — appen uppdaterar automatiskt volym och kurs baserat på Avanzas exportdata.</td></tr>
           <tr><td><strong>Kan jag exportera data till min Investeringslogg i Excel?</strong></td><td>Ja. Tryck "Excel" uppe till höger — filen innehåller flikar för Innehav, Transaktioner, Beslutslogg och Sammanfattning.</td></tr>
@@ -1196,7 +1226,7 @@
       <div style="margin-top:32px;padding:20px;background:#f9fafb;border-radius:var(--radius);text-align:center">
         <div style="font-size:1.3rem;margin-bottom:8px">📈</div>
         <strong style="display:block;margin-bottom:4px">Strategiportföljen</strong>
-        <span style="font-size:0.84rem;color:var(--muted)">Byggd för Martin · Strategi från januari 2026 · v2.01 April 2026</span>
+        <span style="font-size:0.84rem;color:var(--muted)">Byggd för Martin · Strategi från januari 2026 · v2.02 April 2026</span>
       </div>
     </div>
 
@@ -1268,7 +1298,7 @@ function hittaKategori(namn) {
 // ══════════════════════════════════════════════════════════
 let data = {
   innehav:[], kassaTransaktioner:[], avanzaTransaktioner:[],
-  beslutslogg:[], historik:[], senastImport:{}
+  beslutslogg:[], historik:[], senastImport:{}, avanzaKassa:0
 };
 
 function ladda() {
@@ -1278,11 +1308,15 @@ function ladda() {
     if (!data.avanzaTransaktioner) data.avanzaTransaktioner = [];
     if (!data.beslutslogg) data.beslutslogg = [];
     if (!data.senastImport) data.senastImport = {};
-    // Migrera: säkerställ att tvådagars-fält finns
+    // Migrera: säkerställ att tvådagars-fält finns + v2.02 FX-fält
     data.innehav.forEach(h => {
       if (h.dagUtanMa200 === undefined) h.dagUtanMa200 = null;
       if (h.tvådagarsAktiv === undefined) h.tvådagarsAktiv = false;
+      // v2.02 FX
+      if (h.gavLokal === undefined) h.gavLokal = (h.valuta==='SEK'||!h.valuta) ? h.köpkurs : null;
+      if (h.historicalFX === undefined) h.historicalFX = (h.valuta==='SEK'||!h.valuta) ? 1 : null;
     });
+    if (!data.avanzaKassa) data.avanzaKassa = 0;
   }
   // Migrera från V1
   const v1 = localStorage.getItem('portfölj_v1');
@@ -1329,12 +1363,13 @@ function uid() { return Date.now().toString(36) + Math.random().toString(36).sli
 function beräknaInnehavVärde() { return data.innehav.reduce((s,h)=>s+h.antal*h.aktuelKurs,0); }
 function beräknaKostnadsbas() { return data.innehav.reduce((s,h)=>s+h.antal*h.köpkurs,0); }
 function beräknaKassasaldo() { return data.kassaTransaktioner.reduce((s,t)=>t.typ==='insättning'?s+t.belopp:s-t.belopp,0); }
+function beräknaTillgängligLikviditet() { return beräknaKassasaldo() + (data.avanzaKassa||0); }
 function beräknaTotalUtdelning() {
   const m = data.innehav.reduce((s,h)=>s+(h.utdelningar||[]).reduce((u,d)=>u+d.belopp*h.antal,0),0);
   const i = data.avanzaTransaktioner.filter(t=>t.typ==='Utdelning').reduce((s,t)=>s+(parseFloat(t.belopp)||0),0);
   return m+i;
 }
-function beräknaTotalVärde() { return beräknaInnehavVärde()+beräknaKassasaldo(); }
+function beräknaTotalVärde() { return beräknaInnehavVärde()+beräknaTillgängligLikviditet(); }
 function beräknaRealiserat() { return data.avanzaTransaktioner.filter(t=>t.typ==='Sälj'&&t.resultat).reduce((s,t)=>s+(parseFloat(t.resultat)||0),0); }
 function beräknaKällskatt() { return data.avanzaTransaktioner.filter(t=>t.typ==='Utländsk källskatt').reduce((s,t)=>s+Math.abs(parseFloat(t.belopp)||0),0); }
 function beräknaCourtage() { return data.avanzaTransaktioner.filter(t=>t.courtage).reduce((s,t)=>s+(parseFloat(t.courtage)||0),0); }
@@ -1345,7 +1380,9 @@ function beräknaKategorivärden() {
 }
 function ma200Signal(h) {
   if (!h.ma200||h.ma200===0) return 'okänd';
-  const p = (h.aktuelKurs-h.ma200)/h.ma200;
+  // v2.02: jämför lokal kurs med lokal MA200 (MA200 anges i lokal valuta)
+  const lokal = lokalKursVärde(h);
+  const p = (lokal-h.ma200)/h.ma200;
   const kat = h.kategori||2;
   const harTvådagars = [3,4,5,6].includes(kat);
   if (p >= 0.05) return 'grön';
@@ -1370,11 +1407,30 @@ function nödutgångSignal(h) {
 // Gummiband: avstånd till MA200 (positiv = över)
 function gummibandZon(h) {
   if (!h.ma200||h.ma200===0) return null;
-  const pct = (h.aktuelKurs-h.ma200)/h.ma200*100;
+  // v2.02: lokal kurs jämförs med lokal MA200
+  const lokal = lokalKursVärde(h);
+  const pct = (lokal-h.ma200)/h.ma200*100;
   if (pct <= 0) return null; // under eller på MA200 — hanteras av ma200Signal
   if (pct <= 15) return {zon:'grön', pct, label:`+${pct.toFixed(1)}%`};
   if (pct <= 40) return {zon:'gul', pct, label:`+${pct.toFixed(1)}%`};
   return {zon:'orange', pct, label:`+${pct.toFixed(1)}%`};
+}
+
+// ── v2.02: FX-hjälpfunktioner ──
+// Beräknar aktuell kurs i lokal valuta
+function lokalKursVärde(h) {
+  const fx = (h.historicalFX && h.historicalFX > 0) ? h.historicalFX : 1;
+  return h.aktuelKurs / fx;
+}
+
+// Dekomponerar totalvinst i bolagsvinst och valutavinst
+function beräknaVinstDekomponering(h) {
+  const totalSEK = (h.aktuelKurs - h.köpkurs) * h.antal;
+  const harFX = h.historicalFX && h.historicalFX !== 1 && h.gavLokal && h.gavLokal > 0;
+  if (!harFX) return { total: totalSEK, bolag: totalSEK, valuta: 0, hasFX: false };
+  const lokal = lokalKursVärde(h);
+  const bolag = (lokal - h.gavLokal) * h.antal * h.historicalFX;
+  return { total: totalSEK, bolag, valuta: totalSEK - bolag, hasFX: true };
 }
 
 // Nettoinsatt kapital (insättningar − uttag från transaktionsfilen + kassa)
@@ -1442,14 +1498,15 @@ function visaHjalpKapitel(id, knapp) {
 //  RENDER — DASHBOARD
 // ══════════════════════════════════════════════════════════
 function renderDashboard() {
-  const iv=beräknaInnehavVärde(), kassa=beräknaKassasaldo(), kb=beräknaKostnadsbas();
+  const iv=beräknaInnehavVärde(), kassa=beräknaTillgängligLikviditet(), kb=beräknaKostnadsbas();
   const total=iv+kassa, vinst=iv-kb, vpct=kb>0?(vinst/kb)*100:0;
   document.getElementById('nk-total').textContent=kr(total);
   document.getElementById('nk-total-sub').textContent=`Kassa: ${kr(kassa)}`;
   document.getElementById('nk-innehav').textContent=kr(iv);
   document.getElementById('nk-innehav-sub').textContent=`Kostnadsbas: ${kr(kb)}`;
+  const avanzaK=data.avanzaKassa||0;
   document.getElementById('nk-kassa').textContent=kr(kassa);
-  document.getElementById('nk-kassa-sub').textContent='Tillgängliga medel';
+  document.getElementById('nk-kassa-sub').textContent=avanzaK>0?`Avanza: ${kr(avanzaK)} + manuell: ${kr(beräknaKassasaldo())}`:'Tillgängliga medel';
   const nettoInsatt=beräknaNettoInsatt();
   const niEl=document.getElementById('nk-nettoinsatt');
   if(niEl)niEl.textContent=nettoInsatt>0?kr(nettoInsatt):'—';
@@ -1537,7 +1594,7 @@ function renderInnehav() {
     const nödH=nöd==='hård'?`<span class="badge" style="background:#fee2e2;color:#b91c1c">🛑 Stopp</span>`:nöd==='mjuk'?`<span class="badge" style="background:#fef3c7;color:#d97706">⚠️ Analys</span>`:'';
     const gbH=gb?`<span style="font-size:0.7rem;color:${gbFärger[gb.zon]};font-weight:600">${gb.label}</span>`:'';
     const ma200Vis=h.ma200>0?`${kr(h.ma200,0)}${gbH?'<br>'+gbH:''}`:'—';
-    return `<tr><td><strong>${h.namn}</strong>${h.notat?`<br><small style="color:var(--muted)">${h.notat}</small>`:''}</td><td>${katBadge(h.kategori||2)}</td><td><span class="chip">${h.valuta||'SEK'}</span></td><td>${(+h.antal).toLocaleString('sv-SE',{maximumFractionDigits:4})}</td><td>${kr(h.köpkurs,2)}</td><td>${kr(h.aktuelKurs,2)}</td><td>${ma200Vis}</td><td style="text-align:center">${sH}${nödH?'<br>'+nödH:''}</td><td>${kr(kb)}</td><td><strong>${kr(mv)}</strong></td><td class="${färg(vf)}">${kr(vf)}</td><td><span class="badge ${vf>=0?'badge-pos':'badge-neg'}">${pct(vp)}</span></td><td>${ud>0?kr(ud):'—'}</td><td style="white-space:nowrap"><button class="btn btn-primary btn-sm" onclick="redigeraInnehav('${h.id}')">✏️</button> <button class="btn btn-success btn-sm" onclick="öppnaUtdelning('${h.id}')">💰</button> <button class="btn btn-danger btn-sm" onclick="raderaInnehav('${h.id}')">✕</button></td></tr>`;
+    return `<tr><td><strong>${h.namn}</strong>${h.notat?`<br><small style="color:var(--muted)">${h.notat}</small>`:''}</td><td>${katBadge(h.kategori||2)}</td><td><span class="chip">${h.valuta||'SEK'}</span></td><td>${(+h.antal).toLocaleString('sv-SE',{maximumFractionDigits:4})}</td><td>${kr(h.köpkurs,2)}</td><td>${kr(h.aktuelKurs,2)}</td><td>${ma200Vis}</td><td style="text-align:center">${sH}${nödH?'<br>'+nödH:''}</td><td>${kr(kb)}</td><td><strong>${kr(mv)}</strong></td><td class="${färg(vf)}">${(()=>{const d=beräknaVinstDekomponering(h);return d.hasFX?`${kr(vf)}<br><small style="color:var(--muted);font-size:0.72rem" title="Bolagsvinst: ${kr(d.bolag)} | Valutavinst: ${kr(d.valuta)}">🏢 ${kr(d.bolag,0)} 💱 ${kr(d.valuta,0)}</small>`:kr(vf);})()}</td><td><span class="badge ${vf>=0?'badge-pos':'badge-neg'}">${pct(vp)}</span></td><td>${ud>0?kr(ud):'—'}</td><td style="white-space:nowrap"><button class="btn btn-primary btn-sm" onclick="redigeraInnehav('${h.id}')">✏️</button> <button class="btn btn-success btn-sm" onclick="öppnaUtdelning('${h.id}')">💰</button> <button class="btn btn-danger btn-sm" onclick="raderaInnehav('${h.id}')">✕</button></td></tr>`;
   }).join('');
   if(kl)kl.innerHTML=s.map(h=>{
     const kb=h.antal*h.köpkurs,mv=h.antal*h.aktuelKurs,vf=mv-kb,vp=kb>0?(vf/kb)*100:0;
@@ -1639,10 +1696,14 @@ function sparaInnehav() {
   const datum=document.getElementById('f-datum').value;
   const valuta=document.getElementById('f-valuta').value;
   const notat=document.getElementById('f-notat').value.trim();
+  const gavLokalInput=parseFloat(document.getElementById('f-gav-lokal').value)||null;
   const redId=document.getElementById('f-redigera-id').value;
+  // v2.02: beräkna historicalFX
+  const gavLokalVal = gavLokalInput || (valuta==='SEK'?köpkurs:null);
+  const historicalFXVal = (valuta!=='SEK'&&gavLokalVal&&köpkurs>0)?(köpkurs/gavLokalVal):(valuta==='SEK'?1:null);
   if(!namn||isNaN(antal)||isNaN(köpkurs)||isNaN(aktuelKurs)){alert('Fyll i Namn, Antal, GAV och Aktuell kurs.');return;}
-  if(redId){const h=data.innehav.find(x=>x.id===redId);Object.assign(h,{namn,ticker,kategori,antal,köpkurs,aktuelKurs,ma200,datum,valuta,notat});}
-  else{data.innehav.push({id:uid(),namn,ticker,kategori,antal,köpkurs,aktuelKurs,ma200,datum,valuta,notat,utdelningar:[]});}
+  if(redId){const h=data.innehav.find(x=>x.id===redId);Object.assign(h,{namn,ticker,kategori,antal,köpkurs,aktuelKurs,ma200,datum,valuta,notat,gavLokal:gavLokalVal,historicalFX:historicalFXVal});}
+  else{data.innehav.push({id:uid(),namn,ticker,kategori,antal,köpkurs,aktuelKurs,ma200,datum,valuta,notat,utdelningar:[],gavLokal:gavLokalVal,historicalFX:historicalFXVal});}
   spara();renderAllt();avbrytRedigering();
 }
 function raderaInnehav(id) {
@@ -1661,6 +1722,7 @@ function redigeraInnehav(id) {
   document.getElementById('f-datum').value=h.datum||'';
   document.getElementById('f-valuta').value=h.valuta||'SEK';
   document.getElementById('f-notat').value=h.notat||'';
+  document.getElementById('f-gav-lokal').value=h.gavLokal&&h.valuta!=='SEK'?h.gavLokal:'';
   document.getElementById('f-redigera-id').value=id;
   visaSektion('innehav',null);
   document.querySelectorAll('#desktopNav button').forEach(b=>{if(b.textContent.includes('Innehav'))b.classList.add('aktiv');});
@@ -1668,7 +1730,7 @@ function redigeraInnehav(id) {
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function avbrytRedigering() {
-  ['f-namn','f-ticker','f-notat','f-ma200'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['f-namn','f-ticker','f-notat','f-ma200','f-gav-lokal'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   ['f-antal','f-köpkurs','f-aktuelkurs'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('f-valuta').value='SEK';
   document.getElementById('f-kategori').value='2';
@@ -1833,6 +1895,12 @@ function importeraPositioner(text) {
     const namn=r['Namn']||'',kortnamn=r['Kortnamn']||'';
     const volym=parseSE(r['Volym']||0),mv=parseSE(r['Marknadsvärde']||0);
     const gav=parseSE(r['GAV (SEK)']||r['GAV']||0),valuta=r['Valuta']||'SEK',isin=r['ISIN']||'';
+    // v2.02: läs lokal GAV och beräkna historisk FX
+    const gavLokal=parseSE(r[`GAV (${valuta})`]||r['GAV']||0);
+    const historicalFX=(valuta!=='SEK'&&gavLokal>0&&gav>0)?(gav/gavLokal):(valuta==='SEK'?1:null);
+    // Detektera likvida medel (kassa) i positionsfilen
+    const erLiquid=!isin&&(namn.toLowerCase().includes('likv')||namn===valuta||(mv>0&&Math.abs(kurs-1)<0.02&&valuta==='SEK'));
+    if(erLiquid){if(mv>100){data.avanzaKassa=mv;loggImport('info',`Kassa: ${kr(mv)} (${namn})`);} return;}
     if(!namn||volym===0)return;
     // Filter: exkludera hårdkodade värdepapper
     if(EXKLUDERA_VP.includes(namn.toLowerCase())){exkl++;return;}
@@ -1840,6 +1908,9 @@ function importeraPositioner(text) {
     const bef=data.innehav.find(h=>h.namn===namn||h.ticker===kortnamn||(isin&&h.isin===isin));
     if(bef){
       bef.antal=volym;bef.aktuelKurs=kurs;bef.köpkurs=gav||bef.köpkurs;bef.valuta=valuta;if(isin)bef.isin=isin;
+      // v2.02: uppdatera FX om ny data finns
+      if(historicalFX!==null){bef.historicalFX=historicalFX;}
+      if(gavLokal>0){bef.gavLokal=gavLokal;}else if(!bef.gavLokal&&valuta==='SEK'){bef.gavLokal=gav||bef.köpkurs;bef.historicalFX=1;}
       // Tvådagarsregel: uppdatera dagräknare under MA200
       if(bef.ma200>0&&kurs<bef.ma200){
         const kat=bef.kategori||2;
@@ -1851,7 +1922,7 @@ function importeraPositioner(text) {
       upd++;
     }
     else{const kat=hittaKategori(namn);if(kat===2&&!KATEGORI_KOPPLING[namn])ok++;
-      data.innehav.push({id:uid(),namn,ticker:kortnamn,kategori:kat,antal:volym,köpkurs:gav,aktuelKurs:kurs,ma200:0,dagUtanMa200:null,tvådagarsAktiv:false,datum:new Date().toISOString().slice(0,10),valuta,isin,notat:'',utdelningar:[]});nya++;}
+      data.innehav.push({id:uid(),namn,ticker:kortnamn,kategori:kat,antal:volym,köpkurs:gav,aktuelKurs:kurs,ma200:0,dagUtanMa200:null,tvådagarsAktiv:false,datum:new Date().toISOString().slice(0,10),valuta,isin,notat:'',utdelningar:[],gavLokal:gavLokal>0?gavLokal:(valuta==='SEK'?gav:null),historicalFX:historicalFX});nya++;}
   });
   if(exkl>0)loggImport('info',`ℹ️ ${exkl} värdepapper exkluderade av filter (Zomedica m.fl.)`);
   data.senastImport.positioner = idag;
@@ -2135,7 +2206,7 @@ function laddaNedStrategi() {
 </head>
 <body>
 <h1>📜 Aktiestrategi 2026</h1>
-<div class="meta">Martin Andersson &nbsp;·&nbsp; Uppdaterad 5 april 2026 &nbsp;·&nbsp; Genererad från Strategiportföljen v2.01</div>
+<div class="meta">Martin Andersson &nbsp;·&nbsp; Uppdaterad 5 april 2026 &nbsp;·&nbsp; Genererad från Strategiportföljen v2.02</div>
 
 <div class="ruta ruta-info">
   <div class="ruta-titel">🎯 Övergripande mål</div>
@@ -2240,7 +2311,7 @@ function laddaNedStrategi() {
 </div>
 
 <hr style="margin:40px 0;border:none;border-top:1px solid #e5e7eb">
-<p style="text-align:center;color:#9ca3af;font-size:0.82rem">Genererad ${new Date().toLocaleDateString('sv-SE')} från Strategiportföljen v2.01 · Martin Andersson</p>
+<p style="text-align:center;color:#9ca3af;font-size:0.82rem">Genererad ${new Date().toLocaleDateString('sv-SE')} från Strategiportföljen v2.02 · Martin Andersson</p>
 </body>
 </html>`;
 
