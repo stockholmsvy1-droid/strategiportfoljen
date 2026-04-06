@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Strategiportföljen">
   <meta name="theme-color" content="#1e3a5f">
-  <title>Strategiportföljen v2.03</title>
+  <title>Strategiportföljen v2.04</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231e3a5f'/%3E%3Cpolyline points='3,25 9,17 15,21 21,11 29,5' stroke='%230ea5e9' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='29' cy='5' r='2.5' fill='%234ade80'/%3E%3C/svg%3E">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
@@ -54,7 +54,8 @@
       box-shadow: 0 2px 12px rgba(0,0,0,0.2);
       min-height: calc(54px + env(safe-area-inset-top));
     }
-    header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.03em; display: flex; align-items: center; gap: 8px; }
+    header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.03em; display: flex; align-items: center; gap: 8px; margin: 0; line-height: 1.2; }
+    .header-subtitle { font-size: 0.68rem; font-weight: 400; font-style: italic; opacity: 0.75; letter-spacing: 0.02em; font-family: Georgia, 'Times New Roman', serif; }
     .header-badge { font-size: 0.68rem; background: var(--accent); padding: 2px 8px; border-radius: 20px; font-weight: 600; }
     .header-actions { display: flex; gap: 8px; }
 
@@ -455,7 +456,10 @@
 
 <!-- ══ HEADER ══ -->
 <header>
-  <h1>📈 Strategiportföljen <span class="header-badge">v2.03</span></h1>
+  <div>
+    <h1>📈 Strategiportföljen <span class="header-badge">v2.04</span></h1>
+    <div class="header-subtitle">Martin's Magnificent Money-Making Machine</div>
+  </div>
   <div class="header-actions">
     <button class="btn btn-outline btn-sm" onclick="exporteraExcel()">⬇ Excel</button>
     <button class="btn btn-white btn-sm" onclick="visaSektion('hjalp',null);synkNavKnappar('hjalp')">? Hjälp</button>
@@ -539,6 +543,10 @@
 <section id="kategorier" class="sektion">
   <div class="banner banner-info mb20">ℹ️ <span><strong>Grön</strong> = över MA200. <strong>Gul</strong> = nära MA200 (±5%) eller Tvådagarsvarning (1 dag under). <strong>Röd</strong> = Säljsignal (2 dagar under MA200, kat. 3–6). <strong>Hård stopp 🛑</strong> = kurs &lt; 90% av GAV (kat. 3–6). <strong>Mjuk analys ⚠️</strong> = kurs &lt; 90% av GAV (kat. 1–2). <strong>Gummiband</strong> visar avstånd till MA200: 🟢 0–15% · 🟡 15–40% · 🟠 &gt;40%.</span></div>
   <div id="kategori-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;"></div>
+  <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
+    <button class="btn btn-primary btn-sm" onclick="läggTillKategori()">+ Ny kategori</button>
+    <button class="btn btn-outline btn-sm" onclick="återställKategorier()">↩ Återställ standard</button>
+  </div>
 </section>
 
 <!-- ══ INNEHAV ══ -->
@@ -549,14 +557,7 @@
       <div class="fält"><label>Namn</label><input id="f-namn" placeholder="t.ex. Ericsson" autocomplete="off"/></div>
       <div class="fält"><label>Ticker</label><input id="f-ticker" placeholder="t.ex. ERIC B" autocomplete="off"/></div>
       <div class="fält"><label>Kategori</label>
-        <select id="f-kategori">
-          <option value="1">1 – Ankaret (Index)</option>
-          <option value="2">2 – Kassaflödet (Utdelning)</option>
-          <option value="3">3 – Infrastrukturen (Chip)</option>
-          <option value="4">4 – Hjärnan (AI Mjukvara)</option>
-          <option value="5">5 – Skölden (Försvar)</option>
-          <option value="6">6 – Berättelser (Kryddor)</option>
-        </select>
+        <select id="f-kategori" class="kat-select"></select>
       </div>
       <div class="fält"><label>Antal</label><input id="f-antal" type="number" min="0" step="any" placeholder="100" inputmode="decimal"/></div>
       <div class="fält"><label>GAV (SEK)</label><input id="f-köpkurs" type="number" min="0" step="any" placeholder="85.50" inputmode="decimal"/></div>
@@ -780,7 +781,7 @@
   <div class="card">
     <nav class="hjalp-nav">
       <button class="hjalp-flik aktiv" onclick="visaHjalpKapitel('kom-igang',this)">🚀 Kom igång</button>
-      <button class="hjalp-flik" onclick="visaHjalpKapitel('nyheter',this)">✨ Nyheter v2.03</button>
+      <button class="hjalp-flik" onclick="visaHjalpKapitel('nyheter',this)">✨ Nyheter v2.04</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('ipad-import',this)">📱 Import på iPad</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('veckorutin',this)">📅 Veckorutin</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('flikarna',this)">📋 Flikarna</button>
@@ -810,12 +811,18 @@
       </div>
     </div>
 
-    <!-- NYHETER v2.03 -->
+    <!-- NYHETER v2.04 -->
     <div class="hjalp-kapitel" id="hk-nyheter">
-      <div class="hjalp-rubrik">✨ Nyheter i version 2.03</div>
-      <div class="hjalp-ingress">Alla förbättringar i v2.03 — Live FX-motor via API, sticky tabellhuvud, distinkta signalfärger och dokumentnedladdning.</div>
+      <div class="hjalp-rubrik">✨ Nyheter i version 2.04</div>
+      <div class="hjalp-ingress">Anpassningsbara kategorier, förbättrat värdeutvecklingsdiagram och UX-förbättringar.</div>
 
-      <div class="hjalp-h2">🌐 Live FX-motor (v2.03)</div>
+      <div class="hjalp-h2">🗂 Anpassningsbara kategorier (v2.04)</div>
+      <div class="hjalp-p">Kategorier kan nu <strong>läggas till, redigeras och tas bort</strong> direkt i appen. Gå till Kategorier-fliken — varje kort har knappar för ✏️ redigera och 🗑 ta bort. Längst ner finns knappar för att skapa nya kategorier och återställa till standard. Du anger namn, undertitel, emoji, färg, målvikter, MA200-regel och beskrivning. Ändringar sparas i webbläsaren.</div>
+
+      <div class="hjalp-h2">📈 Förbättrat värdeutvecklingsdiagram (v2.04)</div>
+      <div class="hjalp-p">Diagrammet har fullbredd, 280px höjd och läsbar x-axel med kortformat datum ("7 jan.", "1 apr."). <strong>Periodväljare:</strong> 30D / 90D / 6M / 1Å / Allt. Om transaktionsdata med insättningar/uttag finns visas en streckad referenslinje för nettoinsatt kapital. Donut-diagrammet visar nu totalvärde i centrum.</div>
+
+      <div class="hjalp-h2">🌐 Live FX-motor (v2.04)</div>
       <div class="hjalp-p">Appen hämtar nu <strong>dagsaktuella växelkurser</strong> automatiskt via <code>open.er-api.com</code> (gratis, utan API-nyckel) vid varje laddning av sidan. Detta ger matematiskt korrekta MA200-signaler oberoende av SEK-fluktuationer.</div>
       <table class="hjalp-tabell">
         <thead><tr><th>Begrepp</th><th>Formel</th><th>Innebär</th></tr></thead>
@@ -899,10 +906,10 @@
         <li>Värdepapperet <strong>Zomedica</strong> — filtreras bort ur positionsfilen</li>
       </ul>
 
-      <div class="hjalp-h2">📌 Sticky tabellhuvud (v2.03)</div>
+      <div class="hjalp-h2">📌 Sticky tabellhuvud (v2.04)</div>
       <div class="hjalp-p">Rubrikraden i <strong>Innehav</strong>-tabellen är nu låst överst vid scrollning — du ser alltid vad varje kolumn heter.</div>
 
-      <div class="hjalp-h2">🎨 Distinkta signalfärger (v2.03)</div>
+      <div class="hjalp-h2">🎨 Distinkta signalfärger (v2.04)</div>
       <div class="hjalp-p">Två gröna nyanser används nu för att undvika förvirring:</div>
       <table class="hjalp-tabell">
         <thead><tr><th>Färg</th><th>Används för</th></tr></thead>
@@ -914,7 +921,7 @@
         </tbody>
       </table>
 
-      <div class="hjalp-h2">📄 Dokumentnedladdning (v2.03)</div>
+      <div class="hjalp-h2">📄 Dokumentnedladdning (v2.04)</div>
       <div class="hjalp-p">Under <strong>Strategi</strong>-fliken finns nu knappar för att ladda ned strategidokumentet som HTML och som ren textfil (.txt). Under <strong>FAQ</strong>-fliken finns en knapp för att ladda ned hjälptexten som .txt.</div>
 
       <div class="hjalp-h2">🌐 Favicon</div>
@@ -1059,6 +1066,7 @@
 
       <div class="hjalp-h2">🗂 Kategorier</div>
       <div class="hjalp-p">Ett kort per kategori med aktuell vikt, målintervall och MA200-signaler. Här ser du snabbt om något kräver åtgärd.</div>
+      <div class="hjalp-p"><strong>Hantera kategorier:</strong> Längst ner på Kategorier-fliken finns knappar för att lägga till nya kategorier och återställa till standard. Varje kategorikort har ✏️ (redigera) och 🗑 (ta bort) knappar i övre högra hörnet. När du tar bort en kategori som har innehav flyttas dessa automatiskt till kategori 1 (Ankaret). Alla ändringar sparas i webbläsaren.</div>
       <table class="signal-tabell">
         <thead><tr><th>Signal</th><th>Betydelse</th><th>Åtgärd</th></tr></thead>
         <tbody>
@@ -1301,7 +1309,7 @@
       <div style="margin-top:24px;padding:20px;background:#f9fafb;border-radius:var(--radius);text-align:center">
         <div style="font-size:1.3rem;margin-bottom:8px">📈</div>
         <strong style="display:block;margin-bottom:4px">Strategiportföljen</strong>
-        <span style="font-size:0.84rem;color:var(--muted)">Byggd för Martin · Strategi från januari 2026 · v2.03 April 2026</span>
+        <span style="font-size:0.84rem;color:var(--muted)">Byggd för Martin · Strategi från januari 2026 · v2.04 April 2026</span>
       </div>
     </div>
 
@@ -1330,7 +1338,7 @@
 // ══════════════════════════════════════════════════════════
 //  STRATEGI
 // ══════════════════════════════════════════════════════════
-const KATEGORIER = {
+const DEFAULT_KATEGORIER = {
   1:{namn:'Ankaret',undertitel:'Index',emoji:'⚓',färg:'#1e40af',målMin:35,målMax:40,signal:'ingen',beskrivning:'Indexfonder. Basen. Fylls på successivt, aldrig såld.'},
   2:{namn:'Kassaflödet',undertitel:'Utdelning',emoji:'💰',färg:'#15803d',målMin:20,målMax:25,signal:'ingen',beskrivning:'Stabila utdelare. Utdelningarna återinvesteras. Säljs ej vid dipp.'},
   3:{namn:'Infrastrukturen',undertitel:'Chip',emoji:'⚙️',färg:'#7c3aed',målMin:15,målMax:20,signal:'ma200',beskrivning:'Chip och hårdvara. Tvådagarsregel: sälj om stänger under MA200 två dagar i rad.'},
@@ -1338,6 +1346,87 @@ const KATEGORIER = {
   5:{namn:'Skölden',undertitel:'Försvar',emoji:'🛡️',färg:'#b45309',målMin:8,målMax:12,signal:'ma200',beskrivning:'Försvarsindustri. Tvådagarsregel: sälj om stänger under MA200 två dagar i rad.'},
   6:{namn:'Berättelser',undertitel:'Kryddor',emoji:'✨',färg:'#be185d',målMin:0,målMax:5,signal:'ma200',beskrivning:'Kryddor med högre risk. Tvådagarsregel gäller. Håll portionen liten.'}
 };
+let KATEGORIER = JSON.parse(JSON.stringify(DEFAULT_KATEGORIER));
+function laddaKategorier() {
+  const s = localStorage.getItem('portfölj_kategorier');
+  if (s) { try { KATEGORIER = JSON.parse(s); } catch(e) {} }
+}
+function sparaKategorier() {
+  localStorage.setItem('portfölj_kategorier', JSON.stringify(KATEGORIER));
+  uppdateraKatBadgeCSS();
+  uppdateraKatDropdown();
+  renderAllt();
+}
+function uppdateraKatBadgeCSS() {
+  let id = document.getElementById('dynamisk-kat-css');
+  if (!id) { id = document.createElement('style'); id.id = 'dynamisk-kat-css'; document.head.appendChild(id); }
+  id.textContent = Object.entries(KATEGORIER).map(([k,kat]) => {
+    const bg = kat.färg + '1a';
+    return `.kat-${k}{background:${bg};color:${kat.färg}}`;
+  }).join('\n');
+}
+function uppdateraKatDropdown() {
+  document.querySelectorAll('.kat-select').forEach(sel => {
+    const val = sel.value;
+    sel.innerHTML = Object.entries(KATEGORIER).map(([k,kat]) =>
+      `<option value="${k}">${k} – ${kat.namn} (${kat.undertitel})</option>`
+    ).join('');
+    if (val && KATEGORIER[val]) sel.value = val;
+  });
+}
+function nästaKatId() {
+  const ids = Object.keys(KATEGORIER).map(Number);
+  return Math.max(...ids, 0) + 1;
+}
+function läggTillKategori() {
+  const namn = prompt('Namn på ny kategori:');
+  if (!namn || !namn.trim()) return;
+  const undertitel = prompt('Undertitel (kort beskrivning):') || '';
+  const emoji = prompt('Emoji (t.ex. 🎯):') || '📂';
+  const färg = prompt('Färg (hex, t.ex. #6366f1):') || '#6366f1';
+  const målMin = parseInt(prompt('Målvikt min % (t.ex. 5):') || '0') || 0;
+  const målMax = parseInt(prompt('Målvikt max % (t.ex. 10):') || '5') || 5;
+  const signal = confirm('Använda MA200-regel med tvådagarsregel?') ? 'ma200' : 'ingen';
+  const beskrivning = prompt('Beskrivning (strategi):') || '';
+  const id = nästaKatId();
+  KATEGORIER[id] = { namn: namn.trim(), undertitel: undertitel.trim(), emoji, färg, målMin, målMax, signal, beskrivning };
+  sparaKategorier();
+}
+function redigeraKategori(id) {
+  const kat = KATEGORIER[id];
+  if (!kat) return;
+  const namn = prompt('Namn:', kat.namn);
+  if (namn === null) return;
+  kat.namn = namn.trim() || kat.namn;
+  kat.undertitel = (prompt('Undertitel:', kat.undertitel) || kat.undertitel).trim();
+  kat.emoji = prompt('Emoji:', kat.emoji) || kat.emoji;
+  kat.färg = prompt('Färg (hex):', kat.färg) || kat.färg;
+  kat.målMin = parseInt(prompt('Målvikt min %:', kat.målMin)) || 0;
+  kat.målMax = parseInt(prompt('Målvikt max %:', kat.målMax)) || 5;
+  kat.signal = confirm('Använda MA200-regel?') ? 'ma200' : 'ingen';
+  kat.beskrivning = (prompt('Beskrivning:', kat.beskrivning) || kat.beskrivning).trim();
+  sparaKategorier();
+}
+function taBortKategori(id) {
+  const kat = KATEGORIER[id];
+  if (!kat) return;
+  const antal = data.innehav.filter(h => h.kategori == id).length;
+  if (antal > 0) {
+    if (!confirm(`Kategorin "${kat.namn}" har ${antal} innehav. Dessa flyttas till kategori 1. Fortsätt?`)) return;
+    data.innehav.forEach(h => { if (h.kategori == id) h.kategori = 1; });
+    spara();
+  } else {
+    if (!confirm(`Ta bort kategorin "${kat.namn}"?`)) return;
+  }
+  delete KATEGORIER[id];
+  sparaKategorier();
+}
+function återställKategorier() {
+  if (!confirm('Återställ till standardkategorier? Befintliga innehav behåller sina kategori-ID.')) return;
+  KATEGORIER = JSON.parse(JSON.stringify(DEFAULT_KATEGORIER));
+  sparaKategorier();
+}
+laddaKategorier();
 
 // ── Hardkodade filter — exkluderas alltid ──
 const EXKLUDERA_KONTON = ['9557-7346055'];
@@ -1561,7 +1650,7 @@ function gummibandZon(h) {
   return {zon:'orange', pct, label:`+${pct.toFixed(1)}%`};
 }
 
-// ── v2.03: FX-hjälpfunktioner ──
+// ── v2.04: FX-hjälpfunktioner ──
 // Beräknar aktuell kurs i lokal valuta — live FX prioriteras, fallback till historisk
 function lokalKursVärde(h) {
   const valuta = h.valuta || 'SEK';
@@ -1721,7 +1810,7 @@ function renderKategorier() {
       return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:0.87rem"><span style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">${sH}<strong>${h.namn}</strong>${nödH}${gbH}</span><span style="color:var(--muted)">${kr(mv)}</span></div>`;
     }).join('');
     const fw=Math.min(100,(vp/Math.max(kat.målMax,vp))*100);
-    return `<div class="kat-kort"><div class="kat-kort-header"><div class="kat-kort-namn"><span style="font-size:1.4rem">${kat.emoji}</span><div><div>${kat.namn}</div><div style="font-size:0.75rem;color:var(--muted);font-weight:400">${kat.undertitel}</div></div></div><div class="kat-kort-siffror"><div class="vikt">${vp.toFixed(1)}%</div><div class="mal">Mål: ${kat.målMin}–${kat.målMax}%</div></div></div><div class="kat-kort-body"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:0.78rem;color:var(--muted)">${kr(v)}</span>${avvBadge}</div><div class="vikt-bar-track" style="margin-bottom:12px"><div class="vikt-bar-fill" style="width:${fw}%;background:${kat.färg}"></div><div class="vikt-bar-mal" style="left:${Math.min(100,kat.målMax)}%"></div></div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;font-style:italic">${kat.beskrivning}</div>${rader}</div></div>`;
+    return `<div class="kat-kort"><div class="kat-kort-header"><div class="kat-kort-namn"><span style="font-size:1.4rem">${kat.emoji}</span><div><div>${kat.namn}</div><div style="font-size:0.75rem;color:var(--muted);font-weight:400">${kat.undertitel}</div></div></div><div class="kat-kort-siffror"><div class="vikt">${vp.toFixed(1)}%</div><div class="mal">Mål: ${kat.målMin}–${kat.målMax}%</div><div style="margin-top:4px;display:flex;gap:6px;justify-content:flex-end"><button onclick="redigeraKategori(${k})" style="font-size:0.65rem;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:none;cursor:pointer;color:var(--muted)" title="Redigera">✏️</button><button onclick="taBortKategori(${k})" style="font-size:0.65rem;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:none;cursor:pointer;color:var(--danger)" title="Ta bort">🗑</button></div></div></div><div class="kat-kort-body"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:0.78rem;color:var(--muted)">${kr(v)}</span>${avvBadge}</div><div class="vikt-bar-track" style="margin-bottom:12px"><div class="vikt-bar-fill" style="width:${fw}%;background:${kat.färg}"></div><div class="vikt-bar-mal" style="left:${Math.min(100,kat.målMax)}%"></div></div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;font-style:italic">${kat.beskrivning}</div>${rader}</div></div>`;
   }).join('');
 }
 
@@ -2390,7 +2479,7 @@ function laddaNedStrategi() {
 </head>
 <body>
 <h1>📜 Aktiestrategi 2026</h1>
-<div class="meta">Martin Andersson &nbsp;·&nbsp; Uppdaterad 5 april 2026 &nbsp;·&nbsp; Genererad från Strategiportföljen v2.03</div>
+<div class="meta">Martin Andersson &nbsp;·&nbsp; Uppdaterad 5 april 2026 &nbsp;·&nbsp; Genererad från Strategiportföljen v2.04</div>
 
 <div class="ruta ruta-info">
   <div class="ruta-titel">🎯 Övergripande mål</div>
@@ -2495,7 +2584,7 @@ function laddaNedStrategi() {
 </div>
 
 <hr style="margin:40px 0;border:none;border-top:1px solid #e5e7eb">
-<p style="text-align:center;color:#9ca3af;font-size:0.82rem">Genererad ${new Date().toLocaleDateString('sv-SE')} från Strategiportföljen v2.03 · Martin Andersson</p>
+<p style="text-align:center;color:#9ca3af;font-size:0.82rem">Genererad ${new Date().toLocaleDateString('sv-SE')} från Strategiportföljen v2.04 · Martin Andersson</p>
 </body>
 </html>`;
 
@@ -2516,7 +2605,7 @@ function laddaNedStrategi() {
 function laddaNedStrategiTxt() {
   const datum = new Date().toLocaleDateString('sv-SE');
   const txt = `AKTIESTRATEGI 2026 — MARTIN ANDERSSON
-Genererad ${datum} från Strategiportföljen v2.03
+Genererad ${datum} från Strategiportföljen v2.04
 ================================================================
 
 ÖVERGRIPANDE MÅL
@@ -2570,7 +2659,7 @@ Säljsignal kräver stängning under MA200 TVÅ handelsdagar i rad.
   🔴 Röd       = Dag 2+ under MA200 → Sälj mekaniskt
   🟢 Köpsignal = Bryter upp över MA200 → Köp tillbaka
 
-VALUTAHANTERING (v2.03)
+VALUTAHANTERING (v2.04)
 MA200 anges alltid i LOKAL VALUTA (USD för NVIDIA, SEK för SAAB).
 Appen hämtar live-valutakurser via open.er-api.com och beräknar:
   Kurs (Lokal) = Kurs_SEK / Växelkurs_Aktuell
@@ -2614,14 +2703,14 @@ STRATEGINS SYFTE: Ta bort "bruset" — de emotionella impulser som
 leder till dåliga beslut. Var mekanisk i tillämpningen av reglerna.
 
 ================================================================
-Strategiportföljen v2.03 · Martin Andersson · April 2026
+Strategiportföljen v2.04 · Martin Andersson · April 2026
 `;
   laddaNedTextfil(txt, `Strategi_2026_${new Date().toISOString().slice(0,10)}.txt`);
 }
 
 function laddaNedHjalpTxt() {
   const datum = new Date().toLocaleDateString('sv-SE');
-  const txt = `HJÄLP — STRATEGIPORTFÖLJEN v2.03
+  const txt = `HJÄLP — STRATEGIPORTFÖLJEN v2.04
 Genererad ${datum}
 ================================================================
 
@@ -2658,7 +2747,7 @@ Steg 5 — Säkerhetskopiera (varannan vecka)
   Tryck "Excel" uppe till höger → spara i iCloud Drive
 
 ================================================================
-LIVE FX-MOTOR (v2.03)
+LIVE FX-MOTOR (v2.04)
 ================================================================
 
 Appen hämtar dagsaktuella valutakurser från open.er-api.com
@@ -2719,7 +2808,7 @@ All data är borta:
   → Förebygg med regelbundna Excel-exporter
 
 ================================================================
-Strategiportföljen v2.03 · Martin Andersson · April 2026
+Strategiportföljen v2.04 · Martin Andersson · April 2026
 `;
   laddaNedTextfil(txt, `Hjalp_Strategiportfoljen_${new Date().toISOString().slice(0,10)}.txt`);
 }
@@ -2743,6 +2832,8 @@ document.querySelectorAll('.modal-backdrop').forEach(m=>{m.addEventListener('cli
 //  INIT
 // ══════════════════════════════════════════════════════════
 ladda();
+uppdateraKatBadgeCSS();
+uppdateraKatDropdown();
 renderAllt();
 renderStatusPanel();
 hämtaLiveFX(); // Hämtar live valutakurser asynkront
