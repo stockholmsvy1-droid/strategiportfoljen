@@ -236,6 +236,10 @@
     .signal-gul { background: var(--warning); }
     .signal-röd { background: var(--danger); }
 
+    /* ── Periodknappar för värdeutveckling ── */
+    .period-knapp { padding: 3px 10px; border-radius: 20px; border: 1px solid var(--border); background: none; font-size: 0.78rem; color: var(--muted); cursor: pointer; }
+    .period-knapp.aktiv { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 600; }
+
     /* ── Kategori-kort ── */
     .kat-kort { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
     .kat-kort-header { padding: 16px 20px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
@@ -404,6 +408,14 @@
       .diagram-grid { grid-template-columns: 1fr 1fr; }
     }
 
+    /* Transaktioner och innehav – fixar kolumnklippning */
+    #tabellTransaktioner td:first-child { white-space: nowrap; }
+    @media (max-width: 768px) {
+      #tabellTransaktioner th:nth-child(2), #tabellTransaktioner td:nth-child(2) { display: none; }
+      #tabellTransaktioner th:nth-child(8), #tabellTransaktioner td:nth-child(8) { display: none; }
+    }
+    #tabellInnehav td, #tabellDashboard td { white-space: nowrap; }
+
     /* iPad mini / tablet stående */
     @media (max-width: 768px) {
       .grid-3 { grid-template-columns: 1fr 1fr; }
@@ -484,6 +496,7 @@
 
 <!-- ══ DASHBOARD ══ -->
 <section id="dashboard" class="sektion aktiv">
+  <div id="dashboard-fx-status" style="display:none;font-size:0.78rem;color:var(--muted);margin-bottom:10px;padding:6px 4px;display:flex;gap:12px;flex-wrap:wrap;align-items:center"></div>
   <div class="grid-auto mb24" id="nyckeltal-grid">
     <div class="nyckeltal"><div class="label">Totalt portföljvärde</div><div class="value" id="nk-total">— kr</div><div class="sub" id="nk-total-sub"></div></div>
     <div class="nyckeltal"><div class="label">Innehavens värde</div><div class="value" id="nk-innehav">— kr</div><div class="sub" id="nk-innehav-sub"></div></div>
@@ -495,7 +508,19 @@
   </div>
   <div class="diagram-grid mb20">
     <div class="card"><div class="card-titel"><span class="card-titel-text">Fördelning per kategori</span></div><div class="diagram-wrap"><canvas id="diagramKategori"></canvas></div></div>
-    <div class="card"><div class="card-titel"><span class="card-titel-text">Värdeutveckling</span></div><div class="diagram-wrap"><canvas id="diagramHistorik"></canvas></div></div>
+  </div>
+  <div class="card mb20">
+    <div class="card-titel" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <span class="card-titel-text">Värdeutveckling</span>
+      <div id="historik-period-knappar" style="display:flex;gap:4px">
+        <button onclick="byttHistorikPeriod(30,this)" class="period-knapp">30D</button>
+        <button onclick="byttHistorikPeriod(90,this)" class="period-knapp aktiv">90D</button>
+        <button onclick="byttHistorikPeriod(180,this)" class="period-knapp">6M</button>
+        <button onclick="byttHistorikPeriod(365,this)" class="period-knapp">1Å</button>
+        <button onclick="byttHistorikPeriod(0,this)" class="period-knapp">Allt</button>
+      </div>
+    </div>
+    <div class="diagram-wrap" style="height:280px"><canvas id="diagramHistorik"></canvas></div>
   </div>
   <div class="card mb20"><div class="card-titel"><span class="card-titel-text">Kategorivikter vs mål</span></div><div id="dashboard-vikter"></div></div>
   <div class="card">
@@ -709,7 +734,7 @@
     <div class="form-grid">
       <div class="fält"><label>Vecka</label><input id="log-vecka" placeholder="t.ex. v13"/></div>
       <div class="fält"><label>Datum</label><input id="log-datum" type="date"/></div>
-      <div class="fält"><label>Portföljvärde (SEK)</label><input id="log-varde" type="number" step="any" placeholder="900000" inputmode="decimal"/></div>
+      <div class="fält"><label>Portföljvärde (SEK)</label><input id="log-varde" type="number" step="any" placeholder="t.ex. 950 000" inputmode="decimal"/></div>
     </div>
     <div class="form-grid" style="grid-template-columns:1fr 1fr">
       <div class="fält"><label>Tankar om marknaden</label><textarea id="log-tankar" placeholder="Vad händer på börsen? Vad tänker du?"></textarea></div>
@@ -1375,6 +1400,7 @@ async function hämtaLiveFX() {
 
 function uppdateraFXIndikator(läge) {
   const el = document.getElementById('fx-indikator');
+  const dash = document.getElementById('dashboard-fx-status');
   if (!el) return;
   if (läge === 'laddar') {
     el.style.display = 'block';
@@ -1389,16 +1415,19 @@ function uppdateraFXIndikator(läge) {
     el.style.background = '#f0fdf4';
     el.style.borderColor = '#bbf7d0';
     el.innerHTML = `<strong style="color:var(--success)">✓ Live FX ${liveFXTid}:</strong> &nbsp;1 USD = ${f('USD')} kr &nbsp;·&nbsp; 1 EUR = ${f('EUR')} kr &nbsp;·&nbsp; 1 NOK = ${f('NOK',3)} kr &nbsp;·&nbsp; 1 GBP = ${f('GBP')} kr &nbsp;·&nbsp; 1 CAD = ${f('CAD')} kr`;
+    if(dash){dash.style.display='flex';dash.innerHTML=`<span style="color:var(--success)">✓ FX ${liveFXTid}</span><span>1 USD = ${f('USD')} kr</span><span>1 EUR = ${f('EUR')} kr</span><span>1 NOK = ${f('NOK',3)} kr</span><span>1 GBP = ${f('GBP')} kr</span>`;}
   } else if (liveFXStatus === 'offline') {
     el.style.display = 'block';
     el.style.background = '#fef3c7';
     el.style.borderColor = '#fde68a';
     el.innerHTML = '<span style="color:var(--warning)">📡 FX-API ej tillgängligt — beräkningar använder historisk kurs från importfilen</span>';
+    if(dash){dash.style.display='flex';dash.innerHTML='<span style="color:var(--warning)">📡 FX-kurs ej tillgänglig – historisk kurs används</span>';}
   } else if (liveFXStatus === 'fel') {
     el.style.display = 'block';
     el.style.background = '#fee2e2';
     el.style.borderColor = '#fca5a5';
     el.innerHTML = '<span style="color:var(--danger)">⚠️ FX-hämtning misslyckades — beräkningar använder historisk kurs</span>';
+    if(dash){dash.style.display='flex';dash.innerHTML='<span style="color:var(--danger)">⚠️ FX-hämtning misslyckades</span>';}
   }
 }
 
@@ -1456,9 +1485,10 @@ function ladda() {
 function spara() {
   const idag = new Date().toISOString().slice(0,10);
   const tv = beräknaTotalVärde();
+  const ni = beräknaNettoInsatt();
   const fi = data.historik.find(h => h.datum === idag);
-  if (!fi) data.historik.push({datum:idag, totalVärde:tv});
-  else fi.totalVärde = tv;
+  if (!fi) data.historik.push({datum:idag, totalVärde:tv, nettoInsatt:ni||undefined});
+  else { fi.totalVärde = tv; if(ni) fi.nettoInsatt = ni; }
   localStorage.setItem('portfölj_v2', JSON.stringify(data));
 }
 
@@ -1685,7 +1715,7 @@ function renderKategorier() {
       const nöd=nödutgångSignal(h);
       const gb=gummibandZon(h);
       const gbFärger={grön:'#00c853',gul:'#d97706',orange:'#ea580c'};
-      const sH=sig?`<span class="signal-dot signal-${sig==='okänd'?'gul':sig}" style="flex-shrink:0" title="${sig==='grön'?'Över MA200':sig==='gul'?(h.ma200&&h.aktuelKurs<h.ma200?'Dag 1 under MA200 (tvådagarsregel)':'Nära MA200'):sig==='röd'?'Säljsignal (2 dagar under MA200)':'MA200 ej angivet'}"></span>`:'';
+      const sH=sig&&sig!=='okänd'?`<span class="signal-dot signal-${sig}" style="flex-shrink:0" title="${sig==='grön'?'Över MA200':sig==='gul'?(h.ma200&&h.aktuelKurs<h.ma200?'Dag 1 under MA200 (tvådagarsregel)':'Nära MA200'):'Säljsignal (2 dagar under MA200)'}"></span>`:sig==='okänd'?'<span style="color:var(--muted);font-size:0.8rem;flex-shrink:0" title="MA200 ej angivet">—</span>':'';
       const nödH=nöd==='hård'?`<span style="font-size:0.68rem;background:#fee2e2;color:#b91c1c;padding:1px 6px;border-radius:4px;font-weight:700;margin-left:4px">🛑 HÅRD STOPP</span>`:nöd==='mjuk'?`<span style="font-size:0.68rem;background:#fef3c7;color:#d97706;padding:1px 6px;border-radius:4px;font-weight:700;margin-left:4px">⚠️ MJUK ANALYS</span>`:'';
       const gbH=gb?`<span style="font-size:0.7rem;background:${gbFärger[gb.zon]}20;color:${gbFärger[gb.zon]};padding:1px 5px;border-radius:4px;font-weight:600;margin-left:2px" title="Gummiband: ${gb.label} över MA200">${gb.label}</span>`:'';
       return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:0.87rem"><span style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">${sH}<strong>${h.namn}</strong>${nödH}${gbH}</span><span style="color:var(--muted)">${kr(mv)}</span></div>`;
@@ -1712,7 +1742,7 @@ function renderInnehav() {
     const nöd=nödutgångSignal(h);
     const gb=gummibandZon(h);
     const gbFärger={grön:'#00c853',gul:'#d97706',orange:'#ea580c'};
-    const sH=sig?`<span class="signal-dot signal-${sig==='okänd'?'gul':sig}"></span>`:'<span style="color:var(--muted)">—</span>';
+    const sH=sig&&sig!=='okänd'?`<span class="signal-dot signal-${sig}"></span>`:sig==='okänd'?'<span style="color:var(--muted)">—</span>':'<span style="color:var(--muted)">—</span>';
     const nödH=nöd==='hård'?`<span class="badge" style="background:#fee2e2;color:#b91c1c">🛑 Stopp</span>`:nöd==='mjuk'?`<span class="badge" style="background:#fef3c7;color:#d97706">⚠️ Analys</span>`:'';
     const gbH=gb?`<span style="font-size:0.7rem;color:${gbFärger[gb.zon]};font-weight:600;background:${gbFärger[gb.zon]}22;padding:1px 5px;border-radius:4px">${gb.label}</span>`:'';
     const lokal=lokalKursVärde(h);
@@ -1793,19 +1823,46 @@ function renderKassa() {
   tbody.innerHTML=[...data.kassaTransaktioner].reverse().map(t=>`<tr><td>${t.datum}</td><td><span class="badge ${t.typ==='insättning'?'badge-pos':'badge-neg'}">${t.typ}</span></td><td class="${t.typ==='insättning'?'pos':'neg'}">${t.typ==='insättning'?'+':'−'}${kr(t.belopp)}</td><td>${t.notat||'—'}</td><td><button class="btn btn-danger btn-sm" onclick="raderaKassa('${t.id}')">✕</button></td></tr>`).join('');
 }
 
-function renderAllt() { renderDashboard(); renderInnehav(); renderTransaktioner(); renderBeslutslogg(); renderKassa(); renderSenasteImport(); }
+function renderAllt() { renderDashboard(); renderInnehav(); renderTransaktioner(); renderBeslutslogg(); renderKassa(); renderSenasteImport(); ritaDiagram(); }
 
 // ══════════════════════════════════════════════════════════
 //  DIAGRAM
 // ══════════════════════════════════════════════════════════
-let chartK=null, chartH=null;
+let chartK=null, chartH=null, historikPeriod=90;
+function byttHistorikPeriod(period, knapp) {
+  historikPeriod = period;
+  document.querySelectorAll('.period-knapp').forEach(b=>b.classList.remove('aktiv'));
+  if(knapp) knapp.classList.add('aktiv');
+  ritaDiagram();
+}
+const donutCenterPlugin = {
+  id: 'centerText',
+  afterDraw(chart) {
+    if (chart.config.type !== 'doughnut') return;
+    const {ctx, chartArea:{top,bottom,left,right}} = chart;
+    const cx=(left+right)/2, cy=(top+bottom)/2;
+    const tot=chart.data.datasets[0].data.reduce((a,b)=>a+b,0);
+    if(!tot) return;
+    ctx.save();
+    ctx.font='bold 13px system-ui,sans-serif';
+    ctx.fillStyle='#1e293b';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText((tot/1000).toFixed(0)+'k kr', cx, cy);
+    ctx.restore();
+  }
+};
 function ritaDiagram() {
   const cK=document.getElementById('diagramKategori')?.getContext('2d');
   if(cK){if(chartK)chartK.destroy();const kV=beräknaKategorivärden();
-    chartK=new Chart(cK,{type:'doughnut',data:{labels:Object.entries(KATEGORIER).map(([k,kat])=>`${kat.emoji} ${kat.namn}`),datasets:[{data:Object.keys(KATEGORIER).map(k=>kV[k]||0),backgroundColor:Object.values(KATEGORIER).map(kat=>kat.färg),borderWidth:3,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:10}}}}});}
+    chartK=new Chart(cK,{type:'doughnut',data:{labels:Object.entries(KATEGORIER).map(([k,kat])=>`${kat.emoji} ${kat.namn}`),datasets:[{data:Object.keys(KATEGORIER).map(k=>kV[k]||0),backgroundColor:Object.values(KATEGORIER).map(kat=>kat.färg),borderWidth:3,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:10}}}},plugins:[donutCenterPlugin]});}
   const cH=document.getElementById('diagramHistorik')?.getContext('2d');
-  if(cH){if(chartH)chartH.destroy();const hi=data.historik.slice(-90);
-    chartH=new Chart(cH,{type:'line',data:{labels:hi.map(h=>h.datum),datasets:[{label:'Portföljvärde',data:hi.map(h=>h.totalVärde),borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,0.07)',borderWidth:2,pointRadius:hi.length<20?4:1,fill:true,tension:0.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>(v/1000).toFixed(0)+'k kr'}}}}});}
+  if(cH){if(chartH)chartH.destroy();
+    const hi=historikPeriod===0?data.historik:[...data.historik].slice(-historikPeriod);
+    const harNI=hi.some(h=>h.nettoInsatt>0);
+    const datasets=[{label:'Portföljvärde',data:hi.map(h=>h.totalVärde),borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,0.07)',borderWidth:2,pointRadius:hi.length<20?4:1,fill:true,tension:0.3}];
+    if(harNI)datasets.push({label:'Nettoinsatt',data:hi.map(h=>h.nettoInsatt||null),borderColor:'#94a3b8',borderDash:[5,5],borderWidth:1.5,pointRadius:0,fill:false,tension:0});
+    chartH=new Chart(cH,{type:'line',data:{labels:hi.map(h=>h.datum),datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:harNI,labels:{font:{size:11},boxWidth:20,padding:10}}},scales:{x:{ticks:{maxTicksLimit:8,maxRotation:45,callback:function(val){const d=new Date(this.getLabelForValue(val));return d.toLocaleDateString('sv-SE',{day:'numeric',month:'short'});}}},y:{ticks:{callback:v=>(v/1000).toFixed(0)+'k kr'}}}}});}
 }
 
 // ══════════════════════════════════════════════════════════
@@ -2687,7 +2744,6 @@ document.querySelectorAll('.modal-backdrop').forEach(m=>{m.addEventListener('cli
 // ══════════════════════════════════════════════════════════
 ladda();
 renderAllt();
-ritaDiagram();
 renderStatusPanel();
 hämtaLiveFX(); // Hämtar live valutakurser asynkront
 </script>
