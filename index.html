@@ -1565,7 +1565,7 @@ function aktivFXKurs(valuta) {
 // ══════════════════════════════════════════════════════════
 let data = {
   innehav:[], kassaTransaktioner:[], avanzaTransaktioner:[],
-  beslutslogg:[], historik:[], senastImport:{}, avanzaKassa:0, kontoStartsaldo:{}
+  beslutslogg:[], historik:[], senastImport:{}, avanzaKassa:0, kontoStartsaldo:{}, positionsKassa:{}
 };
 
 function ladda() {
@@ -1585,6 +1585,7 @@ function ladda() {
     });
     if (!data.avanzaKassa) data.avanzaKassa = 0;
     if (!data.kontoStartsaldo) data.kontoStartsaldo = {};
+    if (!data.positionsKassa) data.positionsKassa = {};
     // Migration: märk befintliga poster som importerad:true så de inte raderas
     data.historik.forEach(h => { if (!h.importerad) h.importerad = true; });
   }
@@ -1630,6 +1631,16 @@ function beräknaKostnadsbas() { return data.innehav.reduce((s,h)=>s+h.antal*h.k
 function beräknaKassasaldo() { return data.kassaTransaktioner.reduce((s,t)=>t.typ==='insättning'?s+t.belopp:s-t.belopp,0); }
 function beräknaTillgängligLikviditet() { return beräknaKassasaldo() + (data.avanzaKassa||0); }
 function beräknaAvanzaKassaPerKonto() {
+  // Prioritera positionsfildata (exakt samma källa som Avanza visar)
+  if (data.positionsKassa && Object.keys(data.positionsKassa).length > 0) {
+    const konton = {...data.positionsKassa};
+    // Lägg till manuella justeringar (off-Avanza kassa)
+    Object.entries(data.kontoStartsaldo || {}).forEach(([konto, start]) => {
+      konton[konto] = (konton[konto] || 0) + start;
+    });
+    return konton;
+  }
+  // Fallback: transaktionsbaserad (kan vara felaktig om historiken är ofullständig)
   const konton = {};
   data.avanzaTransaktioner.forEach(t => {
     const konto = t.konto || 'Okänt';
@@ -1995,13 +2006,16 @@ function renderKassa() {
   if (kontoNamn.length === 0) {
     kassal.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;margin:8px 0">Importera en transaktionsfil för att se kassasaldo per konto.</p>';
   } else {
+    const harPosKassa = data.positionsKassa && Object.keys(data.positionsKassa).length > 0;
     const totalAuto = Object.values(perKonto).reduce((s,v)=>s+v,0);
-    kassal.innerHTML = `<div class="tabell-wrap"><table><thead><tr><th>Konto</th><th style="text-align:right">Saldo</th><th style="text-align:center">Källa</th></tr></thead><tbody>` +
+    kassal.innerHTML = `<div class="tabell-wrap"><table><thead><tr><th>Konto</th><th style="text-align:right">Saldo</th><th style="text-align:center" title="Källa: 📄 Positionsfil · ✋ Manuell justering · 🔄 Transaktioner (kan vara inexakt)">Källa</th></tr></thead><tbody>` +
       kontoNamn.sort().map(k => {
         const harStart = data.kontoStartsaldo && data.kontoStartsaldo[k] !== undefined;
-        const ikon = harStart ? '✋' : '🤖';
+        const erPosKassa = data.positionsKassa && data.positionsKassa[k] !== undefined;
+        const ikon = harStart && !erPosKassa ? '✋' : harPosKassa ? '📄' : '🔄';
+        const tooltip = harStart && !erPosKassa ? 'Manuellt startsaldo' : harPosKassa ? 'Från positionsfil (exakt)' : 'Beräknat från transaktioner (kan vara inexakt — importera positionsfil för exakt värde)';
         const saldo = perKonto[k];
-        return `<tr><td>${k}</td><td style="text-align:right" class="${saldo>=0?'pos':'neg'}">${saldo>=0?'+':''}${kr(saldo,2)}</td><td style="text-align:center;font-size:1.1rem">${ikon}</td></tr>`;
+        return `<tr><td>${k}</td><td style="text-align:right" class="${saldo>=0?'pos':'neg'}">${saldo>=0?'+':''}${kr(saldo,2)}</td><td style="text-align:center;font-size:1.1rem" title="${tooltip}">${ikon}</td></tr>`;
       }).join('') +
       `<tr style="font-weight:600;border-top:2px solid var(--border)"><td>Totalt</td><td style="text-align:right" class="${totalAuto>=0?'pos':'neg'}">${totalAuto>=0?'+':''}${kr(totalAuto,2)}</td><td></td></tr>` +
       `</tbody></table></div>`;
@@ -2321,6 +2335,25 @@ function importeraPositioner(text, filNamn='') {
   // Avgör om detta är den senaste positionsfilen vi importerat
   const senasteDatum = data.historik.filter(h=>h.importerad).reduce((m,h)=>h.datum>m?h.datum:m,'');
   const erSenasteFil = datumFil >= senasteDatum;
+  // Förpass: bygg kontonummer → [isin] för att kunna mappa till kontonamn via transaktioner
+  const kontonummerISIN = {};
+  rader.forEach(r=>{
+    const knr=r['Kontonummer']||'';
+    if(EXKLUDERA_KONTON.some(k=>knr.includes(k)))return;
+    const isin=r['ISIN']||'';
+    if(isin){if(!kontonummerISIN[knr])kontonummerISIN[knr]=[];kontonummerISIN[knr].push(isin);}
+  });
+  // Slå upp kontonamn från transaktionsfilen via ISIN
+  const kontonummerNamn = {};
+  Object.entries(kontonummerISIN).forEach(([knr,isinLista])=>{
+    for(const isin of isinLista){
+      const tx=data.avanzaTransaktioner.find(t=>t.isin===isin&&t.konto);
+      if(tx){kontonummerNamn[knr]=tx.konto;break;}
+    }
+    if(!kontonummerNamn[knr])kontonummerNamn[knr]=knr; // fallback: visa kontonummer
+  });
+  // Återställ kassadata för senaste filen
+  if(erSenasteFil){data.positionsKassa={};}
   const seenISIN=new Set(), seenNamn=new Set();
   rader.forEach(r=>{
     const konto=r['Kontonummer']||'';
@@ -2335,7 +2368,16 @@ function importeraPositioner(text, filNamn='') {
     const kurs=volym>0?mv/volym:0;
     // Detektera likvida medel (kassa) i positionsfilen
     const erLiquid=!isin&&(namn.toLowerCase().includes('likv')||namn===valuta||(mv>0&&Math.abs(kurs-1)<0.02&&valuta==='SEK'));
-    if(erLiquid){if(mv>100){data.avanzaKassa=mv;loggImport('info',`Kassa: ${kr(mv)} (${namn})`);} return;}
+    if(erLiquid){
+      if(erSenasteFil){
+        const kontoNamn=kontonummerNamn[konto]||konto;
+        data.positionsKassa[kontoNamn]=(data.positionsKassa[kontoNamn]||0)+mv;
+        loggImport('info',`Kassa ${kontoNamn}: ${kr(mv)}`);
+      }
+      // Uppdatera totalsumman för dashboard
+      data.avanzaKassa=Object.values(data.positionsKassa).reduce((s,v)=>s+v,0);
+      return;
+    }
     if(!namn||volym===0)return;
     // Filter: exkludera hårdkodade värdepapper
     if(EXKLUDERA_VP.includes(namn.toLowerCase())){exkl++;return;}
