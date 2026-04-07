@@ -9,7 +9,7 @@ Personlig portföljapp byggd för iPad och dator. Öppnas direkt i webbläsaren 
 
 ## Vad appen gör
 
-- Visar portföljens värde, avkastning och fördelning per kategori — **Total avkastning** visar (portföljvärde − nettoinsatt kapital) i kr och %
+- Visar portföljens värde, avkastning och fördelning per kategori — nyckeltal uppdateras dynamiskt per vald period (30D / 90D / 6M / 1Å / i År / Allt)
 - Importerar positioner och transaktioner direkt från Avanza (CSV) — dra filer eller välj flera samtidigt
 - Sålda innehav tas bort automatiskt när senaste positionsfilen importeras
 - **Utdelningar kopplas automatiskt** per aktie via ISIN från transaktionsfilen — ingen manuell inmatning
