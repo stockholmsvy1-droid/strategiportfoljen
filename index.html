@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Strategiportföljen">
   <meta name="theme-color" content="#1e3a5f">
-  <title>Strategiportföljen v2.06</title>
+  <title>Strategiportföljen v2.07</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231e3a5f'/%3E%3Cpolyline points='3,25 9,17 15,21 21,11 29,5' stroke='%230ea5e9' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='29' cy='5' r='2.5' fill='%234ade80'/%3E%3C/svg%3E">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
@@ -458,7 +458,7 @@
 <!-- ══ HEADER ══ -->
 <header>
   <div>
-    <h1>📈 Strategiportföljen <span class="header-badge">v2.06</span></h1>
+    <h1>📈 Strategiportföljen <span class="header-badge">v2.07</span></h1>
     <div class="header-subtitle">The Magnificent Martin's Money-Making Machine</div>
   </div>
   <div class="header-actions">
@@ -1565,7 +1565,7 @@ function aktivFXKurs(valuta) {
 // ══════════════════════════════════════════════════════════
 let data = {
   innehav:[], kassaTransaktioner:[], avanzaTransaktioner:[],
-  beslutslogg:[], historik:[], senastImport:{}, avanzaKassa:0, kontoStartsaldo:{}
+  beslutslogg:[], historik:[], senastImport:{}, avanzaKassa:0, kontoStartsaldo:{}, kassaFrånPositioner:{}
 };
 
 function ladda() {
@@ -1631,14 +1631,33 @@ function beräknaKassasaldo() { return data.kassaTransaktioner.reduce((s,t)=>t.t
 function beräknaTillgängligLikviditet() { return beräknaKassasaldo() + (data.avanzaKassa||0); }
 function beräknaAvanzaKassaPerKonto() {
   const konton = {};
+  const posKassa = data.kassaFrånPositioner || {};
+
+  // Bygg transaktionsbaserad kassa per konto (fallback)
+  const txKassa = {};
   data.avanzaTransaktioner.forEach(t => {
-    const konto = t.konto || 'Okänt';
+    const k = t.konto || 'Okänt';
     const b = parseSE(t.belopp) || 0;
-    konton[konto] = (konton[konto] || 0) + b;
+    txKassa[k] = (txKassa[k] || 0) + b;
   });
-  Object.entries(data.kontoStartsaldo || {}).forEach(([konto, start]) => {
-    konton[konto] = (konton[konto] || 0) + start;
+
+  // Alla konton från transaktioner och positioner
+  const allaKonton = new Set([...Object.keys(txKassa), ...Object.keys(posKassa)]);
+  const posNyckar = Object.keys(posKassa);
+
+  allaKonton.forEach(k => {
+    // Matcha kontonamn (tx) mot kontonummer (pos) via includes()
+    const posMatch = posNyckar.find(pk => k.includes(pk) || pk.includes(k));
+    konton[k] = posMatch !== undefined ? posKassa[posMatch] : (txKassa[k] || 0);
   });
+
+  // Startsaldon adderas bara om inget positionsfilsvärde finns för kontot
+  Object.entries(data.kontoStartsaldo || {}).forEach(([k, start]) => {
+    if (!(k in konton)) konton[k] = 0;
+    const posMatch = posNyckar.find(pk => k.includes(pk) || pk.includes(k));
+    if (!posMatch) konton[k] += start;
+  });
+
   return konton;
 }
 function sparaKontoStartsaldo() {
@@ -1998,8 +2017,10 @@ function renderKassa() {
     const totalAuto = Object.values(perKonto).reduce((s,v)=>s+v,0);
     kassal.innerHTML = `<div class="tabell-wrap"><table><thead><tr><th>Konto</th><th style="text-align:right">Saldo</th><th style="text-align:center">Källa</th></tr></thead><tbody>` +
       kontoNamn.sort().map(k => {
-        const harStart = data.kontoStartsaldo && data.kontoStartsaldo[k] !== undefined;
-        const ikon = harStart ? '✋' : '🤖';
+        const posNyckar = Object.keys(data.kassaFrånPositioner || {});
+        const harPos = posNyckar.some(pk => k.includes(pk) || pk.includes(k));
+        const harStart = !harPos && data.kontoStartsaldo && data.kontoStartsaldo[k] !== undefined;
+        const ikon = harPos ? '📍' : (harStart ? '✋' : '🤖');
         const saldo = perKonto[k];
         return `<tr><td>${k}</td><td style="text-align:right" class="${saldo>=0?'pos':'neg'}">${saldo>=0?'+':''}${kr(saldo,2)}</td><td style="text-align:center;font-size:1.1rem">${ikon}</td></tr>`;
       }).join('') +
@@ -2321,6 +2342,7 @@ function importeraPositioner(text, filNamn='') {
   // Avgör om detta är den senaste positionsfilen vi importerat
   const senasteDatum = data.historik.filter(h=>h.importerad).reduce((m,h)=>h.datum>m?h.datum:m,'');
   const erSenasteFil = datumFil >= senasteDatum;
+  data.kassaFrånPositioner = {}; data.avanzaKassa = 0;
   const seenISIN=new Set(), seenNamn=new Set();
   rader.forEach(r=>{
     const konto=r['Kontonummer']||'';
@@ -2335,7 +2357,7 @@ function importeraPositioner(text, filNamn='') {
     const kurs=volym>0?mv/volym:0;
     // Detektera likvida medel (kassa) i positionsfilen
     const erLiquid=!isin&&(namn.toLowerCase().includes('likv')||namn===valuta||(mv>0&&Math.abs(kurs-1)<0.02&&valuta==='SEK'));
-    if(erLiquid){if(mv>100){data.avanzaKassa=mv;loggImport('info',`Kassa: ${kr(mv)} (${namn})`);} return;}
+    if(erLiquid){if(mv>0){data.kassaFrånPositioner[konto]=mv;if(mv>100){data.avanzaKassa=(data.avanzaKassa||0)+mv;}loggImport('info',`Kassa ${konto}: ${kr(mv)} (${namn})`);}return;}
     if(!namn||volym===0)return;
     // Filter: exkludera hårdkodade värdepapper
     if(EXKLUDERA_VP.includes(namn.toLowerCase())){exkl++;return;}
