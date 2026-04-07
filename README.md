@@ -1,5 +1,5 @@
 # 📈 Strategiportföljen
-*Martin's Magnificent Money-Making Machine*
+*The Magnificent Martins' Money-Making Machine*
 
 Personlig portföljapp byggd för iPad och dator. Öppnas direkt i webbläsaren — ingen installation, ingen inloggning.
 
@@ -18,7 +18,8 @@ Personlig portföljapp byggd för iPad och dator. Öppnas direkt i webbläsaren 
 - **Nödutgångar** (90 % av GAV) — hård stopp (kat. 3–6) eller mjuk analys (kat. 1–2)
 - **Gummibandet** — visar hur långt kursen sträckt sig från MA200
 - **Anpassningsbara kategorier** — lägg till, redigera och ta bort kategorier via UI
-- **Värdeutvecklingsdiagram** med periodväljare (30D/90D/6M/1Å/Allt) och referenslinje för nettoinsatt kapital
+- **Värdeutvecklingsdiagram** med periodväljare (30D / 90D / 6M / 1Å / i År / Allt) och referenslinje för nettoinsatt kapital
+- Historik byggs automatiskt från importerade positionsfiler — en datapunkt per fil
 - Beslutslogg för veckovisa anteckningar
 - Exporterar data som Excel-säkerhetskopia
 
@@ -62,17 +63,19 @@ MA200 anges alltid i **lokal valuta** (USD för amerikanska aktier, SEK för sve
 
 | Fil | Var du hittar den | Hur ofta |
 |-----|-------------------|----------|
-| `positioner_DATUM.csv` | Min ekonomi → Innehav → Exportera | Varje vecka |
+| `DATUM_positioner.csv` | Min ekonomi → Innehav → Exportera | Varje vecka |
 | `transaktioner_DATUM.csv` | Min ekonomi → Transaktioner → Exportera | Varje vecka |
 | `inkopskurs_DATUM.csv` | Innehav → Exportera inköpskurser | En gång |
 
-Gå sedan till **Importera**-fliken i appen och välj filen.
+Gå sedan till **Importera**-fliken i appen och välj filen. Datumet i positionsfilens namn används automatiskt som historikpunkt i värdeutvecklingsdiagrammet — importera äldre filer för att bygga upp historiken bakåt.
+
+**Filtreras alltid bort:** Pensionskontot `9557-7346055` och värdepapperet Zomedica.
 
 ---
 
 ## Teknik
 
-- Ren HTML/CSS/JavaScript — en enda fil, inga beroenden utöver Chart.js och SheetJS (laddas från CDN)
+- Ren HTML/CSS/JavaScript — en enda fil, inga beroenden utöver Chart.js, chartjs-adapter-date-fns och SheetJS (laddas från CDN)
 - All data sparas lokalt i webbläsarens `localStorage`
 - Fungerar offline efter första laddningen
 - Data synkroniseras **inte** automatiskt mellan enheter — använd Excel-exporten för att flytta data
@@ -81,6 +84,6 @@ Gå sedan till **Importera**-fliken i appen och välj filen.
 
 ## Version
 
-**v2.04** — april 2026
+**v2.05** — april 2026
 
 Byggt för Martin · Strategi från januari 2026
