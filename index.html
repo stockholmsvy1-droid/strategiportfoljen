@@ -505,9 +505,9 @@
   <div class="grid-auto mb24" id="nyckeltal-grid">
     <div class="nyckeltal"><div class="label">Totalt portföljvärde</div><div class="value" id="nk-total">— kr</div><div class="sub" id="nk-total-sub"></div></div>
     <div class="nyckeltal"><div class="label">Innehavens värde</div><div class="value" id="nk-innehav">— kr</div><div class="sub" id="nk-innehav-sub"></div></div>
-    <div class="nyckeltal"><div class="label">Total avkastning</div><div class="value" id="nk-avkastning">— kr</div><div class="sub" id="nk-avkastning-sub"></div></div>
-    <div class="nyckeltal"><div class="label">Utdelningar totalt</div><div class="value" id="nk-utdelning">— kr</div></div>
-    <div class="nyckeltal"><div class="label">Realiserat resultat</div><div class="value" id="nk-realiserat">— kr</div></div>
+    <div class="nyckeltal"><div class="label" id="nk-avkastning-label">Total avkastning</div><div class="value" id="nk-avkastning">— kr</div><div class="sub" id="nk-avkastning-sub"></div></div>
+    <div class="nyckeltal"><div class="label" id="nk-utdelning-label">Utdelningar totalt</div><div class="value" id="nk-utdelning">— kr</div></div>
+    <div class="nyckeltal"><div class="label" id="nk-realiserat-label">Realiserat resultat</div><div class="value" id="nk-realiserat">— kr</div></div>
     <div class="nyckeltal"><div class="label">Tillgänglig likviditet</div><div class="value" id="nk-kassa">— kr</div><div class="sub" id="nk-kassa-sub"></div></div>
     <div class="nyckeltal"><div class="label">Nettoinsatt kapital</div><div class="value" id="nk-nettoinsatt">— kr</div><div class="sub" id="nk-nettoinsatt-sub"></div></div>
   </div>
@@ -1847,13 +1847,39 @@ function renderDashboard() {
   if(niEl)niEl.textContent=nettoInsatt>0?kr(nettoInsatt):'—';
   const niSub=document.getElementById('nk-nettoinsatt-sub');
   if(niSub)niSub.textContent='';
-  // Total avkastning = (portföljvärde − nettoinsatt) i kr och %
-  const totalAvk = nettoInsatt>0 ? total-nettoInsatt : orealiserad;
-  const totalAvkPct = nettoInsatt>0 ? (totalAvk/nettoInsatt)*100 : orealiserad_pct;
-  document.getElementById('nk-avkastning').innerHTML=`<span class="${färg(totalAvk)}">${totalAvk>=0?'+':''}${kr(totalAvk)}</span>`;
-  document.getElementById('nk-avkastning-sub').innerHTML=`<span class="${färg(totalAvkPct)}">${totalAvkPct>=0?'+':''}${pct(totalAvkPct)} vs insatt</span>`;
-  document.getElementById('nk-utdelning').textContent=kr(beräknaTotalUtdelning());
-  const real=beräknaRealiserat();
+  // Period-medvetna nyckeltal
+  const etikett=periodEtikett(); // null = Allt
+  const startDatum=periodeStartDatum();
+  // Avkastning: Allt → vs nettoinsatt | Period → vs historikpunkt vid periodens start
+  let avkKr, avkPct, avkLabel;
+  if(!etikett && nettoInsatt>0){
+    avkKr=total-nettoInsatt; avkPct=(avkKr/nettoInsatt)*100; avkLabel='Total avkastning';
+  } else if(!etikett){
+    avkKr=orealiserad; avkPct=orealiserad_pct; avkLabel='Total avkastning';
+  } else {
+    avkLabel=`Avkastning · ${etikett}`;
+    const sortadH=[...data.historik].sort((a,b)=>a.datum.localeCompare(b.datum));
+    const före=sortadH.filter(h=>h.datum<=startDatum);
+    const startH=före.length>0?före[före.length-1]:sortadH[0];
+    avkKr=startH?total-startH.totalVärde:null;
+    avkPct=startH&&startH.totalVärde>0?(avkKr/startH.totalVärde)*100:null;
+  }
+  document.getElementById('nk-avkastning-label').textContent=avkLabel;
+  document.getElementById('nk-avkastning').innerHTML=avkKr!=null?`<span class="${färg(avkKr)}">${avkKr>=0?'+':''}${kr(avkKr)}</span>`:'—';
+  document.getElementById('nk-avkastning-sub').innerHTML=avkPct!=null?`<span class="${färg(avkPct)}">${avkPct>=0?'+':''}${pct(avkPct)}${!etikett?' vs insatt':''}</span>`:'';
+  // Utdelningar: Allt → totalt | Period → filtrerat
+  const utdLabel=etikett?`Utdelningar · ${etikett}`:'Utdelningar totalt';
+  const utdBelopp=etikett
+    ? data.avanzaTransaktioner.filter(t=>t.datum>=startDatum&&t.typ==='Utdelning').reduce((s,t)=>s+parseSE(t.belopp),0)
+    : beräknaTotalUtdelning();
+  document.getElementById('nk-utdelning-label').textContent=utdLabel;
+  document.getElementById('nk-utdelning').textContent=kr(utdBelopp);
+  // Realiserat: Allt → totalt | Period → filtrerat
+  const realLabel=etikett?`Realiserat · ${etikett}`:'Realiserat resultat';
+  const real=etikett
+    ? data.avanzaTransaktioner.filter(t=>t.datum>=startDatum&&t.typ==='Sälj'&&t.resultat).reduce((s,t)=>s+(parseFloat(t.resultat)||0),0)
+    : beräknaRealiserat();
+  document.getElementById('nk-realiserat-label').textContent=realLabel;
   document.getElementById('nk-realiserat').innerHTML=real!==0?`<span class="${färg(real)}">${kr(real)}</span>`:'—';
 
   const tbody=document.querySelector('#tabellDashboard tbody');
@@ -2043,11 +2069,27 @@ function renderAllt() { renderDashboard(); renderInnehav(); renderTransaktioner(
 //  DIAGRAM
 // ══════════════════════════════════════════════════════════
 let chartK=null, chartH=null, historikPeriod=90;
+function periodeStartDatum() {
+  const idag=new Date().toISOString().slice(0,10);
+  if(historikPeriod==='år') return new Date().getFullYear()+'-01-01';
+  if(historikPeriod===0){const s=[...data.historik].sort((a,b)=>a.datum.localeCompare(b.datum));return s[0]?.datum||idag;}
+  const d=new Date();d.setDate(d.getDate()-historikPeriod);return d.toISOString().slice(0,10);
+}
+function periodEtikett() {
+  if(historikPeriod===0)return null;
+  if(historikPeriod==='år')return 'i År';
+  if(historikPeriod===365)return '1Å';
+  if(historikPeriod===180)return '6M';
+  if(historikPeriod===90)return '90D';
+  if(historikPeriod===30)return '30D';
+  return '';
+}
 function byttHistorikPeriod(period, knapp) {
   historikPeriod = period;
   document.querySelectorAll('.period-knapp').forEach(b=>b.classList.remove('aktiv'));
   if(knapp) knapp.classList.add('aktiv');
   ritaDiagram();
+  renderDashboard();
 }
 const donutCenterPlugin = {
   id: 'centerText',
