@@ -2245,6 +2245,10 @@ function importeraPositioner(text, filNamn='') {
   const idag=new Date().toISOString().slice(0,10);
   const datumMatch = filNamn.match(/(\d{4}-\d{2}-\d{2})/);
   const datumFil = datumMatch ? datumMatch[1] : idag;
+  // Avgör om detta är den senaste positionsfilen vi importerat
+  const senasteDatum = data.historik.filter(h=>h.importerad).reduce((m,h)=>h.datum>m?h.datum:m,'');
+  const erSenasteFil = datumFil >= senasteDatum;
+  const seenISIN=new Set(), seenNamn=new Set();
   rader.forEach(r=>{
     const konto=r['Kontonummer']||'';
     if(EXKLUDERA_KONTON.some(k=>konto.includes(k))){exkl++;return;}
@@ -2262,6 +2266,8 @@ function importeraPositioner(text, filNamn='') {
     if(!namn||volym===0)return;
     // Filter: exkludera hårdkodade värdepapper
     if(EXKLUDERA_VP.includes(namn.toLowerCase())){exkl++;return;}
+    // Spåra vad som faktiskt finns i filen
+    if(isin) seenISIN.add(isin); seenNamn.add(namn);
     const bef=data.innehav.find(h=>h.namn===namn||h.ticker===kortnamn||(isin&&h.isin===isin));
     if(bef){
       bef.antal=volym;bef.aktuelKurs=kurs;bef.köpkurs=gav||bef.köpkurs;bef.valuta=valuta;if(isin)bef.isin=isin;
@@ -2281,6 +2287,14 @@ function importeraPositioner(text, filNamn='') {
     else{const kat=hittaKategori(namn);if(kat===2&&!KATEGORI_KOPPLING[namn])ok++;
       data.innehav.push({id:uid(),namn,ticker:kortnamn,kategori:kat,antal:volym,köpkurs:gav,aktuelKurs:kurs,ma200:0,dagUtanMa200:null,tvådagarsAktiv:false,datum:new Date().toISOString().slice(0,10),valuta,isin,notat:'',utdelningar:[],gavLokal:gavLokal>0?gavLokal:(valuta==='SEK'?gav:null),historicalFX:historicalFX});nya++;}
   });
+  // Ta bort sålda innehav om detta är den senaste positionsfilen
+  if(erSenasteFil){
+    const sålda=data.innehav.filter(h=>!(h.isin&&seenISIN.has(h.isin))&&!seenNamn.has(h.namn));
+    if(sålda.length>0){
+      loggImport('info',`📤 Borttagna (sålda/ej i portföljen): ${sålda.map(h=>h.namn).join(', ')}`);
+      data.innehav=data.innehav.filter(h=>(h.isin&&seenISIN.has(h.isin))||seenNamn.has(h.namn));
+    }
+  }
   if(exkl>0)loggImport('info',`ℹ️ ${exkl} värdepapper exkluderade av filter (Zomedica m.fl.)`);
   data.senastImport.positioner = idag;
   loggImport('ok', `✓ Positioner: ${upd} uppdaterade, ${nya} nya`);
