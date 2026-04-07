@@ -955,11 +955,12 @@
         <li>Tryck <strong>Exportera</strong> → välj alla konton</li>
         <li>Safari frågar var du vill spara → välj <strong>Spara i Filer</strong> → iCloud Drive eller Nedladdningar</li>
         <li>Gå tillbaka till portföljappen → <strong>Importera → Positioner</strong></li>
-        <li>Tryck på knappen → välj filen i Filer-appen</li>
+        <li>Tryck på knappen eller <strong>dra filen direkt</strong> från Finder/Filer till importrutan — du kan markera och dra flera filer samtidigt</li>
       </ol>
       <div class="hjalp-ruta hjalp-ruta-tips">
-        <div class="hjalp-ruta-titel">💡 Filnamnet och historiken</div>
-        Avanza namnger filen med datumet i filnamnet, t.ex. <code>2026-04-07_positioner.csv</code>. Appen läser ut datumet automatiskt och lägger till en historikpunkt för det datumet i värdeutvecklingsdiagrammet. Importera gärna äldre positionsfiler för att bygga upp historiken bakåt i tid. Pensionskontot (<code>9557-7346055</code>) filtreras automatiskt bort.
+        <div class="hjalp-ruta-titel">💡 Filnamnet, historiken och sålda innehav</div>
+        Avanza namnger filen med datumet, t.ex. <code>2026-04-07_positioner.csv</code>. Appen läser ut datumet automatiskt och lägger till en historikpunkt i värdeutvecklingsdiagrammet. Importera gärna äldre positionsfiler för att bygga upp historiken bakåt.<br><br>
+        <strong>Sålda innehav tas bort automatiskt</strong> när du importerar den senaste positionsfilen — aktier som inte längre finns i filen raderas ur appen och loggas i importloggen. Äldre historikfiler påverkar inte listan över aktuella innehav.
       </div>
 
       <div class="hjalp-h2">🔄 Transaktionsfilen — importera varje vecka</div>
@@ -971,8 +972,8 @@
         <li>Portföljappen → <strong>Importera → Transaktioner</strong> → välj filen</li>
       </ol>
       <div class="hjalp-ruta hjalp-ruta-tips">
-        <div class="hjalp-ruta-titel">💡 Dubbletter hanteras automatiskt</div>
-        Du kan importera samma transaktionsfil flera gånger utan problem — appen känner igen och hoppar över poster som redan finns.
+        <div class="hjalp-ruta-titel">💡 Utdelningar kopplas automatiskt</div>
+        Transaktionsfilen innehåller utdelningsrader per aktie. Appen matchar dem mot rätt innehav via ISIN och visar utdelningshistoriken direkt i Innehav-tabellen (kolumn Utd.) och i 💰-knappen per aktie. Du behöver inte registrera utdelningar manuellt. Dubbletter hanteras automatiskt — du kan importera samma fil flera gånger.
       </div>
 
       <div class="hjalp-h2">📈 Inköpskurshistorik — importera en gång</div>
@@ -1092,10 +1093,10 @@
       </table>
 
       <div class="hjalp-h2">📋 Innehav</div>
-      <div class="hjalp-p">Alla aktier och fonder i en tabell. Här lägger du till, redigerar och tar bort innehav. Du kan också registrera utdelningar manuellt och söka bland innehaven.</div>
+      <div class="hjalp-p">Alla aktier och fonder i en tabell. Kolumnen <strong>Utd.</strong> visar totalt mottagna utdelningar per aktie — hämtas automatiskt ur transaktionsfilen, ingen manuell inmatning krävs. Tryck 💰 för att se utdelningshistorik per datum. Manuell registrering finns som fallback för aktier utan Avanza-matchning.</div>
 
       <div class="hjalp-h2">⬆ Importera</div>
-      <div class="hjalp-p">Importera CSV-filer från Avanza. Fem filtyper stöds: Positioner (uppdaterar kurser, volymer och lägger till historikpunkt), Transaktioner (köp/sälj/utdelning/insättningar), Inköpskurshistorik (valfri engångsimport), Investeringslogg Excel (historik) och Beslutslogg CSV (historiska anteckningar). Appen känner igen dubbletter automatiskt. Kontonummer <code>9557-7346055</code> (pension) och värdepapperet Zomedica filtreras alltid bort från positioner och transaktioner. Under <strong>Underhåll</strong> kan du hantera historikposter, rensa all data eller återställa importstatus.</div>
+      <div class="hjalp-p">Importera CSV-filer från Avanza. Alla importknappar stöder drag och drop från Finder/Filer, och Positioner och Transaktioner accepterar flera filer på en gång. Fem filtyper stöds: Positioner (uppdaterar kurser, volymer, tar bort sålda och lägger till historikpunkt), Transaktioner (köp/sälj/utdelning/insättningar), Inköpskurshistorik (valfri engångsimport), Investeringslogg Excel (historik) och Beslutslogg CSV. Appen känner igen dubbletter automatiskt. Kontonummer <code>9557-7346055</code> (pension) och värdepapperet Zomedica filtreras alltid bort. Under <strong>Underhåll</strong> kan du hantera historikposter, rensa all data eller återställa importstatus.</div>
 
       <div class="hjalp-h2">🔄 Transaktioner</div>
       <div class="hjalp-p">Visar alla importerade transaktioner med analysrutor för köp, sälj, utdelningar, källskatt, realiserat resultat och courtage. Filtrera på typ, värdepapper och datumintervall.</div>
