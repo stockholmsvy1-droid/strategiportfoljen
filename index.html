@@ -759,17 +759,14 @@
 <!-- ══ KASSA ══ -->
 <section id="kassa" class="sektion">
   <div class="card mb20">
-    <div class="card-titel"><span class="card-titel-text">🤖 Kassa per konto</span><span style="font-size:0.75rem;color:var(--muted);font-weight:400">Beräknat från transaktionsfil</span></div>
+    <div class="card-titel"><span class="card-titel-text">💰 Tillgängligt för köp per konto</span><span style="font-size:0.75rem;color:var(--muted);font-weight:400">Manuell inmatning från Avanza</span></div>
+    <div class="banner banner-info mb12" style="font-size:0.82rem">Ange "Tillgängligt för köp" direkt från Avanza — uppdatera en gång i veckan vid ordinarie import.</div>
     <div id="avanza-kassa-lista"></div>
-    <details class="mt12" id="startsaldo-sektion">
-      <summary style="cursor:pointer;font-size:0.82rem;color:var(--muted);user-select:none">✋ Justera startsaldo per konto</summary>
-      <div class="form-grid mt8" style="grid-template-columns:1fr 1fr auto;align-items:flex-end;gap:8px">
-        <div class="fält"><label>Konto</label><input id="ks-konto" placeholder="t.ex. ISK Martin" list="ks-konto-lista"/><datalist id="ks-konto-lista"></datalist></div>
-        <div class="fält"><label>Startsaldo (kr)</label><input id="ks-belopp" type="number" step="any" placeholder="0" inputmode="decimal"/></div>
-        <button class="btn btn-primary" onclick="sparaKontoStartsaldo()" style="margin-bottom:0">Spara</button>
-      </div>
-      <div id="konto-startsaldo-lista" class="mt8"></div>
-    </details>
+    <div class="form-grid mt12" style="grid-template-columns:1fr 1fr auto;align-items:flex-end;gap:8px">
+      <div class="fält"><label>Konto</label><select id="ks-konto"><option value="">— välj konto —</option></select></div>
+      <div class="fält"><label>Tillgängligt för köp (kr)</label><input id="ks-belopp" type="number" step="any" placeholder="108" inputmode="decimal"/></div>
+      <button class="btn btn-primary" onclick="sparaKontoStartsaldo()" style="margin-bottom:0">Spara</button>
+    </div>
   </div>
   <div class="kassa-grid mb20">
     <div class="card saldo-box">
@@ -1631,36 +1628,35 @@ function uid() { return Date.now().toString(36) + Math.random().toString(36).sli
 function beräknaInnehavVärde() { return data.innehav.reduce((s,h)=>s+h.antal*h.aktuelKurs,0); }
 function beräknaKostnadsbas() { return data.innehav.reduce((s,h)=>s+h.antal*h.köpkurs,0); }
 function beräknaKassasaldo() { return data.kassaTransaktioner.reduce((s,t)=>t.typ==='insättning'?s+t.belopp:s-t.belopp,0); }
-function beräknaTillgängligLikviditet() { return beräknaKassasaldo() + (data.avanzaKassa||0); }
+function beräknaAvanzaKassaTotalt() {
+  const perKonto = beräknaAvanzaKassaPerKonto();
+  return Object.values(perKonto).reduce((s,v)=>s+v.belopp,0);
+}
+function beräknaTillgängligLikviditet() { return beräknaKassasaldo() + beräknaAvanzaKassaTotalt(); }
 function beräknaAvanzaKassaPerKonto() {
-  // Prioritera positionsfildata (exakt samma källa som Avanza visar)
-  if (data.positionsKassa && Object.keys(data.positionsKassa).length > 0) {
-    const konton = {...data.positionsKassa};
-    // Lägg till manuella justeringar (off-Avanza kassa)
-    Object.entries(data.kontoStartsaldo || {}).forEach(([konto, start]) => {
-      konton[konto] = (konton[konto] || 0) + start;
-    });
-    return konton;
-  }
-  // Fallback: transaktionsbaserad (kan vara felaktig om historiken är ofullständig)
-  const konton = {};
-  data.avanzaTransaktioner.forEach(t => {
-    const konto = t.konto || 'Okänt';
-    const b = parseSE(t.belopp) || 0;
-    konton[konto] = (konton[konto] || 0) + b;
+  // Samla alla konton från transaktioner
+  const alleKonton = [...new Set(data.avanzaTransaktioner.map(t=>t.konto).filter(Boolean))];
+  const result = {};
+  alleKonton.forEach(k => {
+    if (data.kontoStartsaldo && data.kontoStartsaldo[k] !== undefined) {
+      result[k] = {belopp: data.kontoStartsaldo[k], källa: 'manuell'};
+    } else {
+      const sum = data.avanzaTransaktioner.filter(t=>t.konto===k).reduce((s,t)=>s+(parseSE(t.belopp)||0),0);
+      result[k] = {belopp: sum, källa: 'transaktion'};
+    }
   });
-  Object.entries(data.kontoStartsaldo || {}).forEach(([konto, start]) => {
-    konton[konto] = (konton[konto] || 0) + start;
+  // Extra manuella konton (inte i transaktioner)
+  Object.entries(data.kontoStartsaldo || {}).forEach(([k,v]) => {
+    if (!result[k]) result[k] = {belopp: v, källa: 'manuell'};
   });
-  return konton;
+  return result;
 }
 function sparaKontoStartsaldo() {
-  const konto = document.getElementById('ks-konto').value.trim();
-  const belopp = parseFloat(document.getElementById('ks-belopp').value) || 0;
-  if (!konto) return;
+  const konto = document.getElementById('ks-konto').value;
+  const belopp = parseFloat(document.getElementById('ks-belopp').value);
+  if (!konto || isNaN(belopp)) return;
   if (!data.kontoStartsaldo) data.kontoStartsaldo = {};
   data.kontoStartsaldo[konto] = belopp;
-  document.getElementById('ks-konto').value = '';
   document.getElementById('ks-belopp').value = '';
   spara(); renderKassa();
 }
@@ -1843,9 +1839,9 @@ function renderDashboard() {
   document.getElementById('nk-total-sub').textContent=`Kassa: ${kr(kassa)}`;
   document.getElementById('nk-innehav').textContent=kr(iv);
   document.getElementById('nk-innehav-sub').textContent=`Kostnadsbas: ${kr(kb)}`;
-  const avanzaK=data.avanzaKassa||0;
+  const avanzaK=beräknaAvanzaKassaTotalt(), manuellK=beräknaKassasaldo();
   document.getElementById('nk-kassa').textContent=kr(kassa);
-  document.getElementById('nk-kassa-sub').textContent=avanzaK>0?`Avanza: ${kr(avanzaK)} + manuell: ${kr(beräknaKassasaldo())}`:'Tillgängliga medel';
+  document.getElementById('nk-kassa-sub').textContent=avanzaK!==0?`Avanza: ${kr(avanzaK)}${manuellK!==0?` + manuell: ${kr(manuellK)}`:''}`:manuellK!==0?`Manuell kassa: ${kr(manuellK)}`:'Tillgängliga medel';
   const nettoInsatt=beräknaNettoInsatt();
   const niEl=document.getElementById('nk-nettoinsatt');
   if(niEl)niEl.textContent=nettoInsatt>0?kr(nettoInsatt):'—';
@@ -2001,34 +1997,31 @@ function renderBeslutslogg() {
 //  RENDER — KASSA
 // ══════════════════════════════════════════════════════════
 function renderKassa() {
-  // Auto-kassa per konto
+  // Kassa per konto
   const kassal = document.getElementById('avanza-kassa-lista');
   const perKonto = beräknaAvanzaKassaPerKonto();
   const kontoNamn = Object.keys(perKonto);
-  if (kontoNamn.length === 0) {
-    kassal.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;margin:8px 0">Importera en transaktionsfil för att se kassasaldo per konto.</p>';
-  } else {
-    const harPosKassa = data.positionsKassa && Object.keys(data.positionsKassa).length > 0;
-    const totalAuto = Object.values(perKonto).reduce((s,v)=>s+v,0);
-    kassal.innerHTML = `<div class="tabell-wrap"><table><thead><tr><th>Konto</th><th style="text-align:right">Saldo</th><th style="text-align:center" title="Källa: 📄 Positionsfil · ✋ Manuell justering · 🔄 Transaktioner (kan vara inexakt)">Källa</th></tr></thead><tbody>` +
-      kontoNamn.sort().map(k => {
-        const harStart = data.kontoStartsaldo && data.kontoStartsaldo[k] !== undefined;
-        const erPosKassa = data.positionsKassa && data.positionsKassa[k] !== undefined;
-        const ikon = harStart && !erPosKassa ? '✋' : harPosKassa ? '📄' : '🔄';
-        const tooltip = harStart && !erPosKassa ? 'Manuellt startsaldo' : harPosKassa ? 'Från positionsfil (exakt)' : 'Beräknat från transaktioner (kan vara inexakt — importera positionsfil för exakt värde)';
-        const saldo = perKonto[k];
-        return `<tr><td>${k}</td><td style="text-align:right" class="${saldo>=0?'pos':'neg'}">${saldo>=0?'+':''}${kr(saldo,2)}</td><td style="text-align:center;font-size:1.1rem" title="${tooltip}">${ikon}</td></tr>`;
-      }).join('') +
-      `<tr style="font-weight:600;border-top:2px solid var(--border)"><td>Totalt</td><td style="text-align:right" class="${totalAuto>=0?'pos':'neg'}">${totalAuto>=0?'+':''}${kr(totalAuto,2)}</td><td></td></tr>` +
-      `</tbody></table></div>`;
-    const dl = document.getElementById('ks-konto-lista');
-    if (dl) dl.innerHTML = kontoNamn.map(k=>`<option value="${k}">`).join('');
+  // Populera kontoval i formuläret
+  const sel = document.getElementById('ks-konto');
+  if (sel) {
+    const prev = sel.value;
+    sel.innerHTML = '<option value="">— välj konto —</option>' +
+      kontoNamn.sort().map(k=>`<option value="${k}"${k===prev?' selected':''}>${k}</option>`).join('');
   }
-  const ssl = document.getElementById('konto-startsaldo-lista');
-  if (ssl) {
-    const entries = Object.entries(data.kontoStartsaldo || {});
-    ssl.innerHTML = entries.length === 0 ? '' :
-      entries.map(([k,v])=>`<div style="display:flex;align-items:center;gap:8px;font-size:0.82rem;margin:4px 0"><span style="flex:1">${k}</span><span class="${v>=0?'pos':'neg'}">${v>=0?'+':''}${kr(v,2)}</span><button class="btn btn-danger btn-sm" onclick="raderaKontoStartsaldo('${k.replace(/'/g,"\\'")}')">✕</button></div>`).join('');
+  if (kontoNamn.length === 0) {
+    kassal.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;margin:8px 0">Importera en transaktionsfil för att se konton.</p>';
+  } else {
+    const totalManuell = Object.values(perKonto).filter(v=>v.källa==='manuell').reduce((s,v)=>s+v.belopp,0);
+    const allaManuella = kontoNamn.every(k=>perKonto[k].källa==='manuell');
+    const total = Object.values(perKonto).reduce((s,v)=>s+v.belopp,0);
+    kassal.innerHTML = `<div class="tabell-wrap"><table><thead><tr><th>Konto</th><th style="text-align:right">Tillgängligt</th><th style="text-align:center">Källa</th></tr></thead><tbody>` +
+      kontoNamn.sort().map(k => {
+        const {belopp, källa} = perKonto[k];
+        const ikon = källa==='manuell' ? '✅' : '<span title="Beräknat från transaktioner — kan vara inexakt. Ange värdet manuellt nedan." style="cursor:help">⚠️</span>';
+        return `<tr><td>${k}</td><td style="text-align:right" class="${belopp>=0?'pos':'neg'}">${belopp>=0?'+':''}${kr(belopp,2)}</td><td style="text-align:center;font-size:1.1rem">${ikon}</td></tr>`;
+      }).join('') +
+      `<tr style="font-weight:600;border-top:2px solid var(--border)"><td>Totalt</td><td style="text-align:right" class="${total>=0?'pos':'neg'}">${total>=0?'+':''}${kr(total,2)}</td><td></td></tr>` +
+      `</tbody></table></div>`;
   }
   // Manuell kassa
   const s=beräknaKassasaldo();
