@@ -1,5 +1,5 @@
 # 📈 Strategiportföljen
-*The Magnificent Martins' Money-Making Machine*
+*The Magnificent Martin's Money-Making Machine*
 
 Personlig portföljapp byggd för iPad och dator. Öppnas direkt i webbläsaren — ingen installation, ingen inloggning.
 
