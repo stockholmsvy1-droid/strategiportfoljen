@@ -618,9 +618,9 @@
       <button class="import-knapp-stor" onclick="document.getElementById('filPositioner').click()"
         ondragover="dragOver(event,this)" ondragleave="dragLeave(this)" ondrop="dropFil(event,'positioner',this)">
         <span class="import-ikon">📂</span>
-        <div class="import-text"><strong>Tryck för att välja fil</strong><span>Uppdaterar kurser och innehav</span></div>
+        <div class="import-text"><strong>Tryck eller dra filer hit</strong><span>Uppdaterar kurser och innehav — flera filer stöds</span></div>
       </button>
-      <input type="file" id="filPositioner" accept=".csv" style="display:none" onchange="läsFil(event,'positioner')">
+      <input type="file" id="filPositioner" accept=".csv" multiple style="display:none" onchange="läsFil(event,'positioner')">
     </div>
 
     <div class="card">
@@ -629,9 +629,9 @@
       <button class="import-knapp-stor" onclick="document.getElementById('filTransaktioner').click()"
         ondragover="dragOver(event,this)" ondragleave="dragLeave(this)" ondrop="dropFil(event,'transaktioner',this)">
         <span class="import-ikon">📂</span>
-        <div class="import-text"><strong>Tryck för att välja fil</strong><span>Köp, sälj, utdelningar och courtage</span></div>
+        <div class="import-text"><strong>Tryck eller dra filer hit</strong><span>Köp, sälj, utdelningar och courtage — flera filer stöds</span></div>
       </button>
-      <input type="file" id="filTransaktioner" accept=".csv" style="display:none" onchange="läsFil(event,'transaktioner')">
+      <input type="file" id="filTransaktioner" accept=".csv" multiple style="display:none" onchange="läsFil(event,'transaktioner')">
     </div>
   </div>
 
@@ -644,7 +644,7 @@
       <button class="import-knapp-stor" onclick="document.getElementById('filInkopskurs').click()"
         ondragover="dragOver(event,this)" ondragleave="dragLeave(this)" ondrop="dropFil(event,'inkopskurs',this)">
         <span class="import-ikon">📂</span>
-        <div class="import-text"><strong>Tryck för att välja fil</strong><span>Uppdaterar GAV på befintliga innehav</span></div>
+        <div class="import-text"><strong>Tryck eller dra fil hit</strong><span>Uppdaterar GAV på befintliga innehav</span></div>
       </button>
       <input type="file" id="filInkopskurs" accept=".csv" style="display:none" onchange="läsFil(event,'inkopskurs')">
     </div>
@@ -655,7 +655,7 @@
       <button class="import-knapp-stor" onclick="document.getElementById('filExcelLogg').click()"
         ondragover="dragOver(event,this)" ondragleave="dragLeave(this)" ondrop="dropFil(event,'excelLogg',this)">
         <span class="import-ikon">📂</span>
-        <div class="import-text"><strong>Tryck för att välja fil</strong><span>Läser in historisk beslutslogg och diagram</span></div>
+        <div class="import-text"><strong>Tryck eller dra fil hit</strong><span>Läser in historisk beslutslogg och diagram</span></div>
       </button>
       <input type="file" id="filExcelLogg" accept=".xlsx,.xls" style="display:none" onchange="läsFil(event,'excelLogg')">
     </div>
@@ -669,7 +669,7 @@
     <button class="import-knapp-stor" onclick="document.getElementById('filBeslutslogg').click()"
       ondragover="dragOver(event,this)" ondragleave="dragLeave(this)" ondrop="dropFil(event,'beslutsloggCSV',this)">
       <span class="import-ikon">📂</span>
-      <div class="import-text"><strong>Tryck för att välja fil</strong><span>Beslutslogg.csv — importerar historiska loggposter</span></div>
+      <div class="import-text"><strong>Tryck eller dra fil hit</strong><span>Beslutslogg.csv — importerar historiska loggposter</span></div>
     </button>
     <input type="file" id="filBeslutslogg" accept=".csv" style="display:none" onchange="läsFil(event,'beslutsloggCSV')">
   </div>
@@ -2099,8 +2099,8 @@ function raderaLoggpost(id) {
 // ══════════════════════════════════════════════════════════
 function dragOver(e,el){e.preventDefault();el.classList.add('drag-over');}
 function dragLeave(el){el.classList.remove('drag-over');}
-function dropFil(e,typ,el){e.preventDefault();el.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f)behandlaFil(f,typ);}
-function läsFil(e,typ){const f=e.target.files[0];if(f)behandlaFil(f,typ);e.target.value='';}
+function dropFil(e,typ,el){e.preventDefault();el.classList.remove('drag-over');const filer=[...e.dataTransfer.files];if(!filer.length)return;if(filer.length>1)loggImport('info',`📂 Importerar ${filer.length} filer...`);filer.forEach(f=>behandlaFil(f,typ));}
+function läsFil(e,typ){const filer=[...e.target.files];if(!filer.length)return;if(filer.length>1)loggImport('info',`📂 Importerar ${filer.length} filer...`);filer.forEach(f=>behandlaFil(f,typ));e.target.value='';}
 
 function behandlaFil(fil, typ) {
   loggImport('info', `Läser: ${fil.name} (${(fil.size/1024).toFixed(1)} KB)`);
