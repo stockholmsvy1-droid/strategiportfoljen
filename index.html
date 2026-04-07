@@ -1833,11 +1833,11 @@ function visaHjalpKapitel(id, knapp) {
 // ══════════════════════════════════════════════════════════
 function renderDashboard() {
   const iv=beräknaInnehavVärde(), kassa=beräknaTillgängligLikviditet(), kb=beräknaKostnadsbas();
-  const total=iv+kassa, vinst=iv-kb, vpct=kb>0?(vinst/kb)*100:0;
+  const total=iv+kassa, orealiserad=iv-kb, orealiserad_pct=kb>0?(orealiserad/kb)*100:0;
   document.getElementById('nk-total').textContent=kr(total);
   document.getElementById('nk-total-sub').textContent=`Kassa: ${kr(kassa)}`;
   document.getElementById('nk-innehav').textContent=kr(iv);
-  document.getElementById('nk-innehav-sub').textContent=`Kostnadsbas: ${kr(kb)}`;
+  document.getElementById('nk-innehav-sub').innerHTML=`Kostnadsbas: ${kr(kb)} &nbsp;<span class="${färg(orealiserad)}">(${orealiserad>=0?'+':''}${kr(orealiserad)})</span>`;
   const avanzaK=beräknaAvanzaKassaTotalt(), manuellK=beräknaKassasaldo();
   document.getElementById('nk-kassa').textContent=kr(kassa);
   document.getElementById('nk-kassa-sub').textContent=avanzaK!==0?`Avanza: ${kr(avanzaK)}${manuellK!==0?` + manuell: ${kr(manuellK)}`:''}`:manuellK!==0?`Manuell kassa: ${kr(manuellK)}`:'Tillgängliga medel';
@@ -1845,9 +1845,12 @@ function renderDashboard() {
   const niEl=document.getElementById('nk-nettoinsatt');
   if(niEl)niEl.textContent=nettoInsatt>0?kr(nettoInsatt):'—';
   const niSub=document.getElementById('nk-nettoinsatt-sub');
-  if(niSub&&nettoInsatt>0){const iv2=beräknaInnehavVärde()+kassa;const avk=((iv2-nettoInsatt)/nettoInsatt)*100;niSub.innerHTML=`<span class="${färg(avk)}">${pct(avk)} vs insatt</span>`;}
-  document.getElementById('nk-avkastning').innerHTML=`<span class="${färg(vinst)}">${kr(vinst)}</span>`;
-  document.getElementById('nk-avkastning-sub').innerHTML=`<span class="${färg(vpct)}">${pct(vpct)}</span>`;
+  if(niSub)niSub.textContent='';
+  // Total avkastning = (portföljvärde − nettoinsatt) i kr och %
+  const totalAvk = nettoInsatt>0 ? total-nettoInsatt : orealiserad;
+  const totalAvkPct = nettoInsatt>0 ? (totalAvk/nettoInsatt)*100 : orealiserad_pct;
+  document.getElementById('nk-avkastning').innerHTML=`<span class="${färg(totalAvk)}">${totalAvk>=0?'+':''}${kr(totalAvk)}</span>`;
+  document.getElementById('nk-avkastning-sub').innerHTML=`<span class="${färg(totalAvkPct)}">${totalAvkPct>=0?'+':''}${pct(totalAvkPct)} vs insatt</span>`;
   document.getElementById('nk-utdelning').textContent=kr(beräknaTotalUtdelning());
   const real=beräknaRealiserat();
   document.getElementById('nk-realiserat').innerHTML=real!==0?`<span class="${färg(real)}">${kr(real)}</span>`:'—';
