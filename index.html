@@ -7,9 +7,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Strategiportföljen">
   <meta name="theme-color" content="#1e3a5f">
-  <title>Strategiportföljen v2.04</title>
+  <title>Strategiportföljen v2.05</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231e3a5f'/%3E%3Cpolyline points='3,25 9,17 15,21 21,11 29,5' stroke='%230ea5e9' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='29' cy='5' r='2.5' fill='%234ade80'/%3E%3C/svg%3E">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
   <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
   <style>
     :root {
@@ -457,8 +458,8 @@
 <!-- ══ HEADER ══ -->
 <header>
   <div>
-    <h1>📈 Strategiportföljen <span class="header-badge">v2.04</span></h1>
-    <div class="header-subtitle">Martin's Magnificent Money-Making Machine</div>
+    <h1>📈 Strategiportföljen <span class="header-badge">v2.05</span></h1>
+    <div class="header-subtitle">The Magnificent Martins' Money-Making Machine</div>
   </div>
   <div class="header-actions">
     <button class="btn btn-outline btn-sm" onclick="exporteraExcel()">⬇ Excel</button>
@@ -521,6 +522,7 @@
         <button onclick="byttHistorikPeriod(90,this)" class="period-knapp aktiv">90D</button>
         <button onclick="byttHistorikPeriod(180,this)" class="period-knapp">6M</button>
         <button onclick="byttHistorikPeriod(365,this)" class="period-knapp">1Å</button>
+        <button onclick="byttHistorikPeriod('år',this)" class="period-knapp">i År</button>
         <button onclick="byttHistorikPeriod(0,this)" class="period-knapp">Allt</button>
       </div>
     </div>
@@ -682,6 +684,11 @@
     </div>
     <p style="font-size:0.8rem;color:var(--muted);margin-top:12px">⚠️ "Rensa all data" tar bort all portföljdata permanent. Exportera Excel-backup först. "Läs in filer på nytt" återställer importstatus.</p>
   </div>
+  <div class="card mb20">
+    <div class="card-titel"><span class="card-titel-text">Historikposter (värdeutveckling)</span></div>
+    <div id="historik-lista" style="max-height:260px;overflow-y:auto;"></div>
+    <p style="font-size:0.8rem;color:var(--muted);margin-top:10px">Endast poster skapade vid import av positionsfiler visas i diagrammet. Radera felaktiga poster här.</p>
+  </div>
 
   <!-- Importlogg -->
   <div class="card">
@@ -781,7 +788,7 @@
   <div class="card">
     <nav class="hjalp-nav">
       <button class="hjalp-flik aktiv" onclick="visaHjalpKapitel('kom-igang',this)">🚀 Kom igång</button>
-      <button class="hjalp-flik" onclick="visaHjalpKapitel('nyheter',this)">✨ Nyheter v2.04</button>
+      <button class="hjalp-flik" onclick="visaHjalpKapitel('nyheter',this)">✨ Nyheter v2.05</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('ipad-import',this)">📱 Import på iPad</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('veckorutin',this)">📅 Veckorutin</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('flikarna',this)">📋 Flikarna</button>
@@ -811,18 +818,18 @@
       </div>
     </div>
 
-    <!-- NYHETER v2.04 -->
+    <!-- NYHETER v2.05 -->
     <div class="hjalp-kapitel" id="hk-nyheter">
       <div class="hjalp-rubrik">✨ Nyheter i version 2.04</div>
       <div class="hjalp-ingress">Anpassningsbara kategorier, förbättrat värdeutvecklingsdiagram och UX-förbättringar.</div>
 
-      <div class="hjalp-h2">🗂 Anpassningsbara kategorier (v2.04)</div>
+      <div class="hjalp-h2">🗂 Anpassningsbara kategorier (v2.05)</div>
       <div class="hjalp-p">Kategorier kan nu <strong>läggas till, redigeras och tas bort</strong> direkt i appen. Gå till Kategorier-fliken — varje kort har knappar för ✏️ redigera och 🗑 ta bort. Längst ner finns knappar för att skapa nya kategorier och återställa till standard. Du anger namn, undertitel, emoji, färg, målvikter, MA200-regel och beskrivning. Ändringar sparas i webbläsaren.</div>
 
-      <div class="hjalp-h2">📈 Förbättrat värdeutvecklingsdiagram (v2.04)</div>
+      <div class="hjalp-h2">📈 Förbättrat värdeutvecklingsdiagram (v2.05)</div>
       <div class="hjalp-p">Diagrammet har fullbredd, 280px höjd och läsbar x-axel med kortformat datum ("7 jan.", "1 apr."). <strong>Periodväljare:</strong> 30D / 90D / 6M / 1Å / Allt. Om transaktionsdata med insättningar/uttag finns visas en streckad referenslinje för nettoinsatt kapital. Donut-diagrammet visar nu totalvärde i centrum.</div>
 
-      <div class="hjalp-h2">🌐 Live FX-motor (v2.04)</div>
+      <div class="hjalp-h2">🌐 Live FX-motor (v2.05)</div>
       <div class="hjalp-p">Appen hämtar nu <strong>dagsaktuella växelkurser</strong> automatiskt via <code>open.er-api.com</code> (gratis, utan API-nyckel) vid varje laddning av sidan. Detta ger matematiskt korrekta MA200-signaler oberoende av SEK-fluktuationer.</div>
       <table class="hjalp-tabell">
         <thead><tr><th>Begrepp</th><th>Formel</th><th>Innebär</th></tr></thead>
@@ -906,10 +913,10 @@
         <li>Värdepapperet <strong>Zomedica</strong> — filtreras bort ur positionsfilen</li>
       </ul>
 
-      <div class="hjalp-h2">📌 Sticky tabellhuvud (v2.04)</div>
+      <div class="hjalp-h2">📌 Sticky tabellhuvud (v2.05)</div>
       <div class="hjalp-p">Rubrikraden i <strong>Innehav</strong>-tabellen är nu låst överst vid scrollning — du ser alltid vad varje kolumn heter.</div>
 
-      <div class="hjalp-h2">🎨 Distinkta signalfärger (v2.04)</div>
+      <div class="hjalp-h2">🎨 Distinkta signalfärger (v2.05)</div>
       <div class="hjalp-p">Två gröna nyanser används nu för att undvika förvirring:</div>
       <table class="hjalp-tabell">
         <thead><tr><th>Färg</th><th>Används för</th></tr></thead>
@@ -921,7 +928,7 @@
         </tbody>
       </table>
 
-      <div class="hjalp-h2">📄 Dokumentnedladdning (v2.04)</div>
+      <div class="hjalp-h2">📄 Dokumentnedladdning (v2.05)</div>
       <div class="hjalp-p">Under <strong>Strategi</strong>-fliken finns nu knappar för att ladda ned strategidokumentet som HTML och som ren textfil (.txt). Under <strong>FAQ</strong>-fliken finns en knapp för att ladda ned hjälptexten som .txt.</div>
 
       <div class="hjalp-h2">🌐 Favicon</div>
@@ -950,6 +957,10 @@
         <li>Gå tillbaka till portföljappen → <strong>Importera → Positioner</strong></li>
         <li>Tryck på knappen → välj filen i Filer-appen</li>
       </ol>
+      <div class="hjalp-ruta hjalp-ruta-tips">
+        <div class="hjalp-ruta-titel">💡 Filnamnet och historiken</div>
+        Avanza namnger filen med datumet i filnamnet, t.ex. <code>2026-04-07_positioner.csv</code>. Appen läser ut datumet automatiskt och lägger till en historikpunkt för det datumet i värdeutvecklingsdiagrammet. Importera gärna äldre positionsfiler för att bygga upp historiken bakåt i tid. Pensionskontot (<code>9557-7346055</code>) filtreras automatiskt bort.
+      </div>
 
       <div class="hjalp-h2">🔄 Transaktionsfilen — importera varje vecka</div>
       <ol class="hjalp-ol">
@@ -1063,6 +1074,7 @@
 
       <div class="hjalp-h2">🏠 Dashboard</div>
       <div class="hjalp-p">Startskärmen med en snabb överblick. Innehåller nyckeltalskort, diagram över kategorivikter och värdeutveckling, en viktjämförelse mot strategi-målen och en innehållstabell sorterad efter värde.</div>
+      <div class="hjalp-p"><strong>Värdeutvecklingsdiagrammet</strong> visar portföljvärdet över tid baserat på importerade positionsfiler. Välj tidsintervall med knapparna <strong>30D · 90D · 6M · 1Å · i År · Allt</strong>. Om du har importerat transaktionsfiler från Avanza visas även en streckad linje för ackumulerat nettoinsatt kapital. Historikposter kan hanteras under Importera → Underhåll → Historikposter.</div>
 
       <div class="hjalp-h2">🗂 Kategorier</div>
       <div class="hjalp-p">Ett kort per kategori med aktuell vikt, målintervall och MA200-signaler. Här ser du snabbt om något kräver åtgärd.</div>
@@ -1083,7 +1095,7 @@
       <div class="hjalp-p">Alla aktier och fonder i en tabell. Här lägger du till, redigerar och tar bort innehav. Du kan också registrera utdelningar manuellt och söka bland innehaven.</div>
 
       <div class="hjalp-h2">⬆ Importera</div>
-      <div class="hjalp-p">Importera CSV-filer från Avanza. Fem filtyper stöds: Positioner (uppdaterar kurser och volymer), Transaktioner (köp/sälj/utdelning), Inköpskurshistorik (valfri), Investeringslogg Excel (historik) och Beslutslogg CSV (historiska anteckningar). Appen känner igen dubbletter automatiskt. Kontonummer <code>9557-7346055</code> och värdepapperet Zomedica filtreras alltid bort. Under Underhåll kan du rensa all data eller återställa importstatus.</div>
+      <div class="hjalp-p">Importera CSV-filer från Avanza. Fem filtyper stöds: Positioner (uppdaterar kurser, volymer och lägger till historikpunkt), Transaktioner (köp/sälj/utdelning/insättningar), Inköpskurshistorik (valfri engångsimport), Investeringslogg Excel (historik) och Beslutslogg CSV (historiska anteckningar). Appen känner igen dubbletter automatiskt. Kontonummer <code>9557-7346055</code> (pension) och värdepapperet Zomedica filtreras alltid bort från positioner och transaktioner. Under <strong>Underhåll</strong> kan du hantera historikposter, rensa all data eller återställa importstatus.</div>
 
       <div class="hjalp-h2">🔄 Transaktioner</div>
       <div class="hjalp-p">Visar alla importerade transaktioner med analysrutor för köp, sälj, utdelningar, källskatt, realiserat resultat och courtage. Filtrera på typ, värdepapper och datumintervall.</div>
@@ -1309,7 +1321,7 @@
       <div style="margin-top:24px;padding:20px;background:#f9fafb;border-radius:var(--radius);text-align:center">
         <div style="font-size:1.3rem;margin-bottom:8px">📈</div>
         <strong style="display:block;margin-bottom:4px">Strategiportföljen</strong>
-        <span style="font-size:0.84rem;color:var(--muted)">Byggd för Martin · Strategi från januari 2026 · v2.04 April 2026</span>
+        <span style="font-size:0.84rem;color:var(--muted)">Byggd för Martin · Strategi från januari 2026 · v2.05 April 2026</span>
       </div>
     </div>
 
@@ -1550,6 +1562,8 @@ function ladda() {
       if (h.historicalFX === undefined) h.historicalFX = (h.valuta==='SEK'||!h.valuta) ? 1 : null;
     });
     if (!data.avanzaKassa) data.avanzaKassa = 0;
+    // Migration: märk befintliga poster som importerad:true så de inte raderas
+    data.historik.forEach(h => { if (!h.importerad) h.importerad = true; });
   }
   // Migrera från V1
   const v1 = localStorage.getItem('portfölj_v1');
@@ -1572,12 +1586,6 @@ function ladda() {
 }
 
 function spara() {
-  const idag = new Date().toISOString().slice(0,10);
-  const tv = beräknaTotalVärde();
-  const ni = beräknaNettoInsatt();
-  const fi = data.historik.find(h => h.datum === idag);
-  if (!fi) data.historik.push({datum:idag, totalVärde:tv, nettoInsatt:ni||undefined});
-  else { fi.totalVärde = tv; if(ni) fi.nettoInsatt = ni; }
   localStorage.setItem('portfölj_v2', JSON.stringify(data));
 }
 
@@ -1650,7 +1658,7 @@ function gummibandZon(h) {
   return {zon:'orange', pct, label:`+${pct.toFixed(1)}%`};
 }
 
-// ── v2.04: FX-hjälpfunktioner ──
+// ── v2.05: FX-hjälpfunktioner ──
 // Beräknar aktuell kurs i lokal valuta — live FX prioriteras, fallback till historisk
 function lokalKursVärde(h) {
   const valuta = h.valuta || 'SEK';
@@ -1682,6 +1690,13 @@ function beräknaNettoInsatt() {
   const kassaUt = data.kassaTransaktioner.filter(t=>t.typ==='uttag').reduce((s,t)=>s+t.belopp,0);
   return txIns - txUt + kassaIns - kassaUt;
 }
+function beräknaNettoInsattTillDatum(datum) {
+  const txIns = data.avanzaTransaktioner.filter(t=>t.datum<=datum&&t.typ==='Insättning').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
+  const txUt = data.avanzaTransaktioner.filter(t=>t.datum<=datum&&t.typ==='Uttag').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
+  const kassaIns = data.kassaTransaktioner.filter(t=>t.datum<=datum&&t.typ==='insättning').reduce((s,t)=>s+t.belopp,0);
+  const kassaUt = data.kassaTransaktioner.filter(t=>t.datum<=datum&&t.typ==='uttag').reduce((s,t)=>s+t.belopp,0);
+  return txIns - txUt + kassaIns - kassaUt;
+}
 
 // ══════════════════════════════════════════════════════════
 //  FORMAT
@@ -1702,6 +1717,7 @@ function visaSektion(id, knapp) {
   if (knapp) knapp.classList.add('aktiv');
   if (id==='dashboard') ritaDiagram();
   if (id==='kategorier') renderKategorier();
+  if (id==='importera') renderHistorikLista();
 }
 
 function synkNavKnappar(id) {
@@ -1947,11 +1963,17 @@ function ritaDiagram() {
     chartK=new Chart(cK,{type:'doughnut',data:{labels:Object.entries(KATEGORIER).map(([k,kat])=>`${kat.emoji} ${kat.namn}`),datasets:[{data:Object.keys(KATEGORIER).map(k=>kV[k]||0),backgroundColor:Object.values(KATEGORIER).map(kat=>kat.färg),borderWidth:3,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:10}}}},plugins:[donutCenterPlugin]});}
   const cH=document.getElementById('diagramHistorik')?.getContext('2d');
   if(cH){if(chartH)chartH.destroy();
-    const hi=historikPeriod===0?data.historik:[...data.historik].slice(-historikPeriod);
-    const harNI=hi.some(h=>h.nettoInsatt>0);
-    const datasets=[{label:'Portföljvärde',data:hi.map(h=>h.totalVärde),borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,0.07)',borderWidth:2,pointRadius:hi.length<20?4:1,fill:true,tension:0.3}];
-    if(harNI)datasets.push({label:'Nettoinsatt',data:hi.map(h=>h.nettoInsatt||null),borderColor:'#94a3b8',borderDash:[5,5],borderWidth:1.5,pointRadius:0,fill:false,tension:0});
-    chartH=new Chart(cH,{type:'line',data:{labels:hi.map(h=>h.datum),datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:harNI,labels:{font:{size:11},boxWidth:20,padding:10}}},scales:{x:{ticks:{maxTicksLimit:8,maxRotation:45,callback:function(val){const d=new Date(this.getLabelForValue(val));return d.toLocaleDateString('sv-SE',{day:'numeric',month:'short'});}}},y:{ticks:{callback:v=>(v/1000).toFixed(0)+'k kr'}}}}});}
+    const idag=new Date().toISOString().slice(0,10);
+    const sortadHistorik=[...data.historik].sort((a,b)=>a.datum.localeCompare(b.datum));
+    let hi, xMin;
+    if(historikPeriod==='år'){xMin=new Date().getFullYear()+'-01-01';hi=sortadHistorik.filter(h=>h.datum>=xMin);}
+    else if(historikPeriod===0){xMin=sortadHistorik[0]?.datum||idag;hi=sortadHistorik;}
+    else{const d=new Date();d.setDate(d.getDate()-historikPeriod);xMin=d.toISOString().slice(0,10);hi=sortadHistorik.filter(h=>h.datum>=xMin);}
+    const hiMedNI=hi.map(h=>({...h,ni:beräknaNettoInsattTillDatum(h.datum)}));
+    const harNI=hiMedNI.some(h=>h.ni>0);
+    const datasets=[{label:'Portföljvärde',data:hiMedNI.map(h=>({x:h.datum,y:h.totalVärde})),borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,0.07)',borderWidth:2,pointRadius:hiMedNI.length<20?4:1,fill:true,tension:0.3}];
+    if(harNI)datasets.push({label:'Nettoinsatt',data:hiMedNI.map(h=>({x:h.datum,y:h.ni})),borderColor:'#94a3b8',borderDash:[5,5],borderWidth:1.5,pointRadius:0,fill:false,tension:0});
+    chartH=new Chart(cH,{type:'line',data:{datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:harNI,labels:{font:{size:11},boxWidth:20,padding:10}}},scales:{x:{type:'time',min:xMin,max:idag,time:{unit:historikPeriod===0||historikPeriod==='år'||historikPeriod>=180?'month':historikPeriod<=30?'day':'week',tooltipFormat:'yyyy-MM-dd',displayFormats:{day:'d MMM',week:'d MMM',month:'MMM yyyy'}},ticks:{maxTicksLimit:8,maxRotation:45}},y:{ticks:{callback:v=>(v/1000).toFixed(0)+'k kr'}}}}});}
 }
 
 // ══════════════════════════════════════════════════════════
@@ -2101,7 +2123,7 @@ function behandlaFil(fil, typ) {
   // Filnamns-hints för att hjälpa användaren välja rätt
   const filNamn = fil.name.toLowerCase();
   if (typ === 'positioner' && !filNamn.includes('position')) {
-    loggImport('info', `⚠️ Filnamnet ser ovanligt ut. Positionsfilen brukar heta "positioner_DATUM.csv". Försöker ändå...`);
+    loggImport('info', `⚠️ Filnamnet ser ovanligt ut. Positionsfilen brukar heta "DATUM_positioner.csv" eller "positioner_DATUM.csv". Försöker ändå...`);
   }
   if (typ === 'transaktioner' && !filNamn.includes('transaktion')) {
     loggImport('info', `⚠️ Filnamnet ser ovanligt ut. Transaktionsfilen brukar heta "transaktioner_DATUM.csv". Försöker ändå...`);
@@ -2131,7 +2153,7 @@ function behandlaFil(fil, typ) {
           loggImport('fel', '❌ Filen verkar vara tom. Exportera på nytt från Avanza.');
           return;
         }
-        if (typ==='positioner') importeraPositioner(t);
+        if (typ==='positioner') importeraPositioner(t, fil.name);
         else if (typ==='transaktioner') importeraTransaktioner(t);
         else if (typ==='inkopskurs') importeraInkopskurs(t);
         else if (typ==='beslutsloggCSV') importeraBeslutsloggCSV(t);
@@ -2151,7 +2173,7 @@ function parseCSV(text) {
   return rader.slice(1).map(rad=>{const cols=rad.split(';');const obj={};header.forEach((h,i)=>obj[h]=(cols[i]||'').trim());return obj;}).filter(r=>Object.values(r).some(v=>v));
 }
 
-function importeraPositioner(text) {
+function importeraPositioner(text, filNamn='') {
   const rader = parseCSV(text);
   // Validera att det är rätt filtyp
   const forstaRad = rader[0];
@@ -2163,7 +2185,11 @@ function importeraPositioner(text) {
   loggImport('info', `Positioner: ${rader.length} rader`);
   let upd=0,nya=0,ok=0,exkl=0;
   const idag=new Date().toISOString().slice(0,10);
+  const datumMatch = filNamn.match(/(\d{4}-\d{2}-\d{2})/);
+  const datumFil = datumMatch ? datumMatch[1] : idag;
   rader.forEach(r=>{
+    const konto=r['Kontonummer']||'';
+    if(EXKLUDERA_KONTON.some(k=>konto.includes(k))){exkl++;return;}
     const namn=r['Namn']||'',kortnamn=r['Kortnamn']||'';
     const volym=parseSE(r['Volym']||0),mv=parseSE(r['Marknadsvärde']||0);
     const gav=parseSE(r['GAV (SEK)']||r['GAV']||0),valuta=r['Valuta']||'SEK',isin=r['ISIN']||'';
@@ -2204,6 +2230,12 @@ function importeraPositioner(text) {
   if (upd===0 && nya===0) {
     loggImport('fel', '⚠️ Inga innehav importerades. Kontrollera att rätt konton valdes vid export.');
   }
+  // Spara historikpunkt med filens datum
+  const tv = beräknaTotalVärde();
+  const befH = data.historik.find(h => h.datum === datumFil);
+  if (!befH) data.historik.push({datum: datumFil, totalVärde: tv, importerad: true});
+  else { befH.totalVärde = tv; befH.importerad = true; }
+  loggImport('info', `📈 Historikpunkt tillagd: ${datumFil}`);
   spara(); renderAllt(); renderStatusPanel();
 }
 
@@ -2307,7 +2339,7 @@ function importeraExcelLogg(wb, filnamn) {
             if (datum && totalVärde > 10000) {
               const finns = data.historik.find(h => h.datum === datum);
               if (!finns) {
-                data.historik.push({datum, totalVärde});
+                data.historik.push({datum, totalVärde, importerad: true});
                 historikImporterade++;
               }
             }
@@ -2332,6 +2364,21 @@ function loggImport(typ, text) {
 }
 function rensaImportLogg() { const d=document.getElementById('importLogg');if(d)d.innerHTML='<span class="info">Logg rensad.</span>'; }
 function rensaAvanzaTx() { data.avanzaTransaktioner=[];spara();renderTransaktioner(); }
+function renderHistorikLista() {
+  const el = document.getElementById('historik-lista');
+  if (!el) return;
+  const sortad = [...data.historik].sort((a,b)=>b.datum.localeCompare(a.datum));
+  if (!sortad.length) { el.innerHTML='<p style="color:var(--muted);font-size:0.85rem;padding:8px 0">Inga historikposter.</p>'; return; }
+  el.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:0.85rem">' +
+    '<thead><tr><th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--border)">Datum</th><th style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--border)">Portföljvärde</th><th style="padding:6px 8px;border-bottom:1px solid var(--border)"></th></tr></thead><tbody>' +
+    sortad.map(h=>`<tr><td style="padding:6px 8px">${h.datum}</td><td style="text-align:right;padding:6px 8px">${kr(h.totalVärde)}</td><td style="padding:6px 8px;text-align:right"><button class="btn btn-danger btn-sm" onclick="raderaHistorikPost('${h.datum}')">✕</button></td></tr>`).join('') +
+    '</tbody></table>';
+}
+function raderaHistorikPost(datum) {
+  if (!confirm(`Ta bort historikposten för ${datum}?`)) return;
+  data.historik = data.historik.filter(h => h.datum !== datum);
+  spara(); renderHistorikLista(); ritaDiagram();
+}
 
 function rensaAllData() {
   if(!confirm('Rensa ALL data permanent? All portföljdata, transaktioner och logg raderas.\nEksportera Excel-backup innan du fortsätter!'))return;
@@ -2479,7 +2526,7 @@ function laddaNedStrategi() {
 </head>
 <body>
 <h1>📜 Aktiestrategi 2026</h1>
-<div class="meta">Martin Andersson &nbsp;·&nbsp; Uppdaterad 5 april 2026 &nbsp;·&nbsp; Genererad från Strategiportföljen v2.04</div>
+<div class="meta">Martin Andersson &nbsp;·&nbsp; Uppdaterad 5 april 2026 &nbsp;·&nbsp; Genererad från Strategiportföljen v2.05</div>
 
 <div class="ruta ruta-info">
   <div class="ruta-titel">🎯 Övergripande mål</div>
@@ -2584,7 +2631,7 @@ function laddaNedStrategi() {
 </div>
 
 <hr style="margin:40px 0;border:none;border-top:1px solid #e5e7eb">
-<p style="text-align:center;color:#9ca3af;font-size:0.82rem">Genererad ${new Date().toLocaleDateString('sv-SE')} från Strategiportföljen v2.04 · Martin Andersson</p>
+<p style="text-align:center;color:#9ca3af;font-size:0.82rem">Genererad ${new Date().toLocaleDateString('sv-SE')} från Strategiportföljen v2.05 · Martin Andersson</p>
 </body>
 </html>`;
 
@@ -2605,7 +2652,7 @@ function laddaNedStrategi() {
 function laddaNedStrategiTxt() {
   const datum = new Date().toLocaleDateString('sv-SE');
   const txt = `AKTIESTRATEGI 2026 — MARTIN ANDERSSON
-Genererad ${datum} från Strategiportföljen v2.04
+Genererad ${datum} från Strategiportföljen v2.05
 ================================================================
 
 ÖVERGRIPANDE MÅL
@@ -2659,7 +2706,7 @@ Säljsignal kräver stängning under MA200 TVÅ handelsdagar i rad.
   🔴 Röd       = Dag 2+ under MA200 → Sälj mekaniskt
   🟢 Köpsignal = Bryter upp över MA200 → Köp tillbaka
 
-VALUTAHANTERING (v2.04)
+VALUTAHANTERING (v2.05)
 MA200 anges alltid i LOKAL VALUTA (USD för NVIDIA, SEK för SAAB).
 Appen hämtar live-valutakurser via open.er-api.com och beräknar:
   Kurs (Lokal) = Kurs_SEK / Växelkurs_Aktuell
@@ -2703,14 +2750,14 @@ STRATEGINS SYFTE: Ta bort "bruset" — de emotionella impulser som
 leder till dåliga beslut. Var mekanisk i tillämpningen av reglerna.
 
 ================================================================
-Strategiportföljen v2.04 · Martin Andersson · April 2026
+Strategiportföljen v2.05 · Martin Andersson · April 2026
 `;
   laddaNedTextfil(txt, `Strategi_2026_${new Date().toISOString().slice(0,10)}.txt`);
 }
 
 function laddaNedHjalpTxt() {
   const datum = new Date().toLocaleDateString('sv-SE');
-  const txt = `HJÄLP — STRATEGIPORTFÖLJEN v2.04
+  const txt = `HJÄLP — STRATEGIPORTFÖLJEN v2.05
 Genererad ${datum}
 ================================================================
 
@@ -2747,7 +2794,7 @@ Steg 5 — Säkerhetskopiera (varannan vecka)
   Tryck "Excel" uppe till höger → spara i iCloud Drive
 
 ================================================================
-LIVE FX-MOTOR (v2.04)
+LIVE FX-MOTOR (v2.05)
 ================================================================
 
 Appen hämtar dagsaktuella valutakurser från open.er-api.com
@@ -2808,7 +2855,7 @@ All data är borta:
   → Förebygg med regelbundna Excel-exporter
 
 ================================================================
-Strategiportföljen v2.04 · Martin Andersson · April 2026
+Strategiportföljen v2.05 · Martin Andersson · April 2026
 `;
   laddaNedTextfil(txt, `Hjalp_Strategiportfoljen_${new Date().toISOString().slice(0,10)}.txt`);
 }
