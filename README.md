@@ -10,7 +10,9 @@ Personlig portföljapp byggd för iPad och dator. Öppnas direkt i webbläsaren 
 ## Vad appen gör
 
 - Visar portföljens värde, avkastning och fördelning per kategori
-- Importerar positioner och transaktioner direkt från Avanza (CSV)
+- Importerar positioner och transaktioner direkt från Avanza (CSV) — dra filer eller välj flera samtidigt
+- Sålda innehav tas bort automatiskt när senaste positionsfilen importeras
+- **Utdelningar kopplas automatiskt** per aktie via ISIN från transaktionsfilen — ingen manuell inmatning
 - Beräknar nettoinsatt kapital och tillgänglig likviditet (inkl. Avanza-kassa från positionsfil)
 - **FX-motor:** separerar bolagsvinst från valutavinst för utländska innehav
 - Visar MA200-signaler i **lokal valuta** — jämför USD mot USD, SEK mot SEK
@@ -84,6 +86,6 @@ Gå sedan till **Importera**-fliken i appen och välj filen. Datumet i positions
 
 ## Version
 
-**v2.05** — april 2026
+**v2.06** — april 2026
 
 Byggt för Martin · Strategi från januari 2026
