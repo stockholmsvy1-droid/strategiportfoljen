@@ -13,7 +13,7 @@ Personlig portföljapp byggd för iPad och dator. Öppnas direkt i webbläsaren 
 - Importerar positioner och transaktioner direkt från Avanza (CSV) — dra filer eller välj flera samtidigt
 - Sålda innehav tas bort automatiskt när senaste positionsfilen importeras
 - **Utdelningar kopplas automatiskt** per aktie via ISIN från transaktionsfilen — ingen manuell inmatning
-- **Kassasaldo per konto** läses direkt från positionsfilen — matchar exakt Avanzas "Tillgängligt för köp" per ISK/AF/Sparkonto
+- **Tillgängligt för köp per konto** — ange värdet manuellt från Avanza en gång i veckan för exakt saldo (ISK, AF, Sparkonto m.m.)
 - Beräknar nettoinsatt kapital och tillgänglig likviditet (inkl. Avanza-kassa från positionsfil)
 - **FX-motor:** separerar bolagsvinst från valutavinst för utländska innehav
 - Visar MA200-signaler i **lokal valuta** — jämför USD mot USD, SEK mot SEK

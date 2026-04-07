@@ -831,14 +831,13 @@
     <!-- NYHETER v2.07 -->
     <div class="hjalp-kapitel" id="hk-nyheter">
       <div class="hjalp-rubrik">✨ Nyheter i version 2.07</div>
-      <div class="hjalp-ingress">Kassasaldo per konto läses nu direkt ur positionsfilen — exakt samma värde som Avanza visar.</div>
+      <div class="hjalp-ingress">Kassa per konto — ange Avanzas exakta värde direkt i appen.</div>
 
-      <div class="hjalp-h2">💰 Kassa per konto — från positionsfilen (v2.07)</div>
-      <div class="hjalp-p">Kassa-fliken visar <strong>kassasaldo per konto</strong> (ISK, AF, Sparkonto m.m.) hämtat direkt från positionsfilen. Det matchar exakt vad Avanza visar som "Tillgängligt för köp" per konto.</div>
-      <div class="hjalp-p">Kontonummer kopplas automatiskt till kontonamn via ISIN-matchning mot transaktionsfilen — du ser alltid kontots namn, inte ett tekniskt nummer.</div>
-      <div class="hjalp-p"><strong>Ikoner:</strong> &nbsp;📄 = från positionsfil (exakt) &nbsp;|&nbsp; 🔄 = beräknat från transaktioner (fallback om ingen positionsfil importerats) &nbsp;|&nbsp; ✋ = manuell justering</div>
-      <div class="hjalp-p">Under "Justera startsaldo per konto" kan du lägga till kassa som inte finns i Avanza (t.ex. ett bankkonto) — det summeras ihop med positionsfilens värden.</div>
-      <div class="hjalp-ruta hjalp-ruta-tips"><div class="hjalp-ruta-titel">💡 Tips</div>Importera alltid positionsfilen varje vecka för att hålla kassasaldona uppdaterade.</div>
+      <div class="hjalp-h2">💰 Tillgängligt för köp per konto (v2.07)</div>
+      <div class="hjalp-p">Kassa-fliken visar <strong>"Tillgängligt för köp" per konto</strong> (ISK, AF, Sparkonto m.m.) och matchar exakt vad Avanza visar — men du anger värdet manuellt, en gång i veckan vid ordinarie import.</div>
+      <div class="hjalp-p"><strong>Varför manuellt?</strong> Avanzas "Tillgängligt för köp" inkluderar osettlerade affärer, reserverade belopp och likviditet som inte alltid syns i transaktions-CSV:n. Det går inte att beräkna det exakt från filen.</div>
+      <div class="hjalp-p"><strong>Ikoner:</strong> &nbsp;✅ = manuellt inmatat (exakt) &nbsp;|&nbsp; ⚠️ = beräknat från transaktioner (kan avvika — ange manuellt för exakt värde)</div>
+      <div class="hjalp-ruta hjalp-ruta-tips"><div class="hjalp-ruta-titel">💡 Veckorutin</div>Gå till Avanza → Min ekonomi → Översikt. Notera "Tillgängligt för köp" per konto och ange det i Kassa-fliken. Tar 30 sekunder.</div>
 
       <div class="hjalp-h2">🗂 Anpassningsbara kategorier (v2.05)</div>
       <div class="hjalp-p">Kategorier kan nu <strong>läggas till, redigeras och tas bort</strong> direkt i appen. Gå till Kategorier-fliken — varje kort har knappar för ✏️ redigera och 🗑 ta bort. Längst ner finns knappar för att skapa nya kategorier och återställa till standard. Du anger namn, undertitel, emoji, färg, målvikter, MA200-regel och beskrivning. Ändringar sparas i webbläsaren.</div>
