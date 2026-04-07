@@ -86,6 +86,6 @@ Gå sedan till **Importera**-fliken i appen och välj filen. Datumet i positions
 
 ## Version
 
-**v2.06** — april 2026
+**v2.07** — april 2026
 
 Byggt för Martin · Strategi från januari 2026

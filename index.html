@@ -801,7 +801,7 @@
   <div class="card">
     <nav class="hjalp-nav">
       <button class="hjalp-flik aktiv" onclick="visaHjalpKapitel('kom-igang',this)">🚀 Kom igång</button>
-      <button class="hjalp-flik" onclick="visaHjalpKapitel('nyheter',this)">✨ Nyheter v2.06</button>
+      <button class="hjalp-flik" onclick="visaHjalpKapitel('nyheter',this)">✨ Nyheter v2.07</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('ipad-import',this)">📱 Import på iPad</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('veckorutin',this)">📅 Veckorutin</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('flikarna',this)">📋 Flikarna</button>
@@ -831,15 +831,19 @@
       </div>
     </div>
 
-    <!-- NYHETER v2.06 -->
+    <!-- NYHETER v2.07 -->
     <div class="hjalp-kapitel" id="hk-nyheter">
-      <div class="hjalp-rubrik">✨ Nyheter i version 2.06</div>
-      <div class="hjalp-ingress">Automatisk kassaberäkning per konto från Avanza transaktionsfil.</div>
+      <div class="hjalp-rubrik">✨ Nyheter i version 2.07</div>
+      <div class="hjalp-ingress">Kassa per konto hämtas nu direkt från positionsfilen — alltid korrekt oavsett transaktionshistorik.</div>
+
+      <div class="hjalp-h2">📍 Kassa per konto från positionsfilen (v2.07)</div>
+      <div class="hjalp-p">Kassasaldot per konto hämtas nu direkt från <strong>positionsfilens likvida medel-rader</strong> istället för att beräknas via transaktionshistoriken. Det ger alltid rätt saldo — även om transaktionsfilen inte täcker hela kontohistoriken.</div>
+      <div class="hjalp-p"><strong>📍</strong> = hämtat från positionsfilen (alltid korrekt) &nbsp;|&nbsp; <strong>🤖</strong> = beräknat från transaktioner &nbsp;|&nbsp; <strong>✋</strong> = manuellt justerat</div>
+      <div class="hjalp-p">Importera en ny positionsfil för att uppdatera kassasaldona. Om inget positionsfilsvärde finns faller appen tillbaka på transaktionsberäkning.</div>
 
       <div class="hjalp-h2">💰 Kassa per konto — automatisk (v2.06)</div>
-      <div class="hjalp-p">Kassa-fliken visar nu <strong>kassasaldo per konto</strong> (ISK, AF, Sparkonto m.m.) beräknat direkt från din importerade transaktionsfil. Saldon uppdateras automatiskt varje gång du importerar en ny transaktionsfil — ingen manuell inmatning krävs.</div>
-      <div class="hjalp-p"><strong>🤖</strong> = beräknat enbart från transaktioner &nbsp;|&nbsp; <strong>✋</strong> = startsaldo har justerats manuellt</div>
-      <div class="hjalp-p">Om ett konto börjar med ett saldo innan du startade dina transaktionsexporter kan du ange ett <strong>manuellt startsaldo</strong> via "Justera startsaldo per konto" — det läggs till transaktionsberäkningen.</div>
+      <div class="hjalp-p">Kassa-fliken visar <strong>kassasaldo per konto</strong> (ISK, AF, Sparkonto m.m.) uppdaterat vid varje import.</div>
+      <div class="hjalp-p">Om ett konto saknar positionsfilsdata kan du ange ett <strong>manuellt startsaldo</strong> via "Justera startsaldo per konto" — det läggs till transaktionsberäkningen.</div>
 
       <div class="hjalp-h2">🗂 Anpassningsbara kategorier (v2.05)</div>
       <div class="hjalp-p">Kategorier kan nu <strong>läggas till, redigeras och tas bort</strong> direkt i appen. Gå till Kategorier-fliken — varje kort har knappar för ✏️ redigera och 🗑 ta bort. Längst ner finns knappar för att skapa nya kategorier och återställa till standard. Du anger namn, undertitel, emoji, färg, målvikter, MA200-regel och beskrivning. Ändringar sparas i webbläsaren.</div>
