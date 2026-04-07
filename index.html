@@ -1332,17 +1332,20 @@
 
 <!-- Modal: Utdelning -->
 <div class="modal-backdrop" id="modalUtdelning">
-  <div class="modal">
-    <h3>Registrera utdelning</h3>
-    <div class="form-grid" style="grid-template-columns:1fr 1fr">
-      <div class="fält"><label>Belopp per aktie</label><input id="ud-belopp" type="number" min="0" step="any" inputmode="decimal"/></div>
-      <div class="fält"><label>Datum</label><input id="ud-datum" type="date"/></div>
+  <div class="modal" style="max-width:480px">
+    <h3 id="ud-titel">Utdelningar</h3>
+    <div id="ud-avanza-sektion" style="margin-bottom:4px"></div>
+    <div id="ud-manuell-sektion">
+      <div class="form-grid" style="grid-template-columns:1fr 1fr;margin-top:8px">
+        <div class="fält"><label>Belopp per aktie (kr)</label><input id="ud-belopp" type="number" min="0" step="any" inputmode="decimal"/></div>
+        <div class="fält"><label>Datum</label><input id="ud-datum" type="date"/></div>
+      </div>
+      <div class="modal-knappar">
+        <button class="btn btn-ghost" onclick="stangModal('modalUtdelning')">Stäng</button>
+        <button class="btn btn-success" onclick="sparaUtdelning()">Spara manuellt</button>
+      </div>
     </div>
     <input type="hidden" id="ud-id"/>
-    <div class="modal-knappar">
-      <button class="btn btn-ghost" onclick="stangModal('modalUtdelning')">Avbryt</button>
-      <button class="btn btn-success" onclick="sparaUtdelning()">Spara</button>
-    </div>
   </div>
 </div>
 
@@ -1606,10 +1609,30 @@ function beräknaInnehavVärde() { return data.innehav.reduce((s,h)=>s+h.antal*h
 function beräknaKostnadsbas() { return data.innehav.reduce((s,h)=>s+h.antal*h.köpkurs,0); }
 function beräknaKassasaldo() { return data.kassaTransaktioner.reduce((s,t)=>t.typ==='insättning'?s+t.belopp:s-t.belopp,0); }
 function beräknaTillgängligLikviditet() { return beräknaKassasaldo() + (data.avanzaKassa||0); }
+function utdelningarFörInnehav(h) {
+  if (!h.isin && !h.namn) return [];
+  return data.avanzaTransaktioner.filter(t =>
+    t.typ === 'Utdelning' && (
+      (h.isin && t.isin === h.isin) ||
+      (!h.isin && t.värdepapper === h.namn)
+    )
+  ).sort((a,b) => b.datum.localeCompare(a.datum));
+}
+function totalUtdelningFörInnehav(h) {
+  const tx = utdelningarFörInnehav(h);
+  if (tx.length > 0) return tx.reduce((s,t) => s + parseSE(t.belopp), 0);
+  return (h.utdelningar||[]).reduce((s,d) => s + d.belopp * h.antal, 0);
+}
 function beräknaTotalUtdelning() {
-  const m = data.innehav.reduce((s,h)=>s+(h.utdelningar||[]).reduce((u,d)=>u+d.belopp*h.antal,0),0);
-  const i = data.avanzaTransaktioner.filter(t=>t.typ==='Utdelning').reduce((s,t)=>s+(parseFloat(t.belopp)||0),0);
-  return m+i;
+  // Avanza-transaktioner (primär källa — ingen dubbelräkning)
+  const txUtd = data.avanzaTransaktioner
+    .filter(t => t.typ === 'Utdelning')
+    .reduce((s,t) => s + parseSE(t.belopp), 0);
+  // Manuella poster ENDAST för innehav utan matchande Avanza-transaktion
+  const manuella = data.innehav
+    .filter(h => utdelningarFörInnehav(h).length === 0)
+    .reduce((s,h) => s + (h.utdelningar||[]).reduce((u,d) => u + d.belopp * h.antal, 0), 0);
+  return txUtd + manuella;
 }
 function beräknaTotalVärde() { return beräknaInnehavVärde()+beräknaTillgängligLikviditet(); }
 function beräknaRealiserat() { return data.avanzaTransaktioner.filter(t=>t.typ==='Sälj'&&t.resultat).reduce((s,t)=>s+(parseFloat(t.resultat)||0),0); }
@@ -1842,7 +1865,7 @@ function renderInnehav() {
   if(s.length===0){tbody.innerHTML='<tr class="tom-rad"><td colspan="14">Inga innehav.</td></tr>';if(kl)kl.innerHTML='<div style="text-align:center;color:var(--muted);padding:32px">Inga innehav.</div>';return;}
   tbody.innerHTML=s.map(h=>{
     const kb=h.antal*h.köpkurs,mv=h.antal*h.aktuelKurs,vf=mv-kb,vp=kb>0?(vf/kb)*100:0;
-    const ud=(h.utdelningar||[]).reduce((s,d)=>s+d.belopp*h.antal,0);
+    const ud=totalUtdelningFörInnehav(h);
     const kat=KATEGORIER[h.kategori]||KATEGORIER[2],sig=kat.signal==='ma200'?ma200Signal(h):null;
     const nöd=nödutgångSignal(h);
     const gb=gummibandZon(h);
@@ -1861,7 +1884,8 @@ function renderInnehav() {
     const kb=h.antal*h.köpkurs,mv=h.antal*h.aktuelKurs,vf=mv-kb,vp=kb>0?(vf/kb)*100:0;
     const kat=KATEGORIER[h.kategori]||KATEGORIER[2],sig=kat.signal==='ma200'?ma200Signal(h):null;
     const sT=sig==='grön'?'🟢':sig==='gul'?'🟡':sig==='röd'?'🔴':'';
-    return `<div class="mobil-kort"><div class="mobil-kort-header"><div><div class="mobil-kort-namn">${sT} ${h.namn}</div><div style="margin-top:5px">${katBadge(h.kategori||2)}</div></div><div class="${färg(vf)}" style="text-align:right;font-weight:700"><div style="font-size:0.85rem">${pct(vp)}</div><div>${kr(mv)}</div></div></div><div class="mobil-kort-rad"><span class="etikett">Antal</span><span>${(+h.antal).toLocaleString('sv-SE',{maximumFractionDigits:4})}</span></div><div class="mobil-kort-rad"><span class="etikett">GAV</span><span>${kr(h.köpkurs,2)}</span></div><div class="mobil-kort-rad"><span class="etikett">Akt. kurs</span><span>${kr(h.aktuelKurs,2)}</span></div>${h.ma200>0?`<div class="mobil-kort-rad"><span class="etikett">MA200</span><span>${kr(h.ma200,0)}</span></div>`:''}<div class="mobil-kort-rad"><span class="etikett">Vinst/Förlust</span><span class="${färg(vf)}">${kr(vf)}</span></div><div class="mobil-kort-åtgärder"><button class="btn btn-primary btn-sm" onclick="redigeraInnehav('${h.id}');window.scrollTo({top:0,behavior:'smooth'})">✏️ Redigera</button><button class="btn btn-success btn-sm" onclick="öppnaUtdelning('${h.id}')">💰</button><button class="btn btn-danger btn-sm" onclick="raderaInnehav('${h.id}')">✕</button></div></div>`;
+    const udM=totalUtdelningFörInnehav(h);
+    return `<div class="mobil-kort"><div class="mobil-kort-header"><div><div class="mobil-kort-namn">${sT} ${h.namn}</div><div style="margin-top:5px">${katBadge(h.kategori||2)}</div></div><div class="${färg(vf)}" style="text-align:right;font-weight:700"><div style="font-size:0.85rem">${pct(vp)}</div><div>${kr(mv)}</div></div></div><div class="mobil-kort-rad"><span class="etikett">Antal</span><span>${(+h.antal).toLocaleString('sv-SE',{maximumFractionDigits:4})}</span></div><div class="mobil-kort-rad"><span class="etikett">GAV</span><span>${kr(h.köpkurs,2)}</span></div><div class="mobil-kort-rad"><span class="etikett">Akt. kurs</span><span>${kr(h.aktuelKurs,2)}</span></div>${h.ma200>0?`<div class="mobil-kort-rad"><span class="etikett">MA200</span><span>${kr(h.ma200,0)}</span></div>`:''}<div class="mobil-kort-rad"><span class="etikett">Vinst/Förlust</span><span class="${färg(vf)}">${kr(vf)}</span></div>${udM>0?`<div class="mobil-kort-rad"><span class="etikett">Utdelningar</span><span style="color:var(--success)">${kr(udM)}</span></div>`:''}<div class="mobil-kort-åtgärder"><button class="btn btn-primary btn-sm" onclick="redigeraInnehav('${h.id}');window.scrollTo({top:0,behavior:'smooth'})">✏️ Redigera</button><button class="btn btn-success btn-sm" onclick="öppnaUtdelning('${h.id}')">💰</button><button class="btn btn-danger btn-sm" onclick="raderaInnehav('${h.id}')">✕</button></div></div>`;
   }).join('');
 }
 
@@ -2036,9 +2060,43 @@ function avbrytRedigering() {
 //  UTDELNING
 // ══════════════════════════════════════════════════════════
 function öppnaUtdelning(id) {
-  document.getElementById('ud-id').value=id;
-  document.getElementById('ud-belopp').value='';
-  document.getElementById('ud-datum').value=new Date().toISOString().slice(0,10);
+  const h = data.innehav.find(x=>x.id===id);
+  if (!h) return;
+  document.getElementById('ud-id').value = id;
+  document.getElementById('ud-belopp').value = '';
+  document.getElementById('ud-datum').value = new Date().toISOString().slice(0,10);
+  document.getElementById('ud-titel').textContent = `💰 Utdelningar — ${h.namn}`;
+  const txUtd = utdelningarFörInnehav(h);
+  const avanzaSek = document.getElementById('ud-avanza-sektion');
+  if (txUtd.length > 0) {
+    const tot = txUtd.reduce((s,t)=>s+parseSE(t.belopp),0);
+    avanzaSek.innerHTML =
+      `<p style="font-size:0.82rem;font-weight:600;margin-bottom:8px;color:var(--success)">✓ Från Avanza-transaktioner — totalt ${kr(tot)}</p>` +
+      `<table style="width:100%;font-size:0.82rem;border-collapse:collapse;margin-bottom:10px">` +
+      `<thead><tr><th style="text-align:left;padding:4px 8px;border-bottom:1px solid var(--border)">Datum</th><th style="text-align:right;padding:4px 8px;border-bottom:1px solid var(--border)">Utbetalt</th></tr></thead>` +
+      `<tbody>${txUtd.map(t=>`<tr><td style="padding:4px 8px">${t.datum}</td><td style="text-align:right;padding:4px 8px">${kr(parseSE(t.belopp))}</td></tr>`).join('')}</tbody></table>` +
+      `<p style="font-size:0.75rem;color:var(--muted);margin-bottom:10px">Hämtas automatiskt ur importerad transaktionsfil. Lägg till nedan om en utdelning saknas.</p>` +
+      `<hr style="border:none;border-top:1px solid var(--border);margin-bottom:14px">`;
+  } else {
+    avanzaSek.innerHTML = `<p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px">Inga utdelningar hittade i transaktionsfilen för denna aktie. Importera transaktionsfilen eller registrera manuellt nedan.</p>`;
+  }
+  // Visa ev. befintliga manuella poster
+  const manuella = h.utdelningar||[];
+  const manuSek = document.getElementById('ud-manuell-sektion');
+  const rubrik = manuSek.querySelector('label') || null;
+  if (manuella.length > 0) {
+    const befHTML = `<p style="font-size:0.8rem;font-weight:600;margin-bottom:6px">Manuellt registrerade:</p>` +
+      `<table style="width:100%;font-size:0.8rem;border-collapse:collapse;margin-bottom:12px">` +
+      manuella.slice().sort((a,b)=>b.datum.localeCompare(a.datum)).map(d=>
+        `<tr><td style="padding:3px 8px">${d.datum}</td><td style="text-align:right;padding:3px 8px">${kr(d.belopp)}/aktie</td></tr>`
+      ).join('') + `</table>`;
+    const befEl = document.getElementById('ud-befintliga');
+    if (befEl) befEl.innerHTML = befHTML;
+    else manuSek.insertAdjacentHTML('afterbegin', `<div id="ud-befintliga">${befHTML}</div>`);
+  } else {
+    const befEl = document.getElementById('ud-befintliga');
+    if (befEl) befEl.remove();
+  }
   document.getElementById('modalUtdelning').classList.add('visa');
 }
 function sparaUtdelning() {
