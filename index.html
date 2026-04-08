@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Strategiportföljen">
   <meta name="theme-color" content="#1e3a5f">
-  <title>Strategiportföljen v2.07</title>
+  <title>Strategiportföljen v2.08</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231e3a5f'/%3E%3Cpolyline points='3,25 9,17 15,21 21,11 29,5' stroke='%230ea5e9' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='29' cy='5' r='2.5' fill='%234ade80'/%3E%3C/svg%3E">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
@@ -458,7 +458,7 @@
 <!-- ══ HEADER ══ -->
 <header>
   <div>
-    <h1>📈 Strategiportföljen <span class="header-badge">v2.07</span></h1>
+    <h1>📈 Strategiportföljen <span class="header-badge">v2.08</span></h1>
     <div class="header-subtitle">The Magnificent Martin's Money-Making Machine</div>
   </div>
   <div class="header-actions">
@@ -672,6 +672,25 @@
       <div class="import-text"><strong>Tryck eller dra fil hit</strong><span>Beslutslogg.csv — importerar historiska loggposter</span></div>
     </button>
     <input type="file" id="filBeslutslogg" accept=".csv" style="display:none" onchange="läsFil(event,'beslutsloggCSV')">
+  </div>
+
+  <!-- Backup & Återställning -->
+  <p class="import-grupp-rubrik">💾 Backup &amp; Återställning</p>
+  <div class="grid-2 mb20">
+    <div class="card">
+      <div class="card-titel"><span class="card-titel-text">⬇ Exportera fullständig backup</span></div>
+      <p style="font-size:0.84rem;color:var(--muted);margin-bottom:14px;line-height:1.5">Exporterar <strong>all portföljdata</strong> till Excel — innehav, transaktioner, beslutslogg, historik, kassa och kategorier. Använd för säkerhetskopia och för att flytta data mellan enheter.</p>
+      <button class="btn btn-primary" style="width:100%;min-height:56px;font-size:0.97rem" onclick="exporteraExcel()">⬇ Ladda ner Excel-backup</button>
+    </div>
+    <div class="card">
+      <div class="card-titel"><span class="card-titel-text">⬆ Importera från backup</span></div>
+      <p style="font-size:0.84rem;color:var(--muted);margin-bottom:14px;line-height:1.5">Återställ portföljdata från en tidigare Excel-backup. <strong>Obs: all befintlig data ersätts.</strong></p>
+      <button class="import-knapp-stor" onclick="document.getElementById('filBackup').click()">
+        <span class="import-ikon">📂</span>
+        <div class="import-text"><strong>Tryck för att välja backup-fil</strong><span>portfölj_DATUM.xlsx — återställer fullständig data</span></div>
+      </button>
+      <input type="file" id="filBackup" accept=".xlsx" style="display:none" onchange="importeraExcelBackup(event)">
+    </div>
   </div>
 
   <!-- Underhåll -->
@@ -2698,15 +2717,85 @@ function renderSenasteImport() { renderStatusPanel(); }
 //  EXCEL EXPORT
 // ══════════════════════════════════════════════════════════
 function exporteraExcel() {
-  const wb=XLSX.utils.book_new();
-  const ir=[['Namn','Ticker','Kategori','Valuta','Antal','GAV (SEK)','Akt. kurs','MA200','Kostnadsbas','Marknadsvärde','Vinst/Förlust','Avkastning %'],...data.innehav.map(h=>{const kb=h.antal*h.köpkurs,mv=h.antal*h.aktuelKurs,vf=mv-kb,kat=KATEGORIER[h.kategori]||KATEGORIER[2];return[h.namn,h.ticker||'',`${kat.emoji} ${kat.namn}`,h.valuta||'SEK',h.antal,h.köpkurs,h.aktuelKurs,h.ma200||0,kb,mv,vf,kb>0?parseFloat(((vf/kb)*100).toFixed(2)):0];})];
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ir),'Innehav');
-  if(data.avanzaTransaktioner.length>0){const tr=[['Datum','Konto','Typ','Värdepapper','Antal','Kurs','Belopp','Courtage','Resultat'],...data.avanzaTransaktioner.map(t=>[t.datum,t.konto,t.typ,t.värdepapper,t.antal,t.kurs,t.belopp,t.courtage,t.resultat])];XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(tr),'Transaktioner');}
-  if(data.beslutslogg.length>0){const lr=[['Vecka','Datum','Portföljvärde','Tankar om marknaden','Genomförda köp/sälj'],...[...data.beslutslogg].sort((a,b)=>a.datum.localeCompare(b.datum)).map(p=>[p.vecka||'',p.datum,p.värde||'',p.tankar||'',p.åtgärder||''])];XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(lr),'Beslutslogg');}
-  const iv=beräknaInnehavVärde(),kassa=beräknaKassasaldo(),kb=beräknaKostnadsbas();
-  const sr=[['Nyckeltal','Värde'],['Datum',new Date().toLocaleDateString('sv-SE')],['Innehavens marknadsvärde',iv],['Kostnadsbas',kb],['Kassasaldo',kassa],['Totalt portföljvärde',iv+kassa],['Vinst/Förlust',iv-kb],['Avkastning %',kb>0?parseFloat(((iv-kb)/kb*100).toFixed(2)):0],['Utdelningar totalt',beräknaTotalUtdelning()],['Realiserat resultat',beräknaRealiserat()]];
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(sr),'Sammanfattning');
-  XLSX.writeFile(wb,`portfölj_${new Date().toISOString().slice(0,10)}.xlsx`);
+  const wb = XLSX.utils.book_new();
+
+  // ── Ark 1: Innehav (alla fält för fullständig återställning) ──
+  const innehavHdr = ['id','Namn','Ticker','Kategori','Valuta','Antal','GAV_SEK','Kurs_SEK','MA200_Lokal',
+    'GAV_Lokal','Historical_FX','Datum','Notat','DagUtanMA200','TvåDagarsAktiv',
+    'Kostnadsbas','Marknadsvärde','Vinst_Förlust','Avkastning_%'];
+  const innehavRader = data.innehav.map(h => {
+    const kb=h.antal*h.köpkurs, mv=h.antal*h.aktuelKurs, vf=mv-kb;
+    return [h.id||'', h.namn, h.ticker||'', h.kategori, h.valuta||'SEK',
+      h.antal, h.köpkurs, h.aktuelKurs, h.ma200||0,
+      h.gavLokal??'', h.historicalFX??'', h.datum||'', h.notat||'',
+      h.dagUtanMa200??'', h.tvådagarsAktiv?1:0,
+      kb, mv, vf, kb>0 ? parseFloat(((vf/kb)*100).toFixed(2)) : 0];
+  });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([innehavHdr,...innehavRader]), 'Innehav');
+
+  // ── Ark 2: Transaktioner (alla fält inkl. valutainfo) ──
+  const txHdr = ['Datum','Konto','Typ','Värdepapper','Antal','Kurs','Belopp',
+    'Transaktionsvaluta','Courtage','Valutakurs','Instrumentvaluta','ISIN','Resultat'];
+  const txRader = data.avanzaTransaktioner.map(t => [
+    t.datum, t.konto, t.typ, t.värdepapper, t.antal, t.kurs, t.belopp,
+    t.transaktionsvaluta||'', t.courtage||'', t.valutakurs||'',
+    t.instrumentvaluta||'', t.isin||'', t.resultat||'']);
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([txHdr,...txRader]), 'Transaktioner');
+
+  // ── Ark 3: Beslutslogg ──
+  const loggHdr = ['id','Vecka','Datum','Portföljvärde','Tankar','Åtgärder'];
+  const loggRader = [...data.beslutslogg].sort((a,b)=>a.datum.localeCompare(b.datum))
+    .map(p=>[p.id||'', p.vecka||'', p.datum, p.värde||'', p.tankar||'', p.åtgärder||'']);
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([loggHdr,...loggRader]), 'Beslutslogg');
+
+  // ── Ark 4: Sammanfattning (nyckeltal + backup-metadata) ──
+  const iv=beräknaInnehavVärde(), kb=beräknaKostnadsbas(), kassa=beräknaKassasaldo();
+  const summRader = [
+    ['BACKUP_VERSION','2.08'],
+    ['BACKUP_DATUM', new Date().toISOString()],
+    [],
+    ['Nyckeltal','Värde'],
+    ['Exportdatum', new Date().toLocaleDateString('sv-SE')],
+    ['Innehavens marknadsvärde', iv],
+    ['Kostnadsbas', kb],
+    ['Kassasaldo (manuell)', kassa],
+    ['Totalt portföljvärde', iv+kassa],
+    ['Vinst/Förlust', iv-kb],
+    ['Avkastning %', kb>0 ? parseFloat(((iv-kb)/kb*100).toFixed(2)) : 0],
+    ['Utdelningar totalt', beräknaTotalUtdelning()],
+    ['Realiserat resultat', beräknaRealiserat()],
+    ['Antal innehav', data.innehav.length],
+    ['Antal transaktioner', data.avanzaTransaktioner.length],
+    ['Antal loggposter', data.beslutslogg.length],
+    ['Antal historikposter', data.historik.length],
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summRader), 'Sammanfattning');
+
+  // ── Ark 5: Historik (för värdeutvecklingsdiagram) ──
+  const histHdr = ['Datum','Värde','Importerad'];
+  const histRader = data.historik.map(h=>[h.datum, h.värde, h.importerad?1:0]);
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([histHdr,...histRader]), 'Historik');
+
+  // ── Ark 6: Kassa (kassaTransaktioner + kontoStartsaldo i två sektioner) ──
+  const kassaRader = [
+    ['SEKTION','KassaTransaktioner'],
+    ['id','Datum','Typ','Belopp','Notat'],
+    ...data.kassaTransaktioner.map(t=>[t.id||'', t.datum, t.typ, t.belopp, t.notat||'']),
+    [],
+    ['SEKTION','KontoStartsaldo'],
+    ['Konto','Saldo'],
+    ...Object.entries(data.kontoStartsaldo||{}).map(([k,v])=>[k,v]),
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(kassaRader), 'Kassa');
+
+  // ── Ark 7: Kategorier ──
+  const katHdr = ['id','Namn','Undertitel','Emoji','Färg','MålMin','MålMax','Signal','Beskrivning'];
+  const katRader = Object.entries(KATEGORIER).map(([k,kat])=>
+    [k, kat.namn, kat.undertitel, kat.emoji, kat.färg, kat.målMin, kat.målMax, kat.signal, kat.beskrivning]);
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([katHdr,...katRader]), 'Kategorier');
+
+  XLSX.writeFile(wb, `portfölj_${new Date().toISOString().slice(0,10)}.xlsx`);
+  loggImport('ok', `✓ Excel-backup exporterad: ${data.innehav.length} innehav, ${data.avanzaTransaktioner.length} transaktioner.`);
 }
 function exporteraLoggExcel() {
   if(data.beslutslogg.length===0){alert('Inga loggposter att exportera.');return;}
@@ -2714,6 +2803,225 @@ function exporteraLoggExcel() {
   const r=[['Vecka','Datum','Portföljvärde (SEK)','Tankar om marknaden','Genomförda köp/sälj'],...[...data.beslutslogg].sort((a,b)=>a.datum.localeCompare(b.datum)).map(p=>[p.vecka||'',p.datum,p.värde||'',p.tankar||'',p.åtgärder||''])];
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(r),'Beslutslogg');
   XLSX.writeFile(wb,`beslutslogg_${new Date().toISOString().slice(0,10)}.xlsx`);
+}
+
+// ══════════════════════════════════════════════════════════
+//  EXCEL IMPORT (BACKUP-ÅTERSTÄLLNING)
+// ══════════════════════════════════════════════════════════
+function importeraExcelBackup(event) {
+  const fil = event.target.files[0];
+  if (!fil) return;
+  event.target.value = '';
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const wb = XLSX.read(e.target.result, {type:'array'});
+
+      // ── Validera att Innehav-arket finns ──
+      if (!wb.SheetNames.includes('Innehav')) {
+        alert('Ogiltig backup-fil: arket "Innehav" saknas.\n\nKontrollera att du valt en fil exporterad från Strategiportföljen.');
+        return;
+      }
+
+      // ── Läs backup-version från Sammanfattning ──
+      let backupVersion = null, backupDatum = null;
+      if (wb.SheetNames.includes('Sammanfattning')) {
+        const summSheet = XLSX.utils.sheet_to_json(wb.Sheets['Sammanfattning'], {header:1});
+        const vRow = summSheet.find(r => r[0]==='BACKUP_VERSION');
+        const dRow = summSheet.find(r => r[0]==='BACKUP_DATUM');
+        if (vRow) backupVersion = vRow[1];
+        if (dRow) backupDatum = dRow[1] ? new Date(dRow[1]).toLocaleDateString('sv-SE') : null;
+      }
+
+      if (!backupVersion) {
+        if (!confirm('Filen saknar backup-markering (kan vara äldre export).\nVill du ändå importera?\n\n⚠️ All befintlig portföljdata ersätts.')) return;
+      } else {
+        const info = backupDatum ? `Backup v${backupVersion} från ${backupDatum}` : `Backup v${backupVersion}`;
+        if (!confirm(`Importera: ${info}\n\n⚠️ ALL befintlig portföljdata ersätts permanent.\nExportera en ny backup först om du vill spara nuläget.\n\nFortsätta?`)) return;
+      }
+
+      // ── Hjälpfunktion: hämta kolumnindex ──
+      const colIdx = (hdr, name) => hdr.indexOf(name);
+
+      // ── Innehav ──
+      const innehavSheet = XLSX.utils.sheet_to_json(wb.Sheets['Innehav'], {header:1});
+      const innehavHdr = innehavSheet[0] || [];
+      const krävsInnehav = ['Namn','Antal','GAV_SEK','Kurs_SEK','Kategori'];
+      const saknas = krävsInnehav.filter(c => !innehavHdr.includes(c));
+      if (saknas.length > 0) {
+        alert(`Innehav-arket saknar obligatoriska kolumner:\n${saknas.join(', ')}\n\nKontrollera att filen är exporterad från Strategiportföljen.`);
+        return;
+      }
+      const ic = name => colIdx(innehavHdr, name);
+      const nyaInnehav = innehavSheet.slice(1)
+        .filter(r => r[ic('Namn')])
+        .map(r => ({
+          id:            r[ic('id')] || uid(),
+          namn:          String(r[ic('Namn')] || ''),
+          ticker:        String(r[ic('Ticker')] || ''),
+          kategori:      parseInt(r[ic('Kategori')]) || 1,
+          valuta:        String(r[ic('Valuta')] || 'SEK'),
+          antal:         parseFloat(r[ic('Antal')]) || 0,
+          köpkurs:       parseFloat(r[ic('GAV_SEK')]) || 0,
+          aktuelKurs:    parseFloat(r[ic('Kurs_SEK')]) || 0,
+          ma200:         parseFloat(r[ic('MA200_Lokal')]) || 0,
+          gavLokal:      (r[ic('GAV_Lokal')] !== '' && r[ic('GAV_Lokal')] != null) ? parseFloat(r[ic('GAV_Lokal')]) : null,
+          historicalFX:  (r[ic('Historical_FX')] !== '' && r[ic('Historical_FX')] != null) ? parseFloat(r[ic('Historical_FX')]) : null,
+          datum:         String(r[ic('Datum')] || ''),
+          notat:         String(r[ic('Notat')] || ''),
+          dagUtanMa200:  (r[ic('DagUtanMA200')] !== '' && r[ic('DagUtanMA200')] != null) ? r[ic('DagUtanMA200')] : null,
+          tvådagarsAktiv: r[ic('TvåDagarsAktiv')] == 1 || r[ic('TvåDagarsAktiv')] === true,
+        }));
+
+      // Validera: minst ett innehav
+      if (nyaInnehav.length === 0 && data.innehav.length > 0) {
+        if (!confirm('Backup-filen innehåller inga innehav. Vill du ändå fortsätta (återställer övrig data)?')) return;
+      }
+
+      // ── Transaktioner ──
+      let nyaTx = [];
+      if (wb.SheetNames.includes('Transaktioner')) {
+        const txSheet = XLSX.utils.sheet_to_json(wb.Sheets['Transaktioner'], {header:1});
+        const txHdr = txSheet[0] || [];
+        const tc = name => colIdx(txHdr, name);
+        nyaTx = txSheet.slice(1)
+          .filter(r => r[tc('Datum')])
+          .map(r => ({
+            datum:              String(r[tc('Datum')] || ''),
+            konto:              String(r[tc('Konto')] || ''),
+            typ:                String(r[tc('Typ')] || ''),
+            värdepapper:        String(r[tc('Värdepapper')] || ''),
+            antal:              r[tc('Antal')] ?? '',
+            kurs:               r[tc('Kurs')] ?? '',
+            belopp:             r[tc('Belopp')] ?? '',
+            transaktionsvaluta: String(r[tc('Transaktionsvaluta')] || ''),
+            courtage:           r[tc('Courtage')] ?? '',
+            valutakurs:         r[tc('Valutakurs')] ?? '',
+            instrumentvaluta:   String(r[tc('Instrumentvaluta')] || ''),
+            isin:               String(r[tc('ISIN')] || ''),
+            resultat:           r[tc('Resultat')] ?? '',
+          }));
+      }
+
+      // ── Beslutslogg ──
+      let nyaLogg = [];
+      if (wb.SheetNames.includes('Beslutslogg')) {
+        const loggSheet = XLSX.utils.sheet_to_json(wb.Sheets['Beslutslogg'], {header:1});
+        const loggHdr = loggSheet[0] || [];
+        const lc = name => colIdx(loggHdr, name);
+        nyaLogg = loggSheet.slice(1)
+          .filter(r => r[lc('Datum')])
+          .map(r => ({
+            id:       String(r[lc('id')] || uid()),
+            vecka:    String(r[lc('Vecka')] || ''),
+            datum:    String(r[lc('Datum')] || ''),
+            värde:    r[lc('Portföljvärde')] || '',
+            tankar:   String(r[lc('Tankar')] || ''),
+            åtgärder: String(r[lc('Åtgärder')] || ''),
+          }));
+      }
+
+      // ── Historik (värdeutvecklingsdiagram) ──
+      let nyaHistorik = [];
+      if (wb.SheetNames.includes('Historik')) {
+        const histSheet = XLSX.utils.sheet_to_json(wb.Sheets['Historik'], {header:1});
+        const histHdr = histSheet[0] || [];
+        const hc = name => colIdx(histHdr, name);
+        nyaHistorik = histSheet.slice(1)
+          .filter(r => r[hc('Datum')])
+          .map(r => ({
+            datum:     String(r[hc('Datum')] || ''),
+            värde:     parseFloat(r[hc('Värde')]) || 0,
+            importerad: r[hc('Importerad')] == 1 || r[hc('Importerad')] === true,
+          }));
+      }
+
+      // ── Kassa (kassaTransaktioner + kontoStartsaldo) ──
+      let nyaKassaTx = [], nyttKontoSaldo = {};
+      if (wb.SheetNames.includes('Kassa')) {
+        const kassaSheet = XLSX.utils.sheet_to_json(wb.Sheets['Kassa'], {header:1});
+        let sektion = null, kassaHdr = null, kontoHdr = null;
+        kassaSheet.forEach(r => {
+          if (!r || r.length === 0) return;
+          if (r[0] === 'SEKTION') { sektion = r[1]; kassaHdr = null; kontoHdr = null; return; }
+          if (sektion === 'KassaTransaktioner') {
+            if (!kassaHdr) { kassaHdr = r; return; }
+            const kc = name => kassaHdr.indexOf(name);
+            if (!r[kc('Datum')]) return;
+            nyaKassaTx.push({
+              id:     String(r[kc('id')] || uid()),
+              datum:  String(r[kc('Datum')] || ''),
+              typ:    String(r[kc('Typ')] || 'insättning'),
+              belopp: parseFloat(r[kc('Belopp')]) || 0,
+              notat:  String(r[kc('Notat')] || ''),
+            });
+          } else if (sektion === 'KontoStartsaldo') {
+            if (!kontoHdr) { kontoHdr = r; return; }
+            const kkc = name => kontoHdr.indexOf(name);
+            if (r[kkc('Konto')]) nyttKontoSaldo[String(r[kkc('Konto')])] = parseFloat(r[kkc('Saldo')]) || 0;
+          }
+        });
+      }
+
+      // ── Kategorier ──
+      let nyaKat = null;
+      if (wb.SheetNames.includes('Kategorier')) {
+        const katSheet = XLSX.utils.sheet_to_json(wb.Sheets['Kategorier'], {header:1});
+        const katHdr = katSheet[0] || [];
+        const kc = name => colIdx(katHdr, name);
+        const entries = katSheet.slice(1).filter(r => r[kc('Namn')]);
+        if (entries.length > 0) {
+          nyaKat = {};
+          entries.forEach(r => {
+            const id = parseInt(r[kc('id')]) || 1;
+            nyaKat[id] = {
+              namn:        String(r[kc('Namn')] || ''),
+              undertitel:  String(r[kc('Undertitel')] || ''),
+              emoji:       String(r[kc('Emoji')] || '📂'),
+              färg:        String(r[kc('Färg')] || '#6366f1'),
+              målMin:      parseFloat(r[kc('MålMin')]) || 0,
+              målMax:      parseFloat(r[kc('MålMax')]) || 10,
+              signal:      String(r[kc('Signal')] || 'ingen'),
+              beskrivning: String(r[kc('Beskrivning')] || ''),
+            };
+          });
+        }
+      }
+
+      // ── Bygg nytt data-objekt och spara ──
+      data = {
+        innehav:            nyaInnehav,
+        kassaTransaktioner: nyaKassaTx,
+        avanzaTransaktioner: nyaTx,
+        beslutslogg:        nyaLogg,
+        historik:           nyaHistorik,
+        senastImport:       {},
+        avanzaKassa:        0,
+        kontoStartsaldo:    nyttKontoSaldo,
+        positionsKassa:     {},
+      };
+      spara();
+
+      if (nyaKat) {
+        KATEGORIER = nyaKat;
+        localStorage.setItem('portfölj_kategorier', JSON.stringify(KATEGORIER));
+        uppdateraKatBadgeCSS();
+        uppdateraKatDropdown();
+      }
+
+      const sammanf = `${nyaInnehav.length} innehav · ${nyaTx.length} transaktioner · ${nyaLogg.length} loggposter · ${nyaHistorik.length} historikposter`;
+      loggImport('ok', `✅ Backup återställd (${backupVersion||'okänd version'}): ${sammanf}`);
+      renderAllt();
+      alert(`✅ Backup återställd!\n\n${sammanf}`);
+
+    } catch(err) {
+      console.error('importeraExcelBackup:', err);
+      loggImport('fel', '✗ Fel vid import av backup: ' + err.message);
+      alert('Fel vid import av backup:\n' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(fil);
 }
 
 // ══════════════════════════════════════════════════════════
