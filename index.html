@@ -817,7 +817,7 @@
   <div class="card">
     <nav class="hjalp-nav">
       <button class="hjalp-flik aktiv" onclick="visaHjalpKapitel('kom-igang',this)">🚀 Kom igång</button>
-      <button class="hjalp-flik" onclick="visaHjalpKapitel('nyheter',this)">✨ Nyheter v2.07</button>
+      <button class="hjalp-flik" onclick="visaHjalpKapitel('nyheter',this)">✨ Nyheter v2.08</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('ipad-import',this)">📱 Import på iPad</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('veckorutin',this)">📅 Veckorutin</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('flikarna',this)">📋 Flikarna</button>
@@ -847,10 +847,37 @@
       </div>
     </div>
 
-    <!-- NYHETER v2.07 -->
+    <!-- NYHETER v2.08 -->
     <div class="hjalp-kapitel" id="hk-nyheter">
-      <div class="hjalp-rubrik">✨ Nyheter i version 2.07</div>
-      <div class="hjalp-ingress">Kassa per konto — ange Avanzas exakta värde direkt i appen.</div>
+      <div class="hjalp-rubrik">✨ Nyheter i version 2.08</div>
+      <div class="hjalp-ingress">Excel backup &amp; återställning — exportera all data och importera tillbaka för fullständig återställning.</div>
+
+      <div class="hjalp-h2">💾 Excel backup &amp; återställning (v2.08)</div>
+      <div class="hjalp-p">Under <strong>Importera → Backup &amp; Återställning</strong> finns nu två knappar:</div>
+      <ul class="hjalp-ul">
+        <li><strong>⬇ Exportera fullständig backup</strong> — skapar en Excel-fil med 7 ark som innehåller all portföljdata: Innehav, Transaktioner, Beslutslogg, Sammanfattning, Historik, Kassa och Kategorier.</li>
+        <li><strong>⬆ Importera från backup</strong> — läser in en exporterad backup och återställer hela portföljen. Appen validerar att rätt kolumner finns och kräver bekräftelse innan befintlig data ersätts.</li>
+      </ul>
+      <table class="hjalp-tabell">
+        <thead><tr><th>Ark</th><th>Innehåll</th><th>Används för</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Innehav</strong></td><td>Alla fält inkl. GAV_Lokal, Historical_FX, MA200, tvådagarsdata</td><td>Återställer innehav exakt</td></tr>
+          <tr><td><strong>Transaktioner</strong></td><td>Alla Avanza-transaktioner inkl. valutainfo och ISIN</td><td>Beräkningar, utdelningar, realiserat</td></tr>
+          <tr><td><strong>Beslutslogg</strong></td><td>Vecka, datum, portföljvärde, tankar, åtgärder</td><td>Historisk logg</td></tr>
+          <tr><td><strong>Sammanfattning</strong></td><td>Nyckeltal + backup-metadata (version, datum)</td><td>Läsbar rapport — importeras ej</td></tr>
+          <tr><td><strong>Historik</strong></td><td>Datum och värde per importtillfälle</td><td>Värdeutvecklingsdiagrammet</td></tr>
+          <tr><td><strong>Kassa</strong></td><td>Manuella kassatransaktioner + kontosaldon</td><td>Kassasaldo och likviditet</td></tr>
+          <tr><td><strong>Kategorier</strong></td><td>Namn, färg, MA200-regler, målvikter per kategori</td><td>Återställer anpassade kategorier</td></tr>
+        </tbody>
+      </table>
+      <div class="hjalp-ruta hjalp-ruta-tips">
+        <div class="hjalp-ruta-titel">💡 Rekommenderat flöde</div>
+        Exportera backup varje vecka direkt efter ordinarie import. Spara filen i iCloud/OneDrive. Vid byte av enhet eller rensad webbläsare: öppna appen → Importera → Backup &amp; Återställning → välj filen. Allt återställs på under 5 sekunder.
+      </div>
+      <div class="hjalp-ruta hjalp-ruta-varning">
+        <div class="hjalp-ruta-titel">⚠️ Import ersätter all data</div>
+        När du importerar en backup ersätts <em>all</em> befintlig portföljdata. Exportera en ny backup av nuläget först om du vill kunna ångra.
+      </div>
 
       <div class="hjalp-h2">💰 Tillgängligt för köp per konto (v2.07)</div>
       <div class="hjalp-p">Kassa-fliken visar <strong>"Tillgängligt för köp" per konto</strong> (ISK, AF, Sparkonto m.m.) och matchar exakt vad Avanza visar — men du anger värdet manuellt, en gång i veckan vid ordinarie import.</div>

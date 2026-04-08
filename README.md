@@ -24,7 +24,7 @@ Personlig portföljapp byggd för iPad och dator. Öppnas direkt i webbläsaren 
 - **Värdeutvecklingsdiagram** med periodväljare (30D / 90D / 6M / 1Å / i År / Allt) och referenslinje för nettoinsatt kapital
 - Historik byggs automatiskt från importerade positionsfiler — en datapunkt per fil
 - Beslutslogg för veckovisa anteckningar
-- Exporterar data som Excel-säkerhetskopia
+- **Excel backup & återställning** — exporterar all data (7 ark) och kan importeras tillbaka för fullständig återställning
 
 ---
 
@@ -85,8 +85,20 @@ Gå sedan till **Importera**-fliken i appen och välj filen. Datumet i positions
 
 ---
 
+## Backup & Återställning (v2.08)
+
+All portföljdata kan exporteras till en fullständig Excel-backup och importeras tillbaka — t.ex. för att flytta data mellan iPad och dator, eller som säkerhetskopia innan man rensar.
+
+**Exporterar 7 ark:** Innehav · Transaktioner · Beslutslogg · Sammanfattning · Historik · Kassa · Kategorier
+
+**Importera:** Importera-fliken → Backup & Återställning → välj `portfölj_DATUM.xlsx`. Appen validerar att obligatoriska kolumner finns och bekräftar innan all data ersätts.
+
+> Data sparas lokalt i webbläsarens `localStorage`. Exportera backup regelbundet — om du rensar webbhistoriken eller byter enhet är en backup det enda sättet att återfå datan.
+
+---
+
 ## Version
 
-**v2.07** — april 2026
+**v2.08** — april 2026
 
 Byggt för Martin · Strategi från januari 2026
