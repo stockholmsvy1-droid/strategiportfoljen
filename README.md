@@ -97,6 +97,27 @@ All portföljdata kan exporteras till en fullständig Excel-backup och importera
 
 ---
 
+## Testprotokoll
+
+**v2.08 — Statisk kodanalys genomförd 2026-04-09**
+
+Alla 46 testfall i `Testprotokoll_Strategiportfoljen_v208.xlsx` analyserade mot `index.html`:
+
+| Testsvit | Testfall | Godkända | Kräver manuell test |
+|----------|----------|----------|---------------------|
+| T1 Export grundläggande | 7 | 7 | — |
+| T2 Export dataintegritet | 9 | 9 | — |
+| T3 Header-knapp | 2 | 2 | — |
+| T4 Rundtur export→rensa→import | 10 | 10 | — |
+| T5 Felhantering | 6 | 6 | — |
+| T6 Äldre exportformat | 2 | 2 | — |
+| T7 Mobil / iPad | 6 | 3 | T7.3–T7.5 (Safari iOS) |
+| T8 Kategorier bevaras | 4 | 4 | — |
+
+**Anmärkningar:** `rensaAllData()` kräver dubbel bekräftelse (teststeg T4:3 säger singular — protokollet bör korrigeras). Kategorier bevaras vid rensning av data (intentionellt).
+
+---
+
 ## Version
 
 **v2.08** — april 2026
