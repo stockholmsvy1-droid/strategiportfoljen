@@ -209,6 +209,12 @@
     .nyckeltal .sub { font-size: 0.79rem; color: var(--muted); margin-top: 4px; }
     .pos { color: var(--success-value); }
     .neg { color: var(--danger); }
+    .nyckeltal-kat { padding: 11px 14px !important; }
+    .nyckeltal-kat .kat-nk-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px; display:flex; align-items:center; gap:5px; }
+    .nyckeltal-kat .kat-nk-value { font-size: 0.92rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .nyckeltal-kat .kat-nk-avk { font-size: 1.05rem; font-weight: 800; }
+    .nyckeltal-kat .kat-nk-pct { font-size: 0.82rem; font-weight: 700; margin-top: 1px; }
+    .nyckeltal-kat .kat-nk-bas { font-size: 0.65rem; color: var(--muted); margin-top: 3px; font-style: italic; }
 
     /* ── Diagram ── */
     .diagram-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px; }
@@ -1150,17 +1156,14 @@
       <div class="hjalp-ingress">Strategiportföljen går från "interaktivt kalkylblad" till cockpit — med periodanalys i alla vyer, samlade signaler, automatisk MA200-hämtning och ISK/KF-skatteplanering. Version 3.01 lägger till kategoriutvecklingstabellen på Dashboard samt ett antal buggfixar.</div>
 
       <div class="hjalp-h2">📊 Kategoriutveckling på Dashboard (nytt i v3.01)</div>
-      <div class="hjalp-p">Direkt på Dashboard — precis under Periodutveckling-kortet — visas nu en tabell med varje kategoris:</div>
+      <div class="hjalp-p">Version 3.01 tillför två nya delar på Dashboard:</div>
       <ul class="hjalp-ul">
-        <li><strong>Aktuellt marknadsvärde (kr)</strong></li>
-        <li><strong>Förändring i kronor</strong> — röd/grön beroende på riktning</li>
-        <li><strong>Förändring i procent</strong> — badge med +/− och färgkod</li>
-        <li><strong>Andel av portföljen</strong> — inkl. kassa i nämnaren</li>
+        <li><strong>Kategori-nyckeltalskort</strong> — ett kompakt kort per kategori direkt i nyckeltal-griden. Visar emoji, aktuellt värde, netto-avkastning i kr och %, samt periodbeteckning. Korten följer vald period precis som de globala korten.</li>
+        <li><strong>Kategoriutveckling-tabell</strong> — direkt under Periodutveckling-kortet, med en rad per kategori: aktuellt värde, förändring kr, förändring %, andel av portfölj. Sorteras efter störst absolut förändring i kronor.</li>
       </ul>
-      <div class="hjalp-p">Tabellen sorteras automatiskt efter störst absolut förändring i kronor — mest relevant information överst. En tunn färgad stapel under kategorinamnet ger snabb visuell kontext utan att ta upp utrymme.</div>
       <div class="hjalp-ruta hjalp-ruta-tips">
-        <div class="hjalp-ruta-titel">💡 Alltid synlig — med smart fallback</div>
-        Om du valt en period som saknar historikdata (t.ex. "30D" men bara har en historikpunkt) använder tabellen istället <strong>orealiserad vinst sedan köp (från GAV)</strong> som jämförelsebas. Tabellen visas alltid så länge du har innehav.
+        <div class="hjalp-ruta-titel">💡 Smart fallback — alltid synlig</div>
+        Både korten och tabellen kräver <em>inte</em> historikdata för vald period. Om data saknas används orealiserad vinst sedan köp (GAV) automatiskt som jämförelsebas. Etiketten "sedan köp" resp. "periodbaserad" visar vilket som gäller.
       </div>
 
       <div class="hjalp-h2">🕐 Global periodväljare</div>
@@ -1407,7 +1410,8 @@
       <div class="hjalp-p"><strong>Signalband:</strong> Ett rött band precis ovanför nyckeltalen visar antalet röda signaler, nödutgångar och ombalanseringsbehov. Klicka för att gå direkt till Signaler-fliken. Döljs om allt är OK.</div>
       <div class="hjalp-p"><strong>Period-styrda nyckeltal:</strong> Avkastning uppdateras automatiskt för vald period. Avkastning mäts alltid från närmaste importerade historikpunkt (aldrig från alla insättningar sedan 2017). "▼ Visa beräkningsunderlag" visar exakt vilka tal som används.</div>
       <div class="hjalp-p"><strong>FX-exponering:</strong> Donut-diagram och färgade pills visar portföljens valutafördelning (SEK/USD/EUR etc.).</div>
-      <div class="hjalp-p"><strong>Kategoriutveckling (nytt i v3.01):</strong> En tabell direkt på Dashboard visar varje kategoris aktuella värde, förändring i kronor och procent, samt andel av portföljen. Sorteras efter störst absolut förändring. Visas alltid — om en vald period saknar historikdata används orealiserad vinst från GAV som fallback. En tunn färgstapel under kategorinamnet ger snabb visuell kontext.</div>
+      <div class="hjalp-p"><strong>Kategori-nyckeltalskort (nytt i v3.01):</strong> I nyckeltal-griden visas ett litet kort per kategori — direkt till höger om de globala korttalen. Varje kort visar kategoriemoji, aktuellt värde, netto-avkastning i kr och %, samt om värdet gäller för vald period eller sedan köp. Korten uppdateras automatiskt när du byter period.</div>
+      <div class="hjalp-p"><strong>Kategoriutveckling-tabell (nytt i v3.01):</strong> En tabell direkt på Dashboard visar varje kategoris aktuella värde, förändring i kronor och procent, samt andel av portföljen. Sorteras efter störst absolut förändring. Visas alltid — om en vald period saknar historikdata används orealiserad vinst från GAV som fallback. En tunn färgstapel under kategorinamnet ger snabb visuell kontext.</div>
       <div class="hjalp-p"><strong>Utdelningskalender:</strong> Förväntade utdelningar de kommande 90 dagarna baserat på historiska utdelningsmånader.</div>
 
       <div class="hjalp-h2">🚦 Signaler</div>
@@ -2150,6 +2154,61 @@ function beräknaKategoriAvkastning(k, startDatum) {
 // ══════════════════════════════════════════════════════════
 //  FX-EXPONERING (2.2)
 // ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
+//  KATEGORI-NYCKELTAL (mini-kort i nyckeltal-griden)
+// ══════════════════════════════════════════════════════════
+function renderKatNyckeltal() {
+  const grid = document.getElementById('nyckeltal-grid');
+  if (!grid) return;
+  // Ta bort gamla kategori-kort
+  grid.querySelectorAll('[data-kat-nk]').forEach(el => el.remove());
+  if (!data.innehav.length) return;
+
+  const katV = beräknaKategorivärden();
+  const sd = periodeStartDatum();
+  const etik = periodEtikett();
+  const fSign = v => v >= 0 ? '+' : '';
+
+  Object.entries(KATEGORIER).forEach(([k, kat]) => {
+    const nuV = katV[String(k)] ?? 0;
+    if (nuV === 0) return;
+
+    // Försök periodbaserad avkastning
+    const periodRes = etik ? beräknaKategoriAvkastning(k, sd) : null;
+    let avkKr, avkPct, basTyp;
+    if (periodRes) {
+      avkKr = periodRes.avkKr;
+      avkPct = periodRes.avkPct;
+      basTyp = 'period';
+    } else {
+      // Fallback: orealiserad vinst sedan köp (kostnadsbas)
+      const kb = data.innehav
+        .filter(h => String(h.kategori) === String(k))
+        .reduce((s, h) => s + h.antal * h.köpkurs, 0);
+      avkKr = nuV - kb;
+      avkPct = kb > 0 ? (avkKr / kb) * 100 : null;
+      basTyp = 'gav';
+    }
+
+    const pos = avkKr >= 0;
+    const col = pos ? 'var(--success-value)' : 'var(--danger)';
+    const card = document.createElement('div');
+    card.className = 'nyckeltal nyckeltal-kat';
+    card.setAttribute('data-kat-nk', k);
+    card.style.borderLeft = `3px solid ${kat.färg}`;
+    card.innerHTML = `
+      <div class="kat-nk-label"><span>${kat.emoji}</span><span>${kat.namn}</span></div>
+      <div class="kat-nk-value">${kr(nuV)}</div>
+      <div class="kat-nk-avk" style="color:${col}">${fSign(avkKr)}${kr(avkKr)}</div>
+      ${avkPct != null
+        ? `<div class="kat-nk-pct" style="color:${col}">${fSign(avkPct)}${avkPct.toFixed(1)}%</div>`
+        : ''}
+      <div class="kat-nk-bas">${basTyp === 'period' ? (etik || 'Allt') : 'sedan köp'}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
 function renderFXExponering() {
   const kort = document.getElementById('fx-diagram-kort');
   const band = document.getElementById('fx-band');
@@ -2871,6 +2930,8 @@ function renderDashboard() {
     const avvF=avv>5?'var(--warning)':avv<-5?'var(--danger)':'var(--success)';
     return `<div style="display:grid;grid-template-columns:140px 1fr 70px 90px;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:6px;font-size:0.87rem;font-weight:600">${kat.emoji} ${kat.namn}</div><div style="position:relative"><div class="vikt-bar-track"><div class="vikt-bar-fill" style="width:${Math.min(100,vp)}%;background:${kat.färg}80"></div><div class="vikt-bar-mal" style="left:${Math.min(100,kat.målMax)}%"></div></div></div><div style="font-size:0.87rem;font-weight:700;text-align:right">${vp.toFixed(1)}%</div><div style="font-size:0.78rem;font-weight:700;color:${avvF};text-align:right">${avvT}</div></div>`;
   }).join('');
+  // Rendera kategori-nyckeltal i griden (period-styrda minikort)
+  renderKatNyckeltal();
 }
 
 // ══════════════════════════════════════════════════════════
@@ -3270,7 +3331,7 @@ function renderKassa() {
   tbody.innerHTML=[...data.kassaTransaktioner].reverse().map(t=>`<tr><td>${t.datum}</td><td><span class="badge ${t.typ==='insättning'?'badge-pos':'badge-neg'}">${t.typ}</span></td><td class="${t.typ==='insättning'?'pos':'neg'}">${t.typ==='insättning'?'+':'−'}${kr(t.belopp)}</td><td>${t.notat||'—'}</td><td><button class="btn btn-danger btn-sm" onclick="raderaKassa('${t.id}')">✕</button></td></tr>`).join('');
 }
 
-function renderAllt() { renderDashboard(); renderFXExponering(); renderUtdelningskalender(); renderKategorier(); renderSignaler(); renderInnehav(); renderTransaktioner(); renderBeslutslogg(); renderKassa(); renderSenasteImport(); ritaDiagram(); }
+function renderAllt() { renderDashboard(); renderFXExponering(); renderUtdelningskalender(); renderKategorier(); renderSignaler(); renderInnehav(); renderTransaktioner(); renderBeslutslogg(); renderKassa(); renderSenasteImport(); ritaDiagram(); renderKatNyckeltal(); }
 
 // ══════════════════════════════════════════════════════════
 //  DIAGRAM
@@ -3309,6 +3370,7 @@ function byttHistorikPeriod(period, knapp) {
   renderDashboard();
   renderFXExponering();
   renderKategorier();
+  renderKatNyckeltal();
   if (_aktivKatTab === 'jämför') renderKategoriJämförelse();
 }
 const donutCenterPlugin = {

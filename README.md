@@ -9,7 +9,8 @@ Personlig portföljapp byggd för iPad och dator. Öppnas direkt i webbläsaren 
 
 ## Vad appen gör
 
-- **Kategoriutveckling på Dashboard** — tabell med aktuellt värde, förändring i kr och % samt portföljandel per kategori; sorterad efter störst absolut förändring; fallback till orealiserad vinst om historik saknas
+- **Kategori-nyckeltalskort på Dashboard** — ett kompakt kort per kategori i nyckeltal-griden med emoji, aktuellt värde, netto-avkastning kr och %, period-styrt; fallback till vinst sedan köp om historik saknas
+- **Kategoriutvecklingstabell på Dashboard** — tabell med aktuellt värde, förändring i kr och % samt portföljandel per kategori; sorterad efter störst absolut förändring; fallback till orealiserad vinst om historik saknas
 - **Global periodväljare** (1D / 7D / 30D / 90D / 6M / 1Å / i År / Allt) — sticky bar under nav, påverkar Dashboard, Kategorier och Innehav samtidigt
 - **Signalband på Dashboard** — rött band med räknare för röda signaler, nödutgångar och ombalans; klick → Signaler-fliken
 - **Signaler-flik** — samlad vy med säljsignaler, bevakningslista, nödutgångar, ombalanseringsbehov och hög koncentration
