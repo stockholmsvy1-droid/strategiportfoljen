@@ -9,7 +9,24 @@ Personlig portföljapp byggd för iPad och dator. Öppnas direkt i webbläsaren 
 
 ## Vad appen gör
 
-- Visar portföljens värde, avkastning och fördelning per kategori — nyckeltal uppdateras dynamiskt per vald period (30D / 90D / 6M / 1Å / i År / Allt)
+- **Global periodväljare** (1D / 7D / 30D / 90D / 6M / 1Å / i År / Allt) — sticky bar under nav, påverkar Dashboard, Kategorier och Innehav samtidigt
+- **Signalband på Dashboard** — rött band med räknare för röda signaler, nödutgångar och ombalans; klick → Signaler-fliken
+- **Signaler-flik** — samlad vy med säljsignaler, bevakningslista, nödutgångar, ombalanseringsbehov och hög koncentration
+- **Ombalanseringsassistent** — varje kategorikort visar "Köp/Sälj för X kr" om vikten avviker >2% från målintervallet
+- **Koncentrationsrisk** — "Andel"-kolumn i innehav med färgvarning gul >8%, orange >12%
+- **Sorterbar innehavstabell** — klicka på kolumnrubrik för att sortera efter namn, värde, avkastning, signal, andel eller MA200-avstånd
+- **Kategoriprestation per period** — avkastningsbadge på varje kategorikort för vald period
+- **Kategori-jämförelsevy** — indexerat linjediagram (start=100) som jämför alla kategoriers avkastning under vald period
+- **FX-exponeringsöversikt** — donut-diagram och färgade pills (SEK/USD/EUR etc.) på Dashboard
+- **Avkastningsstaplar per kategori** — horisontella staplar på Dashboard för vald period
+- **Tickers & automatisk MA200-hämtning** — ange börssymbol per aktie, hämta MA200 automatiskt via Alpha Vantage (gratis API-nyckel)
+- **Manuell baslinje** — ange ett datum + portföljvärde som fast startpunkt för avkastningsberäkningar
+- **Visa beräkningsunderlag** — "▼"-toggle i Periodutveckling-kortet visar exakt vilka tal som används
+- **ISK/KF-skattesektion** — schablonintäktsprognos och förväntad skatt baserat på kvartalsvärden och insättningar; insättningstajming-varning och round-trip-varning
+- **Avstämningspanel** — 4-stegs guidad jämförelse av portföljsiffror mot Avanza; sparar av stämningshistorik
+- **Utdelningskalender** — förväntade utdelningar de kommande 90 dagarna baserat på historiska utdelningsmånader
+- **Mörkt tema** — ☀️/🌙-toggle i headern, sparas i webbläsaren
+- Visar portföljens värde, avkastning och fördelning per kategori — nyckeltal uppdateras dynamiskt per vald period
 - Importerar positioner och transaktioner direkt från Avanza (CSV) — dra filer eller välj flera samtidigt
 - Sålda innehav tas bort automatiskt när senaste positionsfilen importeras
 - **Utdelningar kopplas automatiskt** per aktie via ISIN från transaktionsfilen — ingen manuell inmatning
@@ -21,7 +38,7 @@ Personlig portföljapp byggd för iPad och dator. Öppnas direkt i webbläsaren 
 - **Nödutgångar** (90 % av GAV) — hård stopp (kat. 3–6) eller mjuk analys (kat. 1–2)
 - **Gummibandet** — visar hur långt kursen sträckt sig från MA200
 - **Anpassningsbara kategorier** — lägg till, redigera och ta bort kategorier via UI
-- **Värdeutvecklingsdiagram** med periodväljare (30D / 90D / 6M / 1Å / i År / Allt) och referenslinje för nettoinsatt kapital
+- **Värdeutvecklingsdiagram** med periodväljare och referenslinje för nettoinsatt kapital
 - Historik byggs automatiskt från importerade positionsfiler — en datapunkt per fil
 - Beslutslogg för veckovisa anteckningar
 - **Excel backup & återställning** — exporterar all data (7 ark) och kan importeras tillbaka för fullständig återställning
@@ -45,6 +62,21 @@ Appen levereras med 6 standardkategorier men du kan anpassa dem fritt via Katego
 
 ---
 
+## Avkastningslogik
+
+Avkastning mäts alltid från **närmaste importerade historikpunkt** — aldrig från alla insättningar sedan 2017.
+
+| Term | Beskrivning |
+|------|-------------|
+| Startpunkt | Närmaste historikpost på eller före periodens startdatum |
+| Nettoinflöde | `beräknaNettoInsattMellan(startH.datum, idag)` — insättningar efter startpunkten |
+| Avkastning (kr) | `nuVärde − startH.totalVärde − insEfterStart` |
+| Manuell baslinje | Datum + värde angivet av användaren, sparas som `{manuell:true}` i historiken |
+
+Tryck **"▼ Visa beräkningsunderlag"** i Periodutveckling-kortet för att se exakt vilka tal som används.
+
+---
+
 ## FX-motorn (v2.02+)
 
 För utländska innehav (t.ex. NVIDIA i USD) beräknar appen automatiskt:
@@ -57,6 +89,23 @@ För utländska innehav (t.ex. NVIDIA i USD) beräknar appen automatiskt:
 | Valutavinst | `Total_SEK − Bolagsvinst` |
 
 MA200 anges alltid i **lokal valuta** (USD för amerikanska aktier, SEK för svenska).
+
+---
+
+## Automatisk MA200-hämtning (Alpha Vantage)
+
+Ange börssymboler per aktie under **Innehav → 📡 Tickers & MA200** och klicka "Uppdatera alla MA200". API-nyckeln (gratis på alphavantage.co) anges en gång och sparas lokalt.
+
+Klicka **🔍** bredvid ett innehav för att söka rätt ticker via Alpha Vantage — resultatlistan visar börs och valuta så att du kan välja rätt symbol direkt.
+
+| Typ | Format | Exempel |
+|-----|--------|---------|
+| Svenska aktier (Nasdaq Sthlm) | `NAMN.STO` | `SAAB-B.STO`, `VOLV-B.STO` |
+| Amerikanska aktier | `TICKER` | `NVDA`, `MSFT` |
+| Brittiska aktier (LSE) | `NAMN.LON` | `AZN.LON`, `SHEL.LON` |
+| Norska aktier (Oslo Børs) | `NAMN.OSL` | `EQNR.OSL` |
+
+Appen väntar automatiskt 15 sekunder mellan anrop (gratis-planen: 5 req/min). Grön ✓ per aktie = uppdaterat, gult ! = ticker saknas. Rött ⚠ = misstänkt fel valuta — använd 🔍 för att hitta rätt ticker.
 
 ---
 
@@ -120,6 +169,11 @@ Alla 46 testfall i `Testprotokoll_Strategiportfoljen_v208.xlsx` analyserade mot 
 
 ## Version
 
-**v2.08** — april 2026
+**v3.00** — april 2026
 
 Byggt för Martin · Strategi från januari 2026
+
+### Ändringslogg
+- **v3.00** — Buggfixar: `liveFXRater`→`liveFX` i Avstämningspanel, signalband inkluderar kassa i ombalanseringskontrollen, `hämtaAllaMA200()` uppdaterar diagram och signaler, signal-band display-konflikt åtgärdad, MA200-varning i mobilkort. UX: inline tickersök-modal (ersätter prompt-dialoger), manuell baslinje-badge i portföljvärde-kortet. Ny hjälpsektion "Kontrollräkna för hand". FAQ utökad (kassa + ombalanseringsformel). GitHub-avsnitt flyttat till separat dokument. Kursmaterial PowerPoint (13 bilder). Dokumentet "Strategiportföljen_Beskrivning_v300" med kontrollräkna-appendix.
+- **v3.0** — Global periodväljare, Signaler-flik, Ombalanseringsassistent, Koncentrationsrisk, Sorterbar innehavstabell, Kategoriprestation per period, Kategori-jämförelsevy, FX-exponeringsöversikt, Avkastningsstaplar, Tickers & automatisk MA200-hämtning (Alpha Vantage), Manuell baslinje, Visa beräkningsunderlag, ISK/KF-skattesektion, Avstämningspanel, Utdelningskalender, Mörkt tema
+- **v2.08** — Excel backup & återställning (7 ark)

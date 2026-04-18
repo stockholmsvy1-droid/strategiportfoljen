@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Strategiportföljen">
   <meta name="theme-color" content="#1e3a5f">
-  <title>Strategiportföljen v2.08</title>
+  <title>Strategiportföljen v3.00</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231e3a5f'/%3E%3Cpolyline points='3,25 9,17 15,21 21,11 29,5' stroke='%230ea5e9' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='29' cy='5' r='2.5' fill='%234ade80'/%3E%3C/svg%3E">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
@@ -41,6 +41,44 @@
       --kat5: #b45309;
       --kat6: #be185d;
     }
+
+    /* ── Mörkt tema ── */
+    body.mörkt {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --primary: #93c5fd;
+      --primary-mid: #60a5fa;
+      --primary-light: #1e3a5f;
+      --accent: #38bdf8;
+      --danger: #f87171;
+      --danger-light: #450a0a;
+      --warning: #fbbf24;
+      --warning-light: #451a03;
+      --success: #4ade80;
+      --success-light: #052e16;
+      --success-value: #86efac;
+      --text: #f1f5f9;
+      --text-mid: #cbd5e1;
+      --muted: #94a3b8;
+      --border: #334155;
+    }
+    body.mörkt header { background: #1e293b; border-bottom-color: #334155; }
+    body.mörkt nav { background: #1e293b; border-bottom-color: #334155; }
+    body.mörkt .nav-bottom { background: #1e293b; border-top-color: #334155; }
+    body.mörkt .period-strip { background: #1e293b; border-bottom-color: #334155; }
+    body.mörkt .period-knapp { background: #334155; color: #94a3b8; border-color: #475569; }
+    body.mörkt .period-knapp.aktiv { background: #60a5fa; color: #0f172a; border-color: #60a5fa; }
+    body.mörkt input, body.mörkt select, body.mörkt textarea { background: #334155; color: #f1f5f9; border-color: #475569; }
+    body.mörkt .btn-white { background: #1e293b; color: #f1f5f9; border-color: #475569; }
+    body.mörkt .btn-ghost { color: #94a3b8; border-color: #475569; }
+    body.mörkt .btn-ghost:hover { background: #334155; }
+    body.mörkt .nyckeltal { background: #1e293b; border-color: #334155; }
+    body.mörkt .kat-kort { background: #1e293b; border-color: #334155; }
+    body.mörkt .mobil-kort { background: #1e293b; border-color: #334155; }
+    body.mörkt tr:hover td { background: #263348; }
+    body.mörkt .badge-pos { background: #052e16; color: #4ade80; }
+    body.mörkt .badge-neg { background: #450a0a; color: #f87171; }
+    body.mörkt .badge-warning { background: #451a03; color: #fbbf24; }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
@@ -242,6 +280,15 @@
     .period-knapp { padding: 3px 10px; border-radius: 20px; border: 1px solid var(--border); background: none; font-size: 0.78rem; color: var(--muted); cursor: pointer; }
     .period-knapp.aktiv { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 600; }
 
+    /* ── Global Period Strip ── */
+    #period-strip {
+      background: white; border-bottom: 1px solid var(--border);
+      padding: 7px 20px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+      position: sticky; top: calc(54px + env(safe-area-inset-top)); z-index: 90;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .period-strip-label { font-size: 0.71rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-right: 2px; }
+
     /* ── Kategori-kort ── */
     .kat-kort { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
     .kat-kort-header { padding: 16px 20px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
@@ -298,6 +345,12 @@
     .import-logg .ok { color: #4ade80; }
     .import-logg .fel { color: #f87171; }
     .import-logg .info { color: #60a5fa; }
+
+    /* ── Avstämningssteg ── */
+    .avsteg { padding: 14px 0; }
+    .avsteg-rubrik { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--primary-mid); margin-bottom: 10px; }
+    .avst-diff-rad { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); }
+    .avst-diff-rad:last-child { border-bottom: none; }
 
     /* ── Beslutslogg ── */
     .vecka-kort { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 14px; }
@@ -458,11 +511,12 @@
 <!-- ══ HEADER ══ -->
 <header>
   <div>
-    <h1>📈 Strategiportföljen <span class="header-badge">v2.08</span></h1>
+    <h1>📈 Strategiportföljen <span class="header-badge">v3.00</span></h1>
     <div class="header-subtitle">The Magnificent Martin's Money-Making Machine</div>
   </div>
   <div class="header-actions">
     <button class="btn btn-outline btn-sm" onclick="exporteraExcel()">⬇ Excel</button>
+    <button class="btn btn-white btn-sm" id="tema-knapp" onclick="växlaTema()" title="Byt tema">☀️</button>
     <button class="btn btn-white btn-sm" onclick="visaSektion('hjalp',null);synkNavKnappar('hjalp')">? Hjälp</button>
   </div>
 </header>
@@ -472,12 +526,26 @@
   <button class="aktiv" onclick="visaSektion('dashboard',this)">🏠 Dashboard</button>
   <button onclick="visaSektion('kategorier',this)">🗂 Kategorier</button>
   <button onclick="visaSektion('innehav',this)">📋 Innehav</button>
+  <button onclick="visaSektion('signaler',this)" id="navSignalerBtn">🚨 Signaler</button>
   <button onclick="visaSektion('importera',this)">⬆ Importera</button>
   <button onclick="visaSektion('transaktioner',this)">🔄 Transaktioner</button>
   <button onclick="visaSektion('beslutslogg',this)">📓 Beslutslogg</button>
   <button onclick="visaSektion('kassa',this)">💰 Kassa</button>
   <button onclick="visaSektion('hjalp',this)">❓ Hjälp</button>
 </nav>
+
+<!-- ══ GLOBAL PERIOD STRIP ══ -->
+<div id="period-strip">
+  <span class="period-strip-label">Period</span>
+  <button onclick="byttHistorikPeriod(1,this)" class="period-knapp">Idag</button>
+  <button onclick="byttHistorikPeriod(7,this)" class="period-knapp">Vecka</button>
+  <button onclick="byttHistorikPeriod(30,this)" class="period-knapp">30D</button>
+  <button onclick="byttHistorikPeriod(90,this)" class="period-knapp aktiv">90D</button>
+  <button onclick="byttHistorikPeriod(180,this)" class="period-knapp">6M</button>
+  <button onclick="byttHistorikPeriod(365,this)" class="period-knapp">1Å</button>
+  <button onclick="byttHistorikPeriod('år',this)" class="period-knapp">i År</button>
+  <button onclick="byttHistorikPeriod(0,this)" class="period-knapp">Allt</button>
+</div>
 
 <!-- ══ MOBIL BOTTOM NAV ══ -->
 <div class="nav-bottom">
@@ -491,6 +559,7 @@
 </div>
 <div class="mer-meny-overlay" id="merOverlay" onclick="stängMerMeny()"></div>
 <div class="mer-meny" id="merMeny">
+  <button class="mer-meny-knapp" onclick="mobilNav('signaler',-1);stängMerMeny()"><span class="mm-ikon">🚨</span>Signaler</button>
   <button class="mer-meny-knapp" onclick="mobilNav('transaktioner',-1);stängMerMeny()"><span class="mm-ikon">🔄</span>Transaktioner</button>
   <button class="mer-meny-knapp" onclick="mobilNav('beslutslogg',-1);stängMerMeny()"><span class="mm-ikon">📓</span>Beslutslogg</button>
   <button class="mer-meny-knapp" onclick="mobilNav('kassa',-1);stängMerMeny()"><span class="mm-ikon">💰</span>Kassa</button>
@@ -501,9 +570,13 @@
 
 <!-- ══ DASHBOARD ══ -->
 <section id="dashboard" class="sektion aktiv">
+  <div id="signal-band" style="margin-bottom:16px;padding:10px 16px;border-radius:8px;background:#fef2f2;border:1px solid #fca5a5;cursor:pointer;display:none;justify-content:space-between;align-items:center" onclick="visaSektion('signaler')">
+    <div id="signal-band-text" style="font-size:0.87rem;font-weight:600;color:#b91c1c"></div>
+    <span style="font-size:0.8rem;color:#b91c1c;font-weight:700">Visa signaler →</span>
+  </div>
   <div id="dashboard-fx-status" style="display:none;font-size:0.78rem;color:var(--muted);margin-bottom:10px;padding:6px 4px;display:flex;gap:12px;flex-wrap:wrap;align-items:center"></div>
   <div class="grid-auto mb24" id="nyckeltal-grid">
-    <div class="nyckeltal"><div class="label">Totalt portföljvärde</div><div class="value" id="nk-total">— kr</div><div class="sub" id="nk-total-sub"></div></div>
+    <div class="nyckeltal"><div class="label">Totalt portföljvärde</div><div class="value" id="nk-total">— kr</div><div class="sub" id="nk-total-sub"></div><div class="sub" id="nk-total-start" style="margin-top:2px;font-style:italic"></div></div>
     <div class="nyckeltal"><div class="label">Innehavens värde</div><div class="value" id="nk-innehav">— kr</div><div class="sub" id="nk-innehav-sub"></div></div>
     <div class="nyckeltal"><div class="label" id="nk-avkastning-label">Total avkastning</div><div class="value" id="nk-avkastning">— kr</div><div class="sub" id="nk-avkastning-sub"></div></div>
     <div class="nyckeltal"><div class="label" id="nk-utdelning-label">Utdelningar totalt</div><div class="value" id="nk-utdelning">— kr</div></div>
@@ -511,22 +584,69 @@
     <div class="nyckeltal"><div class="label">Tillgänglig likviditet</div><div class="value" id="nk-kassa">— kr</div><div class="sub" id="nk-kassa-sub"></div></div>
     <div class="nyckeltal"><div class="label">Nettoinsatt kapital</div><div class="value" id="nk-nettoinsatt">— kr</div><div class="sub" id="nk-nettoinsatt-sub"></div></div>
   </div>
+  <!-- Periodutveckling-kort -->
+  <div class="card mb20" id="periodutveckling-kort">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:14px">
+      <div>
+        <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;font-weight:700">Periodutveckling</div>
+        <div id="pu-period-rubrik" style="font-size:1rem;font-weight:700;color:var(--primary)"></div>
+      </div>
+      <div id="pu-start-till" style="font-size:0.8rem;color:var(--muted);text-align:right;line-height:1.6"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px">
+      <div style="background:#f9fafb;border-radius:8px;padding:14px 16px;border:1px solid var(--border)">
+        <div style="font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px">Totalutveckling <span style="font-weight:400;font-style:italic">inkl. insättningar</span></div>
+        <div id="pu-inkl-kr" style="font-size:1.4rem;font-weight:800;line-height:1">—</div>
+        <div id="pu-inkl-pct" style="font-size:0.95rem;font-weight:700;margin-top:4px">—</div>
+        <div style="font-size:0.7rem;color:var(--muted);margin-top:10px;line-height:1.5;border-top:1px solid var(--border);padding-top:8px">
+          <strong>Formel:</strong> (Slutvärde − Startvärde) ÷ Startvärde
+        </div>
+      </div>
+      <div style="background:#f9fafb;border-radius:8px;padding:14px 16px;border:1px solid var(--border)">
+        <div style="font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px">Ren avkastning <span style="font-weight:400;font-style:italic">exkl. insättningar</span></div>
+        <div id="pu-exkl-kr" style="font-size:1.4rem;font-weight:800;line-height:1">—</div>
+        <div id="pu-exkl-pct" style="font-size:0.95rem;font-weight:700;margin-top:4px">—</div>
+        <div style="font-size:0.7rem;color:var(--muted);margin-top:10px;line-height:1.5;border-top:1px solid var(--border);padding-top:8px">
+          <strong>Formel:</strong> (Slutvärde − Start − Nettoinflöde) ÷ (Start + Nettoinflöde)
+        </div>
+      </div>
+    </div>
+    <div id="pu-insattnings-rad" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--primary-light);border-radius:6px;font-size:0.84rem">
+      <span style="color:var(--primary-mid);font-weight:600">Nettoinflöde under perioden <span style="font-weight:400">(insättn. − uttag)</span></span>
+      <span id="pu-insatt-belopp" style="font-weight:700;color:var(--primary-mid)">—</span>
+    </div>
+    <div style="margin-top:10px">
+      <button onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.textContent=this.textContent.includes('Visa')?'▲ Dölj beräkningsunderlag':'▼ Visa beräkningsunderlag'" style="background:none;border:none;color:var(--muted);font-size:0.75rem;cursor:pointer;padding:0;text-decoration:underline">▼ Visa beräkningsunderlag</button>
+      <div id="pu-debug" style="display:none;margin-top:8px;padding:10px 12px;background:#f9fafb;border-radius:6px;border:1px solid var(--border);font-size:0.77rem;line-height:2;color:#374151"></div>
+    </div>
+  </div>
+
+  <div id="utdelningskalender-kort" class="card mb20" style="display:none">
+    <div class="card-titel"><span class="card-titel-text">📅 Förväntade utdelningar — nästa 90 dagar</span></div>
+    <div id="utdelningskalender-innehall" style="font-size:0.84rem"></div>
+  </div>
+
   <div class="diagram-grid mb20">
     <div class="card"><div class="card-titel"><span class="card-titel-text">Fördelning per kategori</span></div><div class="diagram-wrap"><canvas id="diagramKategori"></canvas></div></div>
+    <div class="card" id="fx-diagram-kort" style="display:none">
+      <div class="card-titel"><span class="card-titel-text">Valutaexponering</span></div>
+      <div id="fx-band" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;font-size:0.82rem"></div>
+      <div class="diagram-wrap"><canvas id="diagramFX"></canvas></div>
+    </div>
   </div>
   <div class="card mb20">
     <div class="card-titel" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
       <span class="card-titel-text">Värdeutveckling</span>
-      <div id="historik-period-knappar" style="display:flex;gap:4px">
-        <button onclick="byttHistorikPeriod(30,this)" class="period-knapp">30D</button>
-        <button onclick="byttHistorikPeriod(90,this)" class="period-knapp aktiv">90D</button>
-        <button onclick="byttHistorikPeriod(180,this)" class="period-knapp">6M</button>
-        <button onclick="byttHistorikPeriod(365,this)" class="period-knapp">1Å</button>
-        <button onclick="byttHistorikPeriod('år',this)" class="period-knapp">i År</button>
-        <button onclick="byttHistorikPeriod(0,this)" class="period-knapp">Allt</button>
+      <div style="display:flex;gap:4px">
+        <button onclick="växlaDiagramVy('total',this)" id="dv-knapp-total" class="period-knapp aktiv">Totalvärde</button>
+        <button onclick="växlaDiagramVy('justerat',this)" id="dv-knapp-just" class="period-knapp">Exkl. insättningar</button>
       </div>
     </div>
     <div class="diagram-wrap" style="height:280px"><canvas id="diagramHistorik"></canvas></div>
+  </div>
+  <div class="card mb20" id="kat-avkastning-kort" style="display:none">
+    <div class="card-titel"><span class="card-titel-text" id="kat-avkastning-rubrik">Kategoriavkastning</span></div>
+    <div id="kat-avkastning-staplar" style="padding:4px 0"></div>
   </div>
   <div class="card mb20"><div class="card-titel"><span class="card-titel-text">Kategorivikter vs mål</span></div><div id="dashboard-vikter"></div></div>
   <div class="card">
@@ -541,13 +661,37 @@
   </div>
 </section>
 
+<!-- ══ SIGNALER ══ -->
+<section id="signaler" class="sektion">
+  <div id="signaler-innehall"></div>
+</section>
+
 <!-- ══ KATEGORIER ══ -->
 <section id="kategorier" class="sektion">
-  <div class="banner banner-info mb20">ℹ️ <span><strong>Grön</strong> = över MA200. <strong>Gul</strong> = nära MA200 (±5%) eller Tvådagarsvarning (1 dag under). <strong>Röd</strong> = Säljsignal (2 dagar under MA200, kat. 3–6). <strong>Hård stopp 🛑</strong> = kurs &lt; 90% av GAV (kat. 3–6). <strong>Mjuk analys ⚠️</strong> = kurs &lt; 90% av GAV (kat. 1–2). <strong>Gummiband</strong> visar avstånd till MA200: 🟢 0–15% · 🟡 15–40% · 🟠 &gt;40%.</span></div>
-  <div id="kategori-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;"></div>
-  <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
-    <button class="btn btn-primary btn-sm" onclick="läggTillKategori()">+ Ny kategori</button>
-    <button class="btn btn-outline btn-sm" onclick="återställKategorier()">↩ Återställ standard</button>
+  <!-- Sub-tabs: Grid | Jämför -->
+  <div style="display:flex;gap:6px;margin-bottom:16px;border-bottom:2px solid var(--border);padding-bottom:0">
+    <button id="kat-tab-grid" onclick="byttKatTab('grid')" style="padding:8px 16px;border:none;background:none;cursor:pointer;font-size:0.9rem;font-weight:700;color:var(--primary-mid);border-bottom:2px solid var(--primary-mid);margin-bottom:-2px">🗂 Kategorier</button>
+    <button id="kat-tab-jämför" onclick="byttKatTab('jämför')" style="padding:8px 16px;border:none;background:none;cursor:pointer;font-size:0.9rem;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px">📈 Jämför kategorier</button>
+  </div>
+  <!-- Grid-vy -->
+  <div id="kat-vy-grid">
+    <div class="banner banner-info mb20">ℹ️ <span><strong>Grön</strong> = över MA200. <strong>Gul</strong> = nära MA200 (±5%) eller Tvådagarsvarning (1 dag under). <strong>Röd</strong> = Säljsignal (2 dagar under MA200, kat. 3–6). <strong>Hård stopp 🛑</strong> = kurs &lt; 90% av GAV (kat. 3–6). <strong>Mjuk analys ⚠️</strong> = kurs &lt; 90% av GAV (kat. 1–2). <strong>Gummiband</strong> visar avstånd till MA200: 🟢 0–15% · 🟡 15–40% · 🟠 &gt;40%.</span></div>
+    <div id="kategori-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;"></div>
+    <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-primary btn-sm" onclick="läggTillKategori()">+ Ny kategori</button>
+      <button class="btn btn-outline btn-sm" onclick="återställKategorier()">↩ Återställ standard</button>
+    </div>
+  </div>
+  <!-- Jämför-vy (4.2) -->
+  <div id="kat-vy-jämför" style="display:none">
+    <div class="card">
+      <div class="card-titel" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <span class="card-titel-text" id="kat-jämför-rubrik">Kategoriutveckling</span>
+        <span style="font-size:0.78rem;color:var(--muted)">Indexerat till 100 vid periodens start</span>
+      </div>
+      <div id="kat-jämför-ingen-data" style="display:none;padding:24px;text-align:center;color:var(--muted);font-size:0.87rem"></div>
+      <div class="diagram-wrap" style="height:320px"><canvas id="diagramKatJämför"></canvas></div>
+    </div>
   </div>
 </section>
 
@@ -578,6 +722,31 @@
       <button class="btn btn-ghost" onclick="avbrytRedigering()">✕ Rensa</button>
     </div>
   </div>
+  <!-- Ticker & MA200-autohämtning -->
+  <div class="card mb20">
+    <div class="card-titel" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <span class="card-titel-text">📡 Tickers & MA200-autohämtning</span>
+      <button class="btn btn-ghost btn-sm" onclick="växlaTickerVy()">▼ Visa / redigera tickers</button>
+    </div>
+    <div id="ticker-vy" style="display:none;margin-top:12px">
+      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px">Ange börssymboler för automatisk MA200-hämtning via Alpha Vantage (gratis, 25 anrop/dag). Format: svenska aktier <code>ERIC-B.STO</code> / <code>VOLV-B.STO</code>, amerikanska <code>NVDA</code> / <code>MSFT</code>.</p>
+      <div id="ticker-lista" style="margin-bottom:14px"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <button class="btn btn-primary" onclick="sparaTickers()">💾 Spara tickers</button>
+        <button class="btn btn-ghost" id="ma200-hämta-knapp" onclick="hämtaAllaMA200()" style="display:none">📡 Hämta MA200 för alla</button>
+        <span id="ma200-progress" style="font-size:0.8rem;color:var(--muted)"></span>
+      </div>
+      <div style="margin-top:14px;padding:10px 14px;background:#f9fafb;border-radius:8px;border:1px solid var(--border)">
+        <label style="font-size:0.78rem;font-weight:600;color:var(--muted);display:block;margin-bottom:6px">Alpha Vantage API-nyckel <a href="https://www.alphavantage.co/support/#api-key" target="_blank" style="color:var(--primary-mid);font-weight:400">(hämta gratis nyckel)</a></label>
+        <div style="display:flex;gap:8px">
+          <input id="av-api-key" type="password" class="input" placeholder="Ange din nyckel här" style="flex:1">
+          <button class="btn btn-ghost" onclick="sparaAPIKey()">Spara</button>
+        </div>
+        <div id="av-key-status" style="font-size:0.75rem;margin-top:6px;color:var(--muted)"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="card">
     <div class="flex-between mb16">
       <div class="card-titel" style="margin:0"><span class="card-titel-text">Mina innehav</span></div>
@@ -586,7 +755,7 @@
     <div id="fx-indikator" style="font-size:0.8rem;padding:7px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;margin-bottom:12px;display:none;line-height:1.5"></div>
     <div class="tabell-wrap">
       <table id="tabellInnehav">
-        <thead><tr><th>Namn</th><th>Kat.</th><th>Valuta</th><th>Antal</th><th>GAV</th><th>Kurs (SEK/Lokal)</th><th>MA200 (Lokal)</th><th>Signal</th><th>Kostnadsbas</th><th>Markn.värde</th><th>Vinst/Förlust</th><th>%</th><th>Utd.</th><th>Åtgärder</th></tr></thead>
+        <thead id="innehavThead"><tr></tr></thead>
         <tbody></tbody>
       </table>
       <div class="mobil-kort-lista" id="innehavKortLista"></div>
@@ -704,17 +873,94 @@
     <p style="font-size:0.8rem;color:var(--muted);margin-top:12px">⚠️ "Rensa all data" tar bort all portföljdata permanent. Exportera Excel-backup först. "Läs in filer på nytt" återställer importstatus.</p>
   </div>
   <div class="card mb20">
+    <div class="card-titel"><span class="card-titel-text">📍 Manuell baslinje (nollpunkt för avkastning)</span></div>
+    <p style="font-size:0.84rem;color:var(--muted);margin-bottom:14px">Ange portföljvärdet vid ett känt datum — t.ex. från ett kontoutdrag eller Avanza-exportfil. Alla avkastningsberäkningar mäts från detta datum som startpunkt. Insättningar gjorda <em>före</em> detta datum räknas inte av.</p>
+    <div id="baslinje-befintlig" style="display:none;margin-bottom:14px;padding:10px 14px;background:var(--primary-light);border-radius:8px;border:1px solid var(--primary-mid);justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:0.72rem;color:var(--primary-mid);font-weight:700;text-transform:uppercase;letter-spacing:0.06em">Aktiv baslinje</div>
+        <div id="baslinje-visning" style="font-weight:700;font-size:1rem;margin-top:2px"></div>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="raderaManuellBaslinje()">Ta bort</button>
+    </div>
+    <div id="baslinje-form" style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end">
+      <div>
+        <label style="font-size:0.78rem;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">Datum</label>
+        <input type="date" id="baslinje-datum" class="input" style="width:100%">
+      </div>
+      <div>
+        <label style="font-size:0.78rem;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">Portföljvärde (kr)</label>
+        <input type="number" id="baslinje-värde" class="input" placeholder="t.ex. 850000" style="width:100%">
+      </div>
+      <button class="btn btn-primary" onclick="sparaManuellBaslinje()">Spara</button>
+    </div>
+  </div>
+  <div class="card mb20">
     <div class="card-titel"><span class="card-titel-text">Historikposter (värdeutveckling)</span></div>
     <div id="historik-lista" style="max-height:260px;overflow-y:auto;"></div>
-    <p style="font-size:0.8rem;color:var(--muted);margin-top:10px">Endast poster skapade vid import av positionsfiler visas i diagrammet. Radera felaktiga poster här.</p>
+    <p style="font-size:0.8rem;color:var(--muted);margin-top:10px">Poster skapas automatiskt vid import av positionsfiler. Manuell baslinje markeras med 📍. Radera felaktiga poster här.</p>
   </div>
 
   <!-- Importlogg -->
-  <div class="card">
+  <div class="card mb20">
     <div class="card-titel"><span class="card-titel-text">Importlogg</span>
       <button class="btn btn-ghost btn-sm" onclick="rensaImportLogg()">Rensa</button>
     </div>
     <div class="import-logg" id="importLogg"><span class="info">Redo. Tryck på en av rutorna ovan för att välja fil.</span></div>
+  </div>
+
+  <!-- Avstämningspanel (3.2) -->
+  <div class="card">
+    <div class="card-titel" style="display:flex;justify-content:space-between;align-items:center">
+      <span class="card-titel-text">🔍 Avstämning mot Avanza</span>
+      <button class="btn btn-ghost btn-sm" onclick="växlaAvstämning()">▼ Öppna</button>
+    </div>
+    <div id="avstämning-panel" style="display:none;margin-top:14px">
+      <!-- Steg 1: Status -->
+      <div class="avsteg" id="avsteg-1">
+        <div class="avsteg-rubrik">Steg 1 — Nuläge i appen</div>
+        <div id="avst-steg1-innehall" style="font-size:0.84rem;line-height:1.9"></div>
+        <button class="btn btn-primary btn-sm mt12" onclick="gåTillAvsteg(2)">Nästa →</button>
+      </div>
+      <!-- Steg 2: Mata in Avanza-totaler -->
+      <div class="avsteg" id="avsteg-2" style="display:none">
+        <div class="avsteg-rubrik">Steg 2 — Ange Avanza-totalerna</div>
+        <p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px">Öppna Avanza → Min ekonomi → Innehav. Ange de siffror du ser där.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:440px">
+          <div class="fält"><label style="font-size:0.78rem">Totalt marknadsvärde (kr)</label><input id="avst-avanza-total" type="number" class="input" placeholder="t.ex. 1250000"></div>
+          <div class="fält"><label style="font-size:0.78rem">Avanza-kassa (kr)</label><input id="avst-avanza-kassa" type="number" class="input" placeholder="t.ex. 45000"></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn btn-ghost btn-sm" onclick="gåTillAvsteg(1)">← Tillbaka</button>
+          <button class="btn btn-primary btn-sm" onclick="gåTillAvsteg(3)">Beräkna diff →</button>
+        </div>
+      </div>
+      <!-- Steg 3: Diff-analys -->
+      <div class="avsteg" id="avsteg-3" style="display:none">
+        <div class="avsteg-rubrik">Steg 3 — Differensanalys</div>
+        <div id="avst-diff-innehall" style="font-size:0.84rem"></div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" onclick="gåTillAvsteg(2)">← Tillbaka</button>
+          <button class="btn btn-primary btn-sm" onclick="gåTillAvsteg(4)">Kontrollera innehav →</button>
+          <button class="btn btn-ghost btn-sm" onclick="sparaAvstämning()">💾 Spara avstämning</button>
+        </div>
+      </div>
+      <!-- Steg 4: Per-innehavs kontroll -->
+      <div class="avsteg" id="avsteg-4" style="display:none">
+        <div class="avsteg-rubrik">Steg 4 — Per-innehavs kurskontroll (valfri)</div>
+        <p style="font-size:0.82rem;color:var(--muted);margin-bottom:10px">Jämför Avanzas aktuella kurser mot kurser i appen. Lämna tomt för innehav som stämmer.</p>
+        <div id="avst-innehav-lista" style="font-size:0.83rem;max-height:320px;overflow-y:auto"></div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" onclick="gåTillAvsteg(3)">← Tillbaka</button>
+          <button class="btn btn-primary btn-sm" onclick="tillämpAvstämningKurser()">✓ Uppdatera kurser</button>
+          <button class="btn btn-ghost btn-sm" onclick="sparaAvstämning()">💾 Spara utan kursuppdatering</button>
+        </div>
+      </div>
+      <!-- Historik -->
+      <div id="avst-historik" style="margin-top:18px;border-top:1px solid var(--border);padding-top:12px;display:none">
+        <div style="font-size:0.78rem;font-weight:700;color:var(--muted);margin-bottom:6px">TIDIGARE AVSTÄMNINGAR</div>
+        <div id="avst-historik-lista" style="font-size:0.8rem"></div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -810,6 +1056,33 @@
       <table id="tabellKassa"><thead><tr><th>Datum</th><th>Typ</th><th>Belopp</th><th>Notat</th><th></th></tr></thead><tbody></tbody></table>
     </div>
   </div>
+
+  <!-- ISK/KF Skattesektion (3.1) -->
+  <div class="card mt20">
+    <div class="card-titel" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <span class="card-titel-text">🧾 ISK/KF — Schablonintäkt & skattprognos</span>
+      <div style="display:flex;gap:6px;align-items:center">
+        <label style="font-size:0.78rem;color:var(--muted)">År</label>
+        <select id="isk-år" class="input" style="padding:4px 8px;font-size:0.82rem;width:80px" onchange="renderISK()"></select>
+      </div>
+    </div>
+    <p style="font-size:0.82rem;color:var(--muted);margin-bottom:14px">Prognos baseras på kvartalsvärden ur historiken + insättningar jan–jun. Ju fler historikpunkter du har kring kvartalsskiftena, desto noggrannare prognos.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:16px">
+      <div class="nyckeltal" style="padding:14px"><div class="label">Kapitalunderlag</div><div class="value" id="isk-underlag">—</div><div class="sub" id="isk-underlag-sub"></div></div>
+      <div class="nyckeltal" style="padding:14px"><div class="label">Schablonintäkt</div><div class="value" id="isk-schablonintäkt">—</div><div class="sub" id="isk-schablonintäkt-sub"></div></div>
+      <div class="nyckeltal" style="padding:14px"><div class="label">Beräknad skatt (30%)</div><div class="value" id="isk-skatt">—</div><div class="sub" id="isk-skatt-sub"></div></div>
+    </div>
+    <div style="margin-bottom:14px;padding:10px 14px;background:#f9fafb;border-radius:8px;border:1px solid var(--border)">
+      <label style="font-size:0.78rem;font-weight:600;color:var(--muted);display:block;margin-bottom:8px">Statslåneränta (SLR) — gäller för valt år</label>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <input id="isk-slr" type="number" step="0.01" min="0" max="20" class="input" style="width:90px;padding:5px 8px" placeholder="2.37" oninput="renderISK()">
+        <span style="font-size:0.82rem;color:var(--muted)">% → Schablonränta = SLR + 1% = <strong id="isk-total-ränta">—</strong></span>
+      </div>
+    </div>
+    <div id="isk-kvartal-detalj" style="margin-bottom:14px;font-size:0.82rem"></div>
+    <div id="isk-tajming-varning" style="display:none"></div>
+    <div id="isk-roundtrip-varning" style="display:none"></div>
+  </div>
 </section>
 
 <!-- ══ HJÄLP / HANDLEDNING ══ -->
@@ -817,14 +1090,14 @@
   <div class="card">
     <nav class="hjalp-nav">
       <button class="hjalp-flik aktiv" onclick="visaHjalpKapitel('kom-igang',this)">🚀 Kom igång</button>
-      <button class="hjalp-flik" onclick="visaHjalpKapitel('nyheter',this)">✨ Nyheter v2.08</button>
+      <button class="hjalp-flik" onclick="visaHjalpKapitel('nyheter',this)">✨ Nyheter v3.0</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('ipad-import',this)">📱 Import på iPad</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('veckorutin',this)">📅 Veckorutin</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('flikarna',this)">📋 Flikarna</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('strategi',this)">📊 Strategi</button>
-      <button class="hjalp-flik" onclick="visaHjalpKapitel('github',this)">🌐 GitHub & URL</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('felsok',this)">🔧 Felsökning</button>
       <button class="hjalp-flik" onclick="visaHjalpKapitel('faq',this)">❓ FAQ</button>
+      <button class="hjalp-flik" onclick="visaHjalpKapitel('kontrollrakna',this)">🔢 Kontrollräkna</button>
     </nav>
 
     <!-- KOM IGÅNG -->
@@ -839,7 +1112,7 @@
         <li><div class="steg-nr">5</div><div class="steg-txt"><strong>Importera transaktionsfilen</strong><span>Importera-fliken → tryck på "Transaktioner"-rutan → välj filen. Köp, sälj, utdelningar och courtage analyseras automatiskt.</span></div></li>
         <li><div class="steg-nr">6</div><div class="steg-txt"><strong>Kontrollera kategorier</strong><span>Gå till <strong>Innehav</strong>. Kontrollera att varje aktie hamnat i rätt kategori. Tryck Redigera för att ändra.</span></div></li>
         <li><div class="steg-nr">7</div><div class="steg-txt"><strong>Lägg in MA200-värden</strong><span>För aktier i kategori 3–5 behöver du ange MA200. Slå upp på avanza.se (Diagram → MA 200) eller investing.com. Tryck Redigera på aktien och fyll i fältet.</span></div></li>
-        <li><div class="steg-nr">8</div><div class="steg-txt"><strong>Klart!</strong><span>Gå till Dashboard för en överblick. Gå till Kategorier för att se om portföljen är i balans med din strategi.</span></div></li>
+        <li><div class="steg-nr">8</div><div class="steg-txt"><strong>Klart!</strong><span>Gå till Dashboard för en överblick. Kolla Signaler-fliken för en samlad bild av vad som kräver åtgärd. Gå till Kategorier för att se om portföljen är i balans med din strategi.</span></div></li>
       </ul>
       <div class="hjalp-ruta hjalp-ruta-varning">
         <div class="hjalp-ruta-titel">⚠️ Viktigt om data</div>
@@ -847,154 +1120,110 @@
       </div>
     </div>
 
-    <!-- NYHETER v2.08 -->
+    <!-- NYHETER v3.0 -->
     <div class="hjalp-kapitel" id="hk-nyheter">
-      <div class="hjalp-rubrik">✨ Nyheter i version 2.08</div>
-      <div class="hjalp-ingress">Excel backup &amp; återställning — exportera all data och importera tillbaka för fullständig återställning.</div>
+      <div class="hjalp-rubrik">✨ Nyheter i version 3.0</div>
+      <div class="hjalp-ingress">Strategiportföljen går från "interaktivt kalkylblad" till cockpit — med periodanalys i alla vyer, samlade signaler, automatisk MA200-hämtning och ISK/KF-skatteplanering.</div>
+
+      <div class="hjalp-h2">🕐 Global periodväljare</div>
+      <div class="hjalp-p">En sticky period-bar sitter fast under navigeringen på alla sidor. Välj <strong>1D · 7D · 30D · 90D · 6M · 1Å · i År · Allt</strong> — valet påverkar Dashboard, Kategorier och Innehav samtidigt. Du behöver inte byta period för varje flik.</div>
+      <div class="hjalp-ruta hjalp-ruta-tips">
+        <div class="hjalp-ruta-titel">💡 Periodbaserad avkastning</div>
+        Avkastning mäts alltid från närmaste importerade historikpunkt — aldrig från alla insättningar sedan 2017. Tryck "▼ Visa beräkningsunderlag" i Periodutveckling-kortet för att se exakt vilka tal som används.
+      </div>
+
+      <div class="hjalp-h2">🎯 Manuell baslinje</div>
+      <div class="hjalp-p">Under <strong>Importera → Manuell baslinje</strong> kan du ange ett datum och ett portföljvärde som fast startpunkt. Appen använder din baslinje som referens för all avkastning framåt — praktiskt om du saknar gamla positionsfiler men vet vad portföljen var värd ett visst datum.</div>
+
+      <div class="hjalp-h2">🚦 Signaler-flik</div>
+      <div class="hjalp-p">En samlad vy med allt som kräver uppmärksamhet — inga fler manuella genomgångar av varje kategori. Innehåller fem sektioner:</div>
+      <ul class="hjalp-ul">
+        <li><strong>Säljsignaler</strong> — MA200 röd, tvådagarskrav uppfyllt</li>
+        <li><strong>Bevakningslista</strong> — gul zon (dag 1 under MA200)</li>
+        <li><strong>Nödutgångar</strong> — kurs under 90% av GAV</li>
+        <li><strong>Ombalansering</strong> — kategorier utanför målviktintervall</li>
+        <li><strong>Hög koncentration</strong> — enskilda innehav &gt;8% av portföljvärdet</li>
+      </ul>
+      <div class="hjalp-p">Dashboard visar ett rött signalband med räknare (röda, nödutgångar, ombalans) som klickbart leder direkt till Signaler. Döljs automatiskt om allt är OK.</div>
+
+      <div class="hjalp-h2">⚖️ Ombalanseringsassistent</div>
+      <div class="hjalp-p">Varje kategorikort visar automatiskt "Köp X kr" eller "Sälj X kr" om vikten avviker mer än 2% från målintervallet. Beloppet är det som krävs för att nå mitten av målintervallet. Döljs när portföljvärde saknas.</div>
+
+      <div class="hjalp-h2">🎨 Koncentrationsrisk i Innehav</div>
+      <div class="hjalp-p">Innehav-tabellen har en ny <strong>Andel</strong>-kolumn som visar varje positions vikt i portföljen. Färgvarning: gul vid &gt;8%, orange vid &gt;12%. Samma information syns i mobilkortet.</div>
+
+      <div class="hjalp-h2">↕ Sorterbar innehavstabell</div>
+      <div class="hjalp-p">Klicka på valfri kolumnrubrik (Namn, Värde, Avkastning, Signal, Andel, MA200-avstånd) för att sortera. Pilar ↑↓ visar aktiv sorteringskolumn. Sorteringsvalet minns val inom sessionen.</div>
+
+      <div class="hjalp-h2">📊 Kategoriprestation per period</div>
+      <div class="hjalp-p">Varje kategorikort visar nu avkastning (kr och %) för vald period. En liten avkastningsbadge visas direkt på kortet — grön vid vinst, röd vid förlust. Kräver att kategorivärden finns sparade i historiken (sparas automatiskt vid varje positionsimport framåt).</div>
+      <div class="hjalp-p">Under <strong>📈 Jämför kategorier</strong> (sub-tab i Kategorier) kan du se alla kategorier som indexerade linjer (start = 100) i ett jämförelsediagram — tydlig visualisering av vilken kategori som bidragit mest under perioden.</div>
+
+      <div class="hjalp-h2">💱 FX-exponeringsöversikt</div>
+      <div class="hjalp-p">Dashboard visar en FX-donut och färgade pills (t.ex. "SEK 48% | USD 39% | EUR 8%") bredvid kategoridonuten. Aggregerar alla innehav per valuta — ger en snabb bild av valutarisken i portföljen.</div>
+
+      <div class="hjalp-h2">📉 Avkastningsstaplar per kategori</div>
+      <div class="hjalp-p">Dashboard visar horisontella staplar med avkastning per kategori för vald period. Kräver historik med kategorivärden (sparas vid positionsimport). Gröna staplar = positiv, röda = negativ avkastning.</div>
+
+      <div class="hjalp-h2">📡 Tickers &amp; automatisk MA200-hämtning</div>
+      <div class="hjalp-p">Under <strong>📡 Tickers &amp; MA200</strong> i Innehav-fliken kan du ange börssymboler (tickers) per aktie. När du lagt in din Alpha Vantage API-nyckel (gratis) hämtas MA200 automatiskt för alla aktier med ticker — ingen manuell uppdatering längre.</div>
+
+      <div class="hjalp-h3">Hitta rätt ticker med 🔍-sökning</div>
+      <div class="hjalp-p">Varje rad i ticker-listan har en <strong>🔍-knapp</strong>. Klicka på den, skriv bolagsnamnet och välj rätt symbol ur listan som visas. Listan visar börs och valuta per träff — välj den som matchar hur aktien är registrerad i din portfölj.</div>
+      <ul class="steg-lista" style="margin:10px 0">
+        <li><div class="steg-nr">1</div><div class="steg-txt"><strong>Klicka 🔍</strong><span>Bredvid ticker-fältet för det innehav du vill söka.</span></div></li>
+        <li><div class="steg-nr">2</div><div class="steg-txt"><strong>Skriv bolagsnamn</strong><span>T.ex. "AstraZeneca" eller "Caterpillar" — Alpha Vantage söker i sin databas.</span></div></li>
+        <li><div class="steg-nr">3</div><div class="steg-txt"><strong>Välj rätt rad</strong><span>Titta på börs och valuta. Välj den som stämmer med din portfölj: <em>United States / USD</em> för amerikanska, <em>Stockholm / SEK</em> för svenska.</span></div></li>
+        <li><div class="steg-nr">4</div><div class="steg-txt"><strong>Spara</strong><span>Klicka "💾 Spara tickers" och sedan "📡 Hämta MA200 för alla".</span></div></li>
+      </ul>
+
+      <div class="hjalp-h3">Ticker-format</div>
+      <table class="hjalp-tabell">
+        <thead><tr><th>Typ</th><th>Ticker-format</th><th>Exempel</th></tr></thead>
+        <tbody>
+          <tr><td>Amerikanska aktier (NYSE/NASDAQ)</td><td><code>TICKER</code></td><td><code>NVDA</code>, <code>CAT</code>, <code>XOM</code></td></tr>
+          <tr><td>Svenska aktier (Nasdaq Sthlm)</td><td><code>NAMN.STO</code></td><td><code>SAAB-B.STO</code>, <code>VOLV-B.STO</code></td></tr>
+          <tr><td>Brittiska aktier (London)</td><td><code>NAMN.LON</code></td><td><code>AZN.LON</code> (i GBX)</td></tr>
+          <tr><td>Norska aktier (Oslo)</td><td><code>NAMN.OSL</code></td><td><code>EQNR.OSL</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="hjalp-ruta hjalp-ruta-varning">
+        <div class="hjalp-ruta-titel">⚠️ Viktig regel: valuta måste stämma</div>
+        MA200 jämförs mot kursens <em>lokala valuta</em>. Om aktien är registrerad som SEK i appen måste tickern returnera ett SEK-värde — annars blir signalen fel. Appen varnar med ett rött ⚠ om det hämtade MA200-värdet avviker mer än 10× från kursen.<br><br>
+        <strong>Svenska aktier på Alpha Vantage:</strong> Täckningen är begränsad — många svenska aktier saknas. Om sökningen inte ger en SEK-träff: ange MA200 manuellt istället (redigera innehav → fältet MA200).
+      </div>
+      <div class="hjalp-ruta hjalp-ruta-info">
+        <div class="hjalp-ruta-titel">API-nyckel och rate limit</div>
+        API-nyckeln (gratis på alphavantage.co) sparas i webbläsarens localStorage och behövs bara anges en gång. Gratis-planen tillåter 5 anrop per minut — appen väntar automatiskt 15 sekunder mellan anrop. Grön ✓ per innehav = MA200 uppdaterat. Rött ⚠ = fel ticker eller fel valuta.
+      </div>
+
+      <div class="hjalp-h2">🧾 ISK/KF-skattesektion</div>
+      <div class="hjalp-p">Under <strong>Kassa → ISK-skatt</strong> beräknar appen årets schablonintäkt och förväntad skatt baserat på kvartalsvärden ur historiken och H1-insättningar.</div>
+      <ul class="hjalp-ul">
+        <li>Ange SLR (statslåneränta) för innevarande år — appen räknar skatteunderlaget automatiskt</li>
+        <li><strong>Insättningstajming-varning:</strong> om du gör en stor insättning sent på kvartalet visas en varning om den skattemässiga effekten</li>
+        <li><strong>Round-trip-varning:</strong> om du tagit ut och satt in pengar samma år kan kapitalunderlaget ha ökat utan att portföljvärdet gjort det</li>
+      </ul>
+
+      <div class="hjalp-h2">🔍 Avstämningspanel</div>
+      <div class="hjalp-p">Under <strong>Importera → Avstämning</strong> finns ett 4-stegs guidat flöde för att stämma av portföljens siffror mot Avanza:</div>
+      <ol class="hjalp-ol">
+        <li><strong>Nuläge</strong> — visar senaste import, FX-status och historikens täckning</li>
+        <li><strong>Avanza-inmatning</strong> — ange Avanzas totalsiffra manuellt</li>
+        <li><strong>Diff-analys</strong> — automatisk jämförelse med kursavvikelse, FX-lag och kassadiff</li>
+        <li><strong>Kurskontroll</strong> — frivillig genomgång per innehav om diff kvarstår</li>
+      </ol>
+      <div class="hjalp-p">Genomförda avstämningar sparas i historiken (<code>data.avstämningar[]</code>) för framtida referens.</div>
+
+      <div class="hjalp-h2">🌙 Mörkt tema</div>
+      <div class="hjalp-p">Klicka på ☀️/🌙-ikonen i headern för att växla mellan ljust och mörkt tema. Valet sparas i webbläsaren och minns between sessioner.</div>
+
+      <div class="hjalp-h2">📅 Utdelningskalender</div>
+      <div class="hjalp-p">Dashboard visar förväntade utdelningar de kommande 90 dagarna baserat på historiska utdelningsmånader ur transaktionsfilen. Varje aktie som delat ut pengar tidigare visas med förväntat belopp och månad. Ingen konfiguration krävs — uppdateras automatiskt efter transaktionsimport.</div>
 
       <div class="hjalp-h2">💾 Excel backup &amp; återställning (v2.08)</div>
-      <div class="hjalp-p">Under <strong>Importera → Backup &amp; Återställning</strong> finns nu två knappar:</div>
-      <ul class="hjalp-ul">
-        <li><strong>⬇ Exportera fullständig backup</strong> — skapar en Excel-fil med 7 ark som innehåller all portföljdata: Innehav, Transaktioner, Beslutslogg, Sammanfattning, Historik, Kassa och Kategorier.</li>
-        <li><strong>⬆ Importera från backup</strong> — läser in en exporterad backup och återställer hela portföljen. Appen validerar att rätt kolumner finns och kräver bekräftelse innan befintlig data ersätts.</li>
-      </ul>
-      <table class="hjalp-tabell">
-        <thead><tr><th>Ark</th><th>Innehåll</th><th>Används för</th></tr></thead>
-        <tbody>
-          <tr><td><strong>Innehav</strong></td><td>Alla fält inkl. GAV_Lokal, Historical_FX, MA200, tvådagarsdata</td><td>Återställer innehav exakt</td></tr>
-          <tr><td><strong>Transaktioner</strong></td><td>Alla Avanza-transaktioner inkl. valutainfo och ISIN</td><td>Beräkningar, utdelningar, realiserat</td></tr>
-          <tr><td><strong>Beslutslogg</strong></td><td>Vecka, datum, portföljvärde, tankar, åtgärder</td><td>Historisk logg</td></tr>
-          <tr><td><strong>Sammanfattning</strong></td><td>Nyckeltal + backup-metadata (version, datum)</td><td>Läsbar rapport — importeras ej</td></tr>
-          <tr><td><strong>Historik</strong></td><td>Datum och värde per importtillfälle</td><td>Värdeutvecklingsdiagrammet</td></tr>
-          <tr><td><strong>Kassa</strong></td><td>Manuella kassatransaktioner + kontosaldon</td><td>Kassasaldo och likviditet</td></tr>
-          <tr><td><strong>Kategorier</strong></td><td>Namn, färg, MA200-regler, målvikter per kategori</td><td>Återställer anpassade kategorier</td></tr>
-        </tbody>
-      </table>
-      <div class="hjalp-ruta hjalp-ruta-tips">
-        <div class="hjalp-ruta-titel">💡 Rekommenderat flöde</div>
-        Exportera backup varje vecka direkt efter ordinarie import. Spara filen i iCloud/OneDrive. Vid byte av enhet eller rensad webbläsare: öppna appen → Importera → Backup &amp; Återställning → välj filen. Allt återställs på under 5 sekunder.
-      </div>
-      <div class="hjalp-ruta hjalp-ruta-varning">
-        <div class="hjalp-ruta-titel">⚠️ Import ersätter all data</div>
-        När du importerar en backup ersätts <em>all</em> befintlig portföljdata. Exportera en ny backup av nuläget först om du vill kunna ångra.
-      </div>
-
-      <div class="hjalp-h2">💰 Tillgängligt för köp per konto (v2.07)</div>
-      <div class="hjalp-p">Kassa-fliken visar <strong>"Tillgängligt för köp" per konto</strong> (ISK, AF, Sparkonto m.m.) och matchar exakt vad Avanza visar — men du anger värdet manuellt, en gång i veckan vid ordinarie import.</div>
-      <div class="hjalp-p"><strong>Varför manuellt?</strong> Avanzas "Tillgängligt för köp" inkluderar osettlerade affärer, reserverade belopp och likviditet som inte alltid syns i transaktions-CSV:n. Det går inte att beräkna det exakt från filen.</div>
-      <div class="hjalp-p"><strong>Ikoner:</strong> &nbsp;✅ = manuellt inmatat (exakt) &nbsp;|&nbsp; ⚠️ = beräknat från transaktioner (kan avvika — ange manuellt för exakt värde)</div>
-      <div class="hjalp-ruta hjalp-ruta-tips"><div class="hjalp-ruta-titel">💡 Veckorutin</div>Gå till Avanza → Min ekonomi → Översikt. Notera "Tillgängligt för köp" per konto och ange det i Kassa-fliken. Tar 30 sekunder.</div>
-
-      <div class="hjalp-h2">🗂 Anpassningsbara kategorier (v2.05)</div>
-      <div class="hjalp-p">Kategorier kan nu <strong>läggas till, redigeras och tas bort</strong> direkt i appen. Gå till Kategorier-fliken — varje kort har knappar för ✏️ redigera och 🗑 ta bort. Längst ner finns knappar för att skapa nya kategorier och återställa till standard. Du anger namn, undertitel, emoji, färg, målvikter, MA200-regel och beskrivning. Ändringar sparas i webbläsaren.</div>
-
-      <div class="hjalp-h2">📈 Förbättrat värdeutvecklingsdiagram (v2.05)</div>
-      <div class="hjalp-p">Diagrammet har fullbredd, 280px höjd och läsbar x-axel med kortformat datum ("7 jan.", "1 apr."). <strong>Periodväljare:</strong> 30D / 90D / 6M / 1Å / Allt. Om transaktionsdata med insättningar/uttag finns visas en streckad referenslinje för nettoinsatt kapital. Donut-diagrammet visar nu totalvärde i centrum.</div>
-
-      <div class="hjalp-h2">🌐 Live FX-motor (v2.05)</div>
-      <div class="hjalp-p">Appen hämtar nu <strong>dagsaktuella växelkurser</strong> automatiskt via <code>open.er-api.com</code> (gratis, utan API-nyckel) vid varje laddning av sidan. Detta ger matematiskt korrekta MA200-signaler oberoende av SEK-fluktuationer.</div>
-      <table class="hjalp-tabell">
-        <thead><tr><th>Begrepp</th><th>Formel</th><th>Innebär</th></tr></thead>
-        <tbody>
-          <tr><td><strong>Marknadsvärde (SEK)</strong></td><td><code>Antal × Kurs_SEK</code></td><td>Från Avanza positionsfil.</td></tr>
-          <tr><td><strong>Växelkurs (Aktuell)</strong></td><td><code>Live från API</code></td><td>SEK per 1 USD/EUR/NOK etc. Uppdateras vid varje sidladdning.</td></tr>
-          <tr><td><strong>Kurs (Lokal)</strong></td><td><code>Kurs_SEK / Växelkurs_Aktuell</code></td><td>Aktiens pris i lokal valuta. Syns i tabellkolumnen.</td></tr>
-          <tr><td><strong>MA200 (Lokal)</strong></td><td>Anges manuellt</td><td>Alltid i lokal valuta (USD för NVIDIA, SEK för SAAB).</td></tr>
-          <tr><td><strong>Avstånd (%)</strong></td><td><code>(Kurs_Lokal / MA200_Lokal) − 1</code></td><td>Sann signal oberoende av SEK-fluktuationer.</td></tr>
-        </tbody>
-      </table>
-      <div class="hjalp-ruta hjalp-ruta-info">
-        <div class="hjalp-ruta-titel">Fallback vid offline</div>
-        Om API:et inte är tillgängligt (t.ex. offline) används den historiska FX-kursen som beräknats vid köptillfället (<code>GAV_SEK / GAV_Lokal</code> från importfilen). Statusen visas i en grön ruta ovanför innehavstabellen.
-      </div>
-
-      <div class="hjalp-h2">💱 FX-dekomponering (v2.02+)</div>
-      <div class="hjalp-p">Appen skiljer på <strong>bolagsvinst</strong> och <strong>valutavinst</strong> för utländska innehav.</div>
-<table class="hjalp-tabell">
-  <thead><tr><th>Begrepp</th><th>Formel</th><th>Innebär</th></tr></thead>
-  <tbody>
-    <tr><td><strong>Historical FX</strong></td><td><code>GAV_SEK / GAV_Lokal</code></td><td>Implicit växelkurs vid köptillfället — hämtas från positionsfilen automatiskt.</td></tr>
-    <tr><td><strong>Bolagsvinst</strong></td><td><code>(Lokal_nu - GAV_Lokal) × Antal × FX_historisk</code></td><td>Vinst driven av bolagets faktiska kursutveckling.</td></tr>
-    <tr><td><strong>Valutavinst</strong></td><td><code>Total_SEK - Bolagsvinst</code></td><td>Vinst driven av SEK-försämring mot lokal valuta.</td></tr>
-  </tbody>
-</table>
-<div class="hjalp-ruta hjalp-ruta-info">
-  <div class="hjalp-ruta-titel">Hur syns det i appen?</div>
-  I <strong>Innehav</strong>-tabellen visas vinst/förlust med en uppdelning: 🏢 = bolagsvinst, 💱 = valutavinst. Hovra över fältet för tooltip med exakta tal.
-</div>
-<div class="hjalp-ruta hjalp-ruta-info">
-  <div class="hjalp-ruta-titel">MA200 anges nu i <em>lokal valuta</em></div>
-  För NVIDIA anger du MA200 i USD, för SAAB i SEK. Appen räknar om till jämförbar lokal kurs automatiskt. Fältet i formuläret heter när "MA200 (lokal valuta)".
-</div>
-
-<div class="hjalp-h2">🛡️ Tvådagarsregeln för MA200 (kat. 3–6)</div>
-      <div class="hjalp-p">Säljsignal (röd) visas nu <strong>först efter två importtillfällen</strong> med stängning under MA200. Dag 1 visas som gul "bevaka"-signal. Dag 2+ aktiverar röd säljsignal.</div>
-      <div class="hjalp-ruta hjalp-ruta-info">
-        <div class="hjalp-ruta-titel">Hur fungerar det i praktiken?</div>
-        Importera positionsfilen måndag. Om en aktie i kat. 3–6 är under MA200 visas den gul. Importera igen tisdag eller senare — om kursen fortfarande är under MA200 slår signalen om till röd.
-      </div>
-
-      <div class="hjalp-h2">🛑 Nödutgångar — 90% av GAV</div>
-      <div class="hjalp-p">Om en akties kurs faller under <strong>90% av GAV</strong> aktiveras en nödutgångssignal oberoende av MA200:</div>
-      <table class="hjalp-tabell">
-        <thead><tr><th>Signal</th><th>Kategori</th><th>Innebär</th></tr></thead>
-        <tbody>
-          <tr><td>🛑 <strong>Hård stopp</strong> (röd)</td><td>Kat. 3, 4, 5, 6</td><td>Kurs &lt; 90% av GAV — sälj omedelbart</td></tr>
-          <tr><td>⚠️ <strong>Mjuk analys</strong> (gul)</td><td>Kat. 1, 2</td><td>Kurs &lt; 90% av GAV — analysera, men panikhandla inte</td></tr>
-        </tbody>
-      </table>
-
-      <div class="hjalp-h2">📏 Gummibandet — avstånd till MA200</div>
-      <div class="hjalp-p">När en aktie är <em>över</em> MA200 visas en färgad procentindikator som visar hur långt kursen har sträckt sig från medelvärdet:</div>
-      <table class="hjalp-tabell">
-        <thead><tr><th>Zon</th><th>Avstånd</th><th>Innebär</th></tr></thead>
-        <tbody>
-          <tr><td>🟢 Grön</td><td>0–15% över MA200</td><td>Normalt. Fortsätt hålla.</td></tr>
-          <tr><td>🟡 Gul</td><td>15–40% över MA200</td><td>Sträckt. Var försiktig med nyköp.</td></tr>
-          <tr><td>🟠 Orange</td><td>&gt;40% över MA200</td><td>Mycket sträckt. Överväg att trimma.</td></tr>
-        </tbody>
-      </table>
-
-      <div class="hjalp-h2">💰 Nettoinsatt kapital</div>
-      <div class="hjalp-p">Dashboarden visar nu <strong>Nettoinsatt kapital</strong> — summan av alla insättningar minus uttag från transaktionsfilen. Ger en realistisk bild av din faktiska avkastning vs insatt kapital.</div>
-
-      <div class="hjalp-h2">📓 Import av Beslutslogg.csv</div>
-      <div class="hjalp-p">Du kan nu importera historiska beslutsloggposter som CSV under Importera. Formatet är:</div>
-      <div class="hjalp-ruta hjalp-ruta-info"><code>Vecka;Datum;Portföljvärde;Tankar;Åtgärder</code><br>t.ex. <code>v13;2026-03-28;900000;Marknaden är volatil...;Köpte mer SAAB B</code></div>
-
-      <div class="hjalp-h2">🔧 Underhållsfunktioner</div>
-      <ul class="hjalp-ul">
-        <li><strong>Rensa all data</strong> — tar bort alla innehav, transaktioner, logg och historik (kräver dubbel bekräftelse). Kategorier och deras inställningar bevaras.</li>
-        <li><strong>Läs in filer på nytt</strong> — återställer importstatus utan att radera data</li>
-      </ul>
-
-      <div class="hjalp-h2">🚫 Automatiska filter</div>
-      <div class="hjalp-p">Följande exkluderas alltid automatiskt vid import:</div>
-      <ul class="hjalp-ul">
-        <li>Kontonummer <code>9557-7346055</code> — filtreras bort ur transaktionsfilen</li>
-        <li>Värdepapperet <strong>Zomedica</strong> — filtreras bort ur positionsfilen</li>
-      </ul>
-
-      <div class="hjalp-h2">📌 Sticky tabellhuvud (v2.05)</div>
-      <div class="hjalp-p">Rubrikraden i <strong>Innehav</strong>-tabellen är nu låst överst vid scrollning — du ser alltid vad varje kolumn heter.</div>
-
-      <div class="hjalp-h2">🎨 Distinkta signalfärger (v2.05)</div>
-      <div class="hjalp-p">Två gröna nyanser används nu för att undvika förvirring:</div>
-      <table class="hjalp-tabell">
-        <thead><tr><th>Färg</th><th>Används för</th></tr></thead>
-        <tbody>
-          <tr><td><span style="color:#2e7d32;font-weight:700">■ Mörkgrön</span></td><td>Värdeutveckling / vinst — t.ex. +5% avkastning</td></tr>
-          <tr><td><span style="color:#00c853;font-weight:700">■ Neongrön</span></td><td>Köpzon (0–15% över MA200) — aktiv strategisignal</td></tr>
-          <tr><td><span style="color:#d97706;font-weight:700">■ Gul</span></td><td>Gummiband 15–40% över MA200</td></tr>
-          <tr><td><span style="color:#ea580c;font-weight:700">■ Orange</span></td><td>Gummiband &gt;40% över MA200</td></tr>
-        </tbody>
-      </table>
-
-      <div class="hjalp-h2">📄 Dokumentnedladdning (v2.05)</div>
-      <div class="hjalp-p">Under <strong>Strategi</strong>-fliken finns nu knappar för att ladda ned strategidokumentet som HTML och som ren textfil (.txt). Under <strong>FAQ</strong>-fliken finns en knapp för att ladda ned hjälptexten som .txt.</div>
-
-      <div class="hjalp-h2">🌐 Favicon</div>
-      <div class="hjalp-p">Appen har nu en egen ikon (en stiliserad kursgraf) som visas i webbläsarfliken och på hemskärmen.</div>
+      <div class="hjalp-p">Under <strong>Importera → Backup &amp; Återställning</strong> exporterar du all portföljdata till 7 ark: Innehav, Transaktioner, Beslutslogg, Sammanfattning, Historik, Kassa och Kategorier. Importera tillbaka vid byte av enhet eller rensad webbläsare.</div>
     </div>
 
     <!-- IPAD IMPORT -->
@@ -1100,11 +1329,11 @@
         </ol></div>
       </div>
       <div class="rutin-kort">
-        <div class="rutin-header">📊 Steg 3 — Kontrollera signaler (3 min)</div>
+        <div class="rutin-header">📊 Steg 3 — Kontrollera signaler (2 min)</div>
         <div class="rutin-body"><ol>
-          <li>Gå till <strong>Kategorier</strong></li>
-          <li>Kolla röda signaler i kategori 3–6</li>
-          <li>Kolla viktbalansen — Övervikt eller Undervikt?</li>
+          <li>Kolla <strong>signalbandet</strong> på Dashboard — röda siffror = åtgärd krävs</li>
+          <li>Klicka bandet (eller gå till <strong>Signaler</strong>) för samlad lista</li>
+          <li>Kolla viktbalansen i Kategorier — Ombalans visas automatiskt</li>
         </ol></div>
       </div>
       <div class="rutin-kort">
@@ -1125,8 +1354,8 @@
         </ol></div>
       </div>
       <div class="hjalp-ruta hjalp-ruta-tips">
-        <div class="hjalp-ruta-titel">💡 MA200 — uppdatera månadsvis</div>
-        MA200 förändras långsamt. Uppdatera värdena för kategori 3–6 ungefär en gång i månaden. <strong>Ange alltid MA200 i lokal valuta</strong> (USD för amerikanska aktier, SEK för svenska). Slå upp på avanza.se (aktiesidan → Diagram → lägg till MA 200) eller på investing.com.
+        <div class="hjalp-ruta-titel">💡 MA200 — automatisk uppdatering via Alpha Vantage</div>
+        Om du lagt in tickers under Innehav → 📡 Tickers &amp; MA200 och en Alpha Vantage API-nyckel kan du klicka "Uppdatera alla MA200" — appen hämtar aktuellt värde för varje aktie. Annars: uppdatera manuellt ca en gång i månaden. <strong>MA200 anges alltid i lokal valuta</strong> (USD för amerikanska, SEK för svenska).
       </div>
     </div>
 
@@ -1136,40 +1365,53 @@
       <div class="hjalp-ingress">Vad varje flik gör och hur du använder den.</div>
 
       <div class="hjalp-h2">🏠 Dashboard</div>
-      <div class="hjalp-p">Startskärmen med en snabb överblick. Innehåller nyckeltalskort, diagram över kategorivikter och värdeutveckling, en viktjämförelse mot strategi-målen och en innehållstabell sorterad efter värde.</div>
-      <div class="hjalp-p"><strong>Period-styrda nyckeltal:</strong> Avkastning, utdelningar och realiserat resultat uppdateras automatiskt när du väljer period (30D / 90D / 6M / 1Å / i År / Allt). Kortens etiketter byter namn, t.ex. "Avkastning · 30D". I läget <em>Allt</em> visas all-time-avkastning mot nettoinsatt kapital. För specifika perioder jämförs mot portföljvärdet vid periodens startpunkt (från importerade positionsfiler).</div>
-      <div class="hjalp-p"><strong>Total avkastning (Allt)</strong> visar (Totalt portföljvärde − Nettoinsatt kapital) i kr och %. Orealiserad vinst mot inköpskurs (GAV) visas som subtext på "Innehavens värde".</div>
-      <div class="hjalp-p"><strong>Värdeutvecklingsdiagrammet</strong> visar portföljvärdet över tid baserat på importerade positionsfiler. Välj tidsintervall med knapparna <strong>30D · 90D · 6M · 1Å · i År · Allt</strong>. Om du har importerat transaktionsfiler från Avanza visas även en streckad linje för ackumulerat nettoinsatt kapital. Historikposter kan hanteras under Importera → Underhåll → Historikposter.</div>
+      <div class="hjalp-p">Startskärmen med en samlad cockpit-vy. Innehåller nyckeltalskort, signalband, FX-exponering, kategoridonut, avkastningsstaplar per kategori, värdeutvecklingsdiagram och utdelningskalender.</div>
+      <div class="hjalp-p"><strong>Signalband:</strong> Ett rött band precis ovanför nyckeltalen visar antalet röda signaler, nödutgångar och ombalanseringsbehov. Klicka för att gå direkt till Signaler-fliken. Döljs om allt är OK.</div>
+      <div class="hjalp-p"><strong>Period-styrda nyckeltal:</strong> Avkastning uppdateras automatiskt för vald period. Avkastning mäts alltid från närmaste importerade historikpunkt (aldrig från alla insättningar sedan 2017). "▼ Visa beräkningsunderlag" visar exakt vilka tal som används.</div>
+      <div class="hjalp-p"><strong>FX-exponering:</strong> Donut-diagram och färgade pills visar portföljens valutafördelning (SEK/USD/EUR etc.).</div>
+      <div class="hjalp-p"><strong>Avkastningsstaplar:</strong> Horisontella staplar för varje kategoris avkastning under vald period (kräver historik med kategorivärden).</div>
+      <div class="hjalp-p"><strong>Utdelningskalender:</strong> Förväntade utdelningar de kommande 90 dagarna baserat på historiska utdelningsmånader.</div>
+
+      <div class="hjalp-h2">🚦 Signaler</div>
+      <div class="hjalp-p">Samlad vy med allt som kräver åtgärd — säljsignaler, bevakningslista, nödutgångar, ombalansering och hög koncentration. Tomtillstånd: "Ingen åtgärd krävs. Portföljen mår bra." Uppdateras automatiskt vid varje positionsimport.</div>
 
       <div class="hjalp-h2">🗂 Kategorier</div>
-      <div class="hjalp-p">Ett kort per kategori med aktuell vikt, målintervall och MA200-signaler. Här ser du snabbt om något kräver åtgärd.</div>
-      <div class="hjalp-p"><strong>Hantera kategorier:</strong> Längst ner på Kategorier-fliken finns knappar för att lägga till nya kategorier och återställa till standard. Varje kategorikort har ✏️ (redigera) och 🗑 (ta bort) knappar i övre högra hörnet. När du tar bort en kategori som har innehav flyttas dessa automatiskt till kategori 1 (Ankaret). Alla ändringar sparas i webbläsaren.</div>
+      <div class="hjalp-p">Ett kort per kategori med aktuell vikt, avkastningsbadge för vald period, målintervall, ombalanseringshjälp och MA200-signaler.</div>
+      <div class="hjalp-p"><strong>Ombalanseringsassistent:</strong> Om vikten avviker &gt;2% från målintervallet visas ett "Köp X kr"- eller "Sälj X kr"-band direkt på kategorikortets underkant.</div>
+      <div class="hjalp-p"><strong>Jämför kategorier (sub-tab):</strong> Indexerat linjediagram (start = 100) för vald period — tydlig bild av vilken kategori som presterat bäst.</div>
+      <div class="hjalp-p"><strong>Hantera kategorier:</strong> Varje kategorikort har ✏️ (redigera) och 🗑 (ta bort). Längst ner: "+ Ny kategori" och "↩ Återställ standard".</div>
       <table class="signal-tabell">
         <thead><tr><th>Signal</th><th>Betydelse</th><th>Åtgärd</th></tr></thead>
         <tbody>
           <tr><td>🟢 Grön</td><td>Kursen mer än 5% över MA200</td><td>Behåll. Positiv trend.</td></tr>
           <tr><td>🟡 Gul</td><td>Nära MA200 (±5%) eller dag 1 under MA200 (kat. 3–6)</td><td>Bevaka. Importera igen nästa dag.</td></tr>
-          <tr><td>🔴 Röd</td><td>Säljsignal: 2+ dagar under MA200 (kat. 3–6) eller under MA200 (kat. 1–2)</td><td>Sälj enligt strategin.</td></tr>
+          <tr><td>🔴 Röd</td><td>Säljsignal: 2+ dagar under MA200 (kat. 3–6)</td><td>Sälj enligt strategin.</td></tr>
           <tr><td>🛑 Hård stopp</td><td>Kurs under 90% av GAV (kat. 3–6)</td><td>Sälj omedelbart oavsett MA200.</td></tr>
           <tr><td>⚠️ Mjuk analys</td><td>Kurs under 90% av GAV (kat. 1–2)</td><td>Analysera situationen. Panikhandla inte.</td></tr>
-          <tr><td>⚪ Grå</td><td>MA200 inte angivet</td><td>Lägg in värdet under Innehav → Redigera.</td></tr>
+          <tr><td>⚪ Grå</td><td>MA200 inte angivet</td><td>Lägg in värdet eller ange ticker för auto-hämtning.</td></tr>
         </tbody>
       </table>
 
       <div class="hjalp-h2">📋 Innehav</div>
-      <div class="hjalp-p">Alla aktier och fonder i en tabell. Kolumnen <strong>Utd.</strong> visar totalt mottagna utdelningar per aktie — hämtas automatiskt ur transaktionsfilen, ingen manuell inmatning krävs. Tryck 💰 för att se utdelningshistorik per datum. Manuell registrering finns som fallback för aktier utan Avanza-matchning.</div>
+      <div class="hjalp-p">Alla aktier och fonder i en sorterbar tabell. Klicka på kolumnrubriken för att sortera efter Namn, Värde, Avkastning, Signal, Andel eller MA200-avstånd.</div>
+      <div class="hjalp-p"><strong>Andel-kolumn:</strong> Varje innehavs procentandel av portföljvärdet. Gul vid &gt;8%, orange vid &gt;12%.</div>
+      <div class="hjalp-p"><strong>Utdelningar:</strong> Kolumnen Utd. visar totalt mottagna utdelningar. Tryck 💰 för historik per datum.</div>
+      <div class="hjalp-p"><strong>📡 Tickers &amp; MA200 (kollapsbar sektion):</strong> Ange börssymboler per aktie och klicka "Uppdatera alla MA200" för automatisk hämtning via Alpha Vantage. Använd <strong>🔍-knappen</strong> per rad för att söka rätt ticker direkt i Alpha Vantages databas — välj rätt börs och valuta ur listan. API-nyckel anges en gång och sparas lokalt. Rött ⚠ varnar om hämtat värde verkar ha fel valuta.</div>
 
       <div class="hjalp-h2">⬆ Importera</div>
-      <div class="hjalp-p">Importera CSV-filer från Avanza. Alla importknappar stöder drag och drop från Finder/Filer, och Positioner och Transaktioner accepterar flera filer på en gång. Fem filtyper stöds: Positioner (uppdaterar kurser, volymer, tar bort sålda och lägger till historikpunkt), Transaktioner (köp/sälj/utdelning/insättningar), Inköpskurshistorik (valfri engångsimport), Investeringslogg Excel (historik) och Beslutslogg CSV. Appen känner igen dubbletter automatiskt. Kontonummer <code>9557-7346055</code> (pension) och värdepapperet Zomedica filtreras alltid bort. Under <strong>Underhåll</strong> kan du hantera historikposter, rensa all data eller återställa importstatus.</div>
+      <div class="hjalp-p">Importera CSV-filer från Avanza. Positioner och Transaktioner accepterar flera filer på en gång (drag &amp; drop stöds). Kontonummer <code>9557-7346055</code> (pension) och Zomedica filtreras alltid bort.</div>
+      <div class="hjalp-p"><strong>Manuell baslinje:</strong> Ange ett datum + portföljvärde som fast startpunkt för avkastningsberäkningar.</div>
+      <div class="hjalp-p"><strong>Avstämningspanel:</strong> 4-stegs guidad jämförelse av portföljens siffror mot Avanzas totaler.</div>
+      <div class="hjalp-p"><strong>Backup &amp; Återställning:</strong> Exportera/importera hela portföljen som Excel (7 ark). Använd vid byte av enhet.</div>
 
       <div class="hjalp-h2">🔄 Transaktioner</div>
       <div class="hjalp-p">Visar alla importerade transaktioner med analysrutor för köp, sälj, utdelningar, källskatt, realiserat resultat och courtage. Filtrera på typ, värdepapper och datumintervall.</div>
 
       <div class="hjalp-h2">📓 Beslutslogg</div>
-      <div class="hjalp-p">Skriv veckoanteckningar om marknadsläget och dina beslut. Exportera loggen till Excel för din investeringsdagbok. Att dokumentera beslut är ett av de effektivaste sätten att bli en bättre investerare.</div>
+      <div class="hjalp-p">Skriv veckoanteckningar om marknadsläget och dina beslut. Exportera loggen till Excel. Att dokumentera beslut är ett av de effektivaste sätten att bli en bättre investerare.</div>
 
       <div class="hjalp-h2">💰 Kassa</div>
-      <div class="hjalp-p">Registrera likvida medel manuellt som ska räknas in i portföljvärdet — t.ex. pengar på sparkonto som du planerar att investera. Observera att detta inte är kopplat till Avanzas faktiska likvidsaldo.</div>
+      <div class="hjalp-p">Registrera likvida medel manuellt som ska räknas in i portföljvärdet. Kassa-fliken innehåller även <strong>ISK-skatt</strong>-sektionen som beräknar schablonintäkt och förväntad skatt för innevarande år baserat på kvartalsvärden och insättningar.</div>
     </div>
 
     <!-- STRATEGI -->
@@ -1288,8 +1530,8 @@
       </div>
     </div>
 
-    <!-- GITHUB -->
-    <div class="hjalp-kapitel" id="hk-github">
+    <!-- GITHUB (dolt — innehållet finns i dokumentet "Till Martin om GIT-export.docx") -->
+    <div class="hjalp-kapitel" id="hk-github" style="display:none!important">
       <div class="hjalp-rubrik">🌐 GitHub Pages — appen som webbsida</div>
       <div class="hjalp-ingress">Publicera appen på internet så du kommer åt den från vilken enhet som helst via en URL.</div>
 
@@ -1368,7 +1610,8 @@
       <table class="hjalp-tabell">
         <thead><tr><th>Fråga</th><th>Svar</th></tr></thead>
         <tbody>
-          <tr><td><strong>Kan appen hämta kurser automatiskt?</strong></td><td>Nej — kurser uppdateras när du importerar positionsfilen från Avanza. Det är ett medvetet val för att hålla appen enkel och utan inloggningskrav.</td></tr>
+          <tr><td><strong>Kan appen hämta kurser automatiskt?</strong></td><td>Kurspriser hämtas via Avanzas positionsfil. Däremot kan <strong>MA200-värden</strong> hämtas automatiskt via Alpha Vantage API — ange ticker per aktie under Innehav → 📡 Tickers &amp; MA200, lägg in din (gratis) API-nyckel och klicka "Uppdatera alla MA200". Använd 🔍-knappen per aktie för att hitta rätt ticker.</td></tr>
+          <tr><td><strong>MA200-signalen ser helt fel ut (t.ex. +1000%)?</strong></td><td>Tickern returnerar troligen ett värde i fel valuta. Vanligaste fallet: en SEK-aktie med en USD-ticker. Klicka 🔍 bredvid aktien, sök på bolagsnamnet och välj en träff med rätt börs och valuta. Om ingen SEK-träff finns: ange MA200 manuellt i redigeringsformuläret.</td></tr>
           <tr><td><strong>Synkroniseras data mellan iPad och dator?</strong></td><td>Nej, data sparas lokalt i respektive webbläsare. Använd Excel-export för att flytta data mellan enheter.</td></tr>
           <tr><td><strong>Kan jag använda appen utan internetanslutning?</strong></td><td>Appen fungerar offline efter att sidan laddats. Du behöver internet för att importera filer från Avanza och för att ladda ner diagrambiblioteket (Chart.js) första gången.</td></tr>
           <tr><td><strong>Varför stämmer inte avkastningen med Avanzas siffror?</strong></td><td>Appen beräknar (marknadsvärde − kostnadsbas) / kostnadsbas. Avanza kan använda tidsviktad avkastning. Båda är korrekta men mäter olika saker.</td></tr>
@@ -1376,6 +1619,11 @@
           <tr><td><strong>Kan jag använda appen med Nordnet?</strong></td><td>Appen är anpassad för Avanzas filformat. Nordnets filer fungerar inte direkt — men det går att lägga till stöd.</td></tr>
           <tr><td><strong>Vad gör jag om en aktie splittats?</strong></td><td>Importera en ny positionsfil — appen uppdaterar automatiskt volym och kurs baserat på Avanzas exportdata.</td></tr>
           <tr><td><strong>Kan jag exportera data till min Investeringslogg i Excel?</strong></td><td>Ja. Tryck "Excel" uppe till höger — filen innehåller flikar för Innehav, Transaktioner, Beslutslogg och Sammanfattning.</td></tr>
+          <tr><td><strong>Varför ser avkastningen konstig ut för långa perioder?</strong></td><td>Avkastning mäts alltid från närmaste historikpunkt — inte från alla insättningar sedan 2017. Tryck "▼ Visa beräkningsunderlag" i Periodutveckling-kortet för att se exakt vilka tal som används. Om du saknar gammal historik: ange en manuell baslinje under Importera.</td></tr>
+          <tr><td><strong>Hur byter jag till mörkt tema?</strong></td><td>Klicka på ☀️/🌙-ikonen längst upp till höger i headern. Temat sparas automatiskt.</td></tr>
+          <tr><td><strong>Vad är ISK-skatteberäkningen baserad på?</strong></td><td>Kapitalunderlaget beräknas som medelvärdet av kvartalsvärden (Q1–Q4) plus H1-insättningar, multiplicerat med SLR+1%. Kvartalsvärden hämtas från importerade historikpunkter. Ange SLR under Kassa → ISK-skatt.</td></tr>
+          <tr><td><strong>Hur fungerar kassasaldot — ska jag fylla i "Tillgängligt för köp"?</strong></td><td>Appen hanterar kassa på två sätt som adderas: (1) <strong>Positionskassa</strong> — hämtas automatiskt från Avanzas positionsfil och uppdateras vid varje import. (2) <strong>Manuell kassa</strong> — beloppet du anger under Kassa → "Tillgängligt för köp per konto". Du behöver bara ange det manuella om positionsfilen inte täcker alla dina konton (t.ex. sparkonton). Ange INTE hela ditt Avanza-saldo manuellt — det dubbelräknas då mot positionskassan.</td></tr>
+          <tr><td><strong>Hur räknar ombalanseringsassistenten ut "Köp/Sälj för X kr"?</strong></td><td>Beloppet beräknas som: <em>(målmitten% − nuvarande vikt%) × totalt portföljvärde</em>. Målmitten är medelvärdet av kategorins min- och maxvikt (t.ex. 15–20% → mitt 17,5%). Är din kategori på 12% och målet är 17,5% visas "Köp för 5,5% × portföljvärde kr". Varning visas bara vid avvikelse över 2 procentenheter.</td></tr>
         </tbody>
       </table>
 
@@ -1386,7 +1634,83 @@
       <div style="margin-top:24px;padding:20px;background:#f9fafb;border-radius:var(--radius);text-align:center">
         <div style="font-size:1.3rem;margin-bottom:8px">📈</div>
         <strong style="display:block;margin-bottom:4px">Strategiportföljen</strong>
-        <span style="font-size:0.84rem;color:var(--muted)">Byggd för Martin · Strategi från januari 2026 · v2.05 April 2026</span>
+        <span style="font-size:0.84rem;color:var(--muted)">Byggd för Martin · Strategi från januari 2026 · v3.00 April 2026</span>
+      </div>
+    </div>
+
+    <!-- KONTROLLRÄKNA FÖR HAND -->
+    <div class="hjalp-kapitel" id="hk-kontrollrakna">
+      <div class="hjalp-rubrik">🔢 För dig som vill kontrollräkna för hand</div>
+      <div class="hjalp-ingress">Alla siffror appen visar är reproducerbara med dessa formler. Använd dem om du vill dubbelkolla en siffra eller förstå exakt hur beräkningen går till.</div>
+
+      <div class="hjalp-h2">Portföljens totala marknadsvärde</div>
+      <div class="hjalp-ruta hjalp-ruta-tips">
+        <div class="hjalp-ruta-titel">Formel</div>
+        <strong>Totalt värde = Σ (Antal aktier × Aktuell kurs i SEK) + Kassa (SEK)</strong><br>
+        <span style="font-size:0.85rem">För utländska innehav: Lokal kurs × FX-kurs (SEK/utländsk valuta) = SEK-kurs. Kassa = positionskassa från importfilen + manuellt angivet saldo.</span>
+      </div>
+
+      <div class="hjalp-h2">Orealiserad vinst/förlust per innehav</div>
+      <div class="hjalp-ruta hjalp-ruta-tips">
+        <div class="hjalp-ruta-titel">Formel</div>
+        <strong>Vinst (kr) = Antal × Aktuell kurs − Antal × GAV</strong><br>
+        <strong>Vinst (%) = (Aktuell kurs − GAV) / GAV × 100</strong><br>
+        <span style="font-size:0.85rem">GAV = Genomsnittligt anskaffningsvärde (köpkurs i SEK). Allt i SEK.</span>
+      </div>
+
+      <div class="hjalp-h2">FX-dekomponering (bolagsvinst vs. valutavinst)</div>
+      <div class="hjalp-ruta hjalp-ruta-tips">
+        <div class="hjalp-ruta-titel">Formler</div>
+        <strong>Historisk FX = GAV (SEK) / GAV (lokal valuta)</strong><br>
+        <strong>Lokal kurs nu = Aktuell SEK-kurs / Historisk FX</strong><br>
+        <strong>Bolagsvinst = (Lokal kurs nu − GAV lokal) × Antal × Aktuell FX</strong><br>
+        <strong>Valutavinst = Total vinst (SEK) − Bolagsvinst</strong><br>
+        <span style="font-size:0.85rem">Exempel: Du köpte NVDA till GAV 900 kr / $100 = FX 9,00. Kursen är nu $130 och FX är 10,50.<br>
+        Lokal kurs nu = 130 × 10,50 = 1 365 kr. GAV lokal = $100.<br>
+        Bolagsvinst = (130 − 100) × antal × 10,50.<br>
+        Valutavinst = Total vinst − Bolagsvinst.</span>
+      </div>
+
+      <div class="hjalp-h2">Avkastning för en period</div>
+      <div class="hjalp-ruta hjalp-ruta-tips">
+        <div class="hjalp-ruta-titel">Formler</div>
+        <strong>Startpunkt = Närmaste importerade portföljvärde på eller före periodens startdatum</strong><br>
+        <strong>Nettoinflöde = Σ insättningar − Σ uttag under perioden (från startpunktens datum)</strong><br>
+        <strong>Avkastning inkl. insättningar (kr) = Nuvarande värde − Startvärde</strong><br>
+        <strong>Avkastning exkl. insättningar (kr) = Nuvarande värde − Startvärde − Nettoinflöde</strong><br>
+        <strong>Avkastning (%) = Avkastning exkl. / (Startvärde + Nettoinflöde) × 100</strong><br>
+        <span style="font-size:0.85rem">Tryck "▼ Visa beräkningsunderlag" i Periodutveckling-kortet för att se exakt vilka tal som används för din portfölj.</span>
+      </div>
+
+      <div class="hjalp-h2">Kategorivikt och ombalansering</div>
+      <div class="hjalp-ruta hjalp-ruta-tips">
+        <div class="hjalp-ruta-titel">Formler</div>
+        <strong>Kategorivikt (%) = Kategorins marknadsvärde / Totalt portföljvärde × 100</strong><br>
+        <strong>Köp/Sälj belopp = (Målmitten% − Nuvarande vikt%) × Totalt portföljvärde</strong><br>
+        <strong>Målmitten = (Målmin + Målmax) / 2</strong><br>
+        <span style="font-size:0.85rem">Ombalansering visas bara om avvikelsen överstiger 2 procentenheter. Positivt belopp = köp, negativt = sälj.</span>
+      </div>
+
+      <div class="hjalp-h2">MA200-signal</div>
+      <div class="hjalp-ruta hjalp-ruta-tips">
+        <div class="hjalp-ruta-titel">Regler</div>
+        <strong>Lokal kurs = Aktuell SEK-kurs / Historisk FX</strong><br>
+        <strong>Avstånd från MA200 (%) = (Lokal kurs − MA200) / MA200 × 100</strong><br>
+        <ul style="margin:6px 0 0;padding-left:18px;font-size:0.85rem">
+          <li>Grön: Lokal kurs &gt; MA200 (kursen är över 200-dagars medel)</li>
+          <li>Gul (gummiband): Lokal kurs &gt; MA200 men mer än +15% över (sträckt uppåt)</li>
+          <li>Röd: Lokal kurs &lt; MA200 i 2 dagar i rad (tvådagarsregel, kat. 3–6)</li>
+          <li>Nödutgång: Aktuell kurs &lt; 90% av GAV (kat. 3–6: hård stopp; kat. 1–2: mjuk analys)</li>
+        </ul>
+      </div>
+
+      <div class="hjalp-h2">ISK-skatt (schablonintäkt)</div>
+      <div class="hjalp-ruta hjalp-ruta-tips">
+        <div class="hjalp-ruta-titel">Formler (förenklade Skatteverket-regler)</div>
+        <strong>Kapitalunderlag = (Q1-värde + Q2-värde + Q3-värde + Q4-värde) / 4 + H1-insättningar</strong><br>
+        <strong>Schablonintäkt = Kapitalunderlag × (Statslåneränta SLR + 1%)</strong><br>
+        <strong>Skatt = Schablonintäkt × 30%</strong><br>
+        <span style="font-size:0.85rem">Q1–Q4 = portföljvärde vid 1 jan, 1 apr, 1 jul, 1 okt. Kvartalsvärden hämtas automatiskt från importerade historikpunkter närmast dessa datum. H1-insättningar = nettoinflöde under jan–jun.</span>
       </div>
     </div>
 
@@ -1394,6 +1718,25 @@
 </section>
 
 </main>
+
+<!-- Modal: Ticker-sökning -->
+<div class="modal-backdrop" id="modalTickerSok">
+  <div class="modal" style="max-width:560px">
+    <h3 id="ts-titel">🔍 Sök ticker</h3>
+    <div style="margin-bottom:12px">
+      <div style="display:flex;gap:8px">
+        <input id="ts-input" class="input" placeholder="Ange bolagsnamn eller förkortning…" style="flex:1" onkeydown="if(event.key==='Enter')utförTickerSökning()">
+        <button class="btn btn-primary" onclick="utförTickerSökning()">Sök</button>
+      </div>
+      <div id="ts-status" style="font-size:0.8rem;color:var(--muted);margin-top:6px"></div>
+    </div>
+    <div id="ts-resultat" style="max-height:320px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;display:none"></div>
+    <div class="modal-knappar" style="margin-top:14px">
+      <button class="btn btn-ghost" onclick="stangModal('modalTickerSok')">Stäng</button>
+    </div>
+    <input type="hidden" id="ts-hid">
+  </div>
+</div>
 
 <!-- Modal: Utdelning -->
 <div class="modal-backdrop" id="modalUtdelning">
@@ -1632,8 +1975,13 @@ function ladda() {
     if (!data.avanzaKassa) data.avanzaKassa = 0;
     if (!data.kontoStartsaldo) data.kontoStartsaldo = {};
     if (!data.positionsKassa) data.positionsKassa = {};
+    if (!data.avstämningar) data.avstämningar = [];
     // Migration: märk befintliga poster som importerad:true så de inte raderas
-    data.historik.forEach(h => { if (!h.importerad) h.importerad = true; });
+    data.historik.forEach(h => {
+      if (!h.importerad) h.importerad = true;
+      if (h.manuell === undefined) h.manuell = false;
+      if (h.katVärden === undefined) h.katVärden = null; // null = okänd (äldre import)
+    });
   }
   // Migrera från V1
   const v1 = localStorage.getItem('portfölj_v1');
@@ -1745,6 +2093,286 @@ function beräknaKategorivärden() {
   data.innehav.forEach(h=>{ const k=String(h.kategori||2); r[k]=(r[k]||0)+h.antal*h.aktuelKurs; });
   return r;
 }
+// Returnerar {avkKr, avkPct, startV, nuV} för kategori k från närmaste historikpunkt <= startDatum
+// Kräver att historikpunkten har katVärden sparat (sparas vid import fr.o.m. fas 2.1)
+function beräknaKategoriAvkastning(k, startDatum) {
+  const sortad = [...data.historik].filter(h => h.katVärden).sort((a,b)=>a.datum.localeCompare(b.datum));
+  if (!sortad.length) return null;
+  const före = sortad.filter(h => h.datum <= startDatum);
+  const startH = före.length > 0 ? före[före.length-1] : sortad[0];
+  if (!startH || !startH.katVärden) return null;
+  const startV = startH.katVärden[String(k)] ?? 0;
+  const nuV = (beräknaKategorivärden())[String(k)] ?? 0;
+  if (startV === 0) return null;
+  const avkKr = nuV - startV;
+  const avkPct = (avkKr / startV) * 100;
+  return { avkKr, avkPct, startV, nuV, startDatum: startH.datum };
+}
+
+// ══════════════════════════════════════════════════════════
+//  FX-EXPONERING (2.2)
+// ══════════════════════════════════════════════════════════
+function renderFXExponering() {
+  const kort = document.getElementById('fx-diagram-kort');
+  const band = document.getElementById('fx-band');
+  if (!kort || !band || data.innehav.length === 0) { if(kort) kort.style.display='none'; return; }
+  // Aggregera marknadsvärde per valuta
+  const perValuta = {};
+  data.innehav.forEach(h => {
+    const val = h.valuta || 'SEK';
+    perValuta[val] = (perValuta[val] || 0) + h.antal * h.aktuelKurs;
+  });
+  const tot = Object.values(perValuta).reduce((s,v)=>s+v,0);
+  if (tot === 0) { kort.style.display='none'; return; }
+  const valutaFärger = { SEK:'#2563eb', USD:'#16a34a', EUR:'#d97706', NOK:'#7c3aed', GBP:'#db2777', DKK:'#0891b2', CAD:'#ea580c' };
+  const sorteradeValutor = Object.entries(perValuta).sort((a,b)=>b[1]-a[1]);
+  // Band med färgade pills
+  band.innerHTML = sorteradeValutor.map(([val, v]) => {
+    const pct = (v/tot*100).toFixed(1);
+    const färg = valutaFärger[val] || '#6b7280';
+    return `<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;background:${färg}18;border:1px solid ${färg}40;font-weight:700;color:${färg}">${val} <span style="font-weight:400">${pct}%</span></span>`;
+  }).join('');
+  kort.style.display = 'block';
+  // Donut-diagram
+  const canvas = document.getElementById('diagramFX');
+  if (!canvas) return;
+  if (window._chartFX) { window._chartFX.destroy(); window._chartFX = null; }
+  window._chartFX = new Chart(canvas.getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: sorteradeValutor.map(([v]) => v),
+      datasets: [{ data: sorteradeValutor.map(([,v]) => v), backgroundColor: sorteradeValutor.map(([v]) => valutaFärger[v] || '#6b7280'), borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: { responsive:true, maintainAspectRatio:true, plugins: { legend:{ position:'bottom', labels:{font:{size:11}} }, tooltip:{ callbacks:{ label: ctx => ` ${ctx.label}: ${(ctx.parsed/tot*100).toFixed(1)}% (${kr(ctx.parsed)})` } } }, cutout:'65%' },
+    plugins: [donutCenterPlugin]
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+//  TICKER-HANTERING & ALPHA VANTAGE MA200 (2.5)
+// ══════════════════════════════════════════════════════════
+function sparaAPIKey() {
+  const key = (document.getElementById('av-api-key').value || '').trim();
+  if (!key) { alert('Ange en API-nyckel.'); return; }
+  localStorage.setItem('alphaVantageKey', key);
+  document.getElementById('av-api-key').value = '';
+  document.getElementById('av-key-status').textContent = '✓ Nyckel sparad.';
+  document.getElementById('av-key-status').style.color = 'var(--success)';
+  renderTickerLista();
+}
+function hämtaAPIKey() { return localStorage.getItem('alphaVantageKey') || ''; }
+
+function växlaTickerVy() {
+  const vy = document.getElementById('ticker-vy');
+  if (!vy) return;
+  const öppen = vy.style.display !== 'none';
+  vy.style.display = öppen ? 'none' : 'block';
+  if (!öppen) renderTickerLista();
+}
+
+function renderTickerLista() {
+  const lista = document.getElementById('ticker-lista');
+  const hämtaKnapp = document.getElementById('ma200-hämta-knapp');
+  const keyStatus = document.getElementById('av-key-status');
+  if (!lista) return;
+  const key = hämtaAPIKey();
+  if (keyStatus) {
+    keyStatus.textContent = key ? '✓ API-nyckel inlagd.' : 'Ingen nyckel sparad — hämtning av MA200 kräver nyckel.';
+    keyStatus.style.color = key ? 'var(--success)' : 'var(--muted)';
+    const keyInput = document.getElementById('av-api-key');
+    if (keyInput && !key) keyInput.placeholder = 'Ange din nyckel här';
+  }
+  if (hämtaKnapp) hämtaKnapp.style.display = key && data.innehav.length ? 'inline-flex' : 'none';
+  if (!data.innehav.length) { lista.innerHTML = '<p style="color:var(--muted);font-size:0.84rem">Inga innehav ännu.</p>'; return; }
+  lista.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:0.84rem">
+    <thead><tr>
+      <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);font-weight:600">Innehav</th>
+      <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);font-weight:600">Ticker</th>
+      <th style="padding:6px 8px;border-bottom:1px solid var(--border)"></th>
+    </tr></thead>
+    <tbody>
+    ${data.innehav.map(h => {
+      const hasTicker = !!(h.ticker && h.ticker.trim());
+      const harVarning = !!h.ma200Varning;
+      const harDatum = !!h.ma200Datum;
+      const indikator = harVarning
+        ? `<span style="color:#dc2626;font-weight:700" title="${h.ma200Varning}">⚠</span>`
+        : hasTicker && harDatum
+          ? `<span style="color:#16a34a;font-weight:700" title="MA200 hämtat ${h.ma200Datum}: ${h.ma200}">✓</span>`
+          : hasTicker
+            ? `<span style="color:#16a34a;font-weight:700" title="Ticker inlagd">✓</span>`
+            : `<span style="color:#d97706;font-weight:700" title="Saknar ticker — MA200 kan ej hämtas automatiskt">!</span>`;
+      const varningRad = harVarning
+        ? `<tr><td colspan="3" style="padding:2px 8px 6px;font-size:0.75rem;color:#dc2626">${h.ma200Varning}</td></tr>`
+        : '';
+      return `<tr>
+        <td style="padding:6px 8px">${h.namn}<br><span style="font-size:0.73rem;color:var(--muted)">${h.valuta||'SEK'} · Kat ${h.kategori||2}${harDatum&&!harVarning?' · MA200: '+h.ma200:''}</span></td>
+        <td style="padding:6px 8px;display:flex;gap:4px;align-items:center">
+          <input data-id="${h.id}" class="input ticker-input" value="${h.ticker||''}" placeholder="${h.valuta==='USD'?'t.ex. NVDA':'t.ex. ERIC-B.STO'}" style="width:130px;padding:5px 8px;font-size:0.83rem">
+          <button onclick="sökTicker('${h.id}')" title="Sök rätt ticker" style="padding:4px 7px;font-size:0.8rem;border:1px solid var(--border);border-radius:6px;background:var(--card);cursor:pointer;white-space:nowrap">🔍</button>
+        </td>
+        <td style="padding:6px 8px;text-align:center">${indikator}</td>
+      </tr>${varningRad}`;
+    }).join('')}
+    </tbody></table>`;
+}
+
+function sparaTickers() {
+  document.querySelectorAll('.ticker-input').forEach(input => {
+    const id = input.dataset.id;
+    const h = data.innehav.find(x => x.id === id);
+    if (h) h.ticker = input.value.trim();
+  });
+  spara();
+  renderTickerLista();
+  renderInnehav();
+  const prog = document.getElementById('ma200-progress');
+  if (prog) { prog.textContent = '✓ Tickers sparade.'; setTimeout(()=>prog.textContent='', 2500); }
+}
+
+let _ma200Köar = false;
+function sökTicker(hId) {
+  const key = hämtaAPIKey();
+  if (!key) {
+    const stEl = document.getElementById('ts-status');
+    // Öppna modalen ändå — visa felbeskrivning inuti
+    document.getElementById('ts-hid').value = hId;
+    const h = data.innehav.find(x => x.id === hId);
+    document.getElementById('ts-titel').textContent = `🔍 Sök ticker — ${h ? h.namn : ''}`;
+    document.getElementById('ts-input').value = h ? h.namn : '';
+    document.getElementById('ts-resultat').style.display = 'none';
+    document.getElementById('ts-status').textContent = '⚠️ Ange API-nyckel i fältet nedan för att kunna söka.';
+    öppnaModal('modalTickerSok');
+    return;
+  }
+  const h = data.innehav.find(x => x.id === hId);
+  if (!h) return;
+  document.getElementById('ts-hid').value = hId;
+  document.getElementById('ts-titel').textContent = `🔍 Sök ticker — ${h.namn}`;
+  document.getElementById('ts-input').value = h.namn;
+  document.getElementById('ts-resultat').style.display = 'none';
+  document.getElementById('ts-status').textContent = 'Tryck Sök eller Enter för att söka.';
+  öppnaModal('modalTickerSok');
+  // Autosök direkt med bolagsnamnet
+  setTimeout(utförTickerSökning, 80);
+}
+
+async function utförTickerSökning() {
+  const key = hämtaAPIKey();
+  if (!key) { document.getElementById('ts-status').textContent = '⚠️ API-nyckel saknas.'; return; }
+  const sökterm = (document.getElementById('ts-input')?.value || '').trim();
+  if (!sökterm) return;
+  const statusEl = document.getElementById('ts-status');
+  const resultatEl = document.getElementById('ts-resultat');
+  statusEl.textContent = 'Söker…';
+  resultatEl.style.display = 'none';
+  try {
+    const url = `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${encodeURIComponent(sökterm)}&apikey=${key}`;
+    const res = await fetch(url);
+    const json = await res.json();
+    const träffar = (json.bestMatches || []).slice(0, 10);
+    if (!träffar.length) {
+      statusEl.textContent = 'Inga träffar. Prova ett annat sökord.';
+      return;
+    }
+    statusEl.textContent = `${träffar.length} träffar — klicka för att välja:`;
+    resultatEl.style.display = 'block';
+    const hId = document.getElementById('ts-hid').value;
+    resultatEl.innerHTML = träffar.map(t => {
+      const symbol = t['1. symbol'];
+      const namn = t['2. name'];
+      const region = t['4. region'];
+      const valuta = t['8. currency'];
+      const matchSEK = valuta === 'SEK';
+      const matchUSD = valuta === 'USD';
+      const vBadge = matchSEK ? `<span style="background:#dcfce7;color:#15803d;font-size:0.7rem;padding:1px 5px;border-radius:4px;font-weight:700">SEK</span>`
+                   : matchUSD ? `<span style="background:#dbeafe;color:#1d4ed8;font-size:0.7rem;padding:1px 5px;border-radius:4px;font-weight:700">USD</span>`
+                   : `<span style="background:#f3f4f6;color:#6b7280;font-size:0.7rem;padding:1px 5px;border-radius:4px">${valuta}</span>`;
+      return `<div onclick="väljticker('${hId}','${symbol.replace(/'/g,"\\'")}',this)"
+        style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:8px"
+        onmouseover="this.style.background='var(--primary-light)'" onmouseout="this.style.background=''">
+        <div>
+          <strong style="font-size:0.92rem">${symbol}</strong>
+          <span style="color:var(--muted);font-size:0.82rem;margin-left:8px">${namn}</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;white-space:nowrap">
+          ${vBadge}
+          <span style="font-size:0.75rem;color:var(--muted)">${region}</span>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) { statusEl.textContent = '❌ Sökning misslyckades. Kontrollera nätverksanslutningen.'; }
+}
+
+function väljticker(hId, symbol, radEl) {
+  const input = document.querySelector(`.ticker-input[data-id="${hId}"]`);
+  if (input) {
+    input.value = symbol;
+    input.dispatchEvent(new Event('input'));
+  }
+  // Markera vald rad
+  document.querySelectorAll('#ts-resultat div').forEach(d => d.style.background = '');
+  if (radEl) radEl.style.background = '#dcfce7';
+  document.getElementById('ts-status').textContent = `✓ "${symbol}" vald — klicka Stäng och spara tickers.`;
+  setTimeout(() => stangModal('modalTickerSok'), 900);
+}
+
+async function hämtaAllaMA200() {
+  if (_ma200Köar) return;
+  const key = hämtaAPIKey();
+  if (!key) { alert('Ange din Alpha Vantage API-nyckel nedan.'); return; }
+  const prog = document.getElementById('ma200-progress');
+  const knapp = document.getElementById('ma200-hämta-knapp');
+  const medTicker = data.innehav.filter(h => h.ticker && h.ticker.trim());
+  if (!medTicker.length) { if(prog) prog.textContent = 'Inga innehav med tickers.'; return; }
+  _ma200Köar = true;
+  if (knapp) knapp.disabled = true;
+  let ok = 0, fel = 0;
+  for (let i = 0; i < medTicker.length; i++) {
+    const h = medTicker[i];
+    if (prog) prog.textContent = `Hämtar ${i+1}/${medTicker.length}: ${h.namn}…`;
+    try {
+      const url = `https://www.alphavantage.co/query?function=SMA&symbol=${encodeURIComponent(h.ticker)}&interval=daily&time_period=200&series_type=close&apikey=${key}`;
+      const res = await fetch(url);
+      const json = await res.json();
+      const analys = json['Technical Analysis: SMA'];
+      if (analys) {
+        const senasteDag = Object.keys(analys).sort().reverse()[0];
+        const ma200Val = parseFloat(analys[senasteDag]['SMA']);
+        if (!isNaN(ma200Val) && ma200Val > 0) {
+          // Sanity check: om hämtat värde avviker mer än 10× från nuvarande kurs
+          // är det troligen fel valuta (t.ex. USD-ticker för en SEK-aktie)
+          const lokalKurs = lokalKursVärde(h);
+          const ratio = lokalKurs > 0 ? Math.max(ma200Val/lokalKurs, lokalKurs/ma200Val) : 1;
+          if (ratio > 10) {
+            h.ma200Varning = `⚠️ Misstänkt fel valuta: hämtat MA200 ${ma200Val.toFixed(2)} avviker ${ratio.toFixed(0)}× från kursen ${lokalKurs.toFixed(2)} — kontrollera ticker`;
+            fel++;
+          } else {
+            h.ma200 = ma200Val;
+            h.ma200Datum = senasteDag;
+            delete h.ma200Varning;
+            ok++;
+          }
+        } else { fel++; }
+      } else if (json['Note'] || json['Information']) {
+        if (prog) prog.textContent = '⚠️ API-gräns nådd — vänta en minut och försök igen.';
+        break;
+      } else { fel++; }
+    } catch(e) { fel++; }
+    // Vänta 15 sek mellan anrop (rate limit: 5/min på gratis-plan)
+    if (i < medTicker.length - 1) {
+      for (let s = 15; s > 0; s--) {
+        if (prog) prog.textContent = `Hämtat ${i+1}/${medTicker.length} (${ok} OK, ${fel} fel) — nästa om ${s}s…`;
+        await new Promise(r => setTimeout(r, 1000));
+      }
+    }
+  }
+  spara(); renderInnehav(); renderTickerLista(); renderKategorier(); renderSignaler(); ritaDiagram();
+  if (prog) prog.textContent = `✓ Klart: ${ok} uppdaterade, ${fel} misslyckades.`;
+  if (knapp) knapp.disabled = false;
+  _ma200Köar = false;
+}
+
 function ma200Signal(h) {
   if (!h.ma200||h.ma200===0) return 'okänd';
   // v2.02: jämför lokal kurs med lokal MA200 (MA200 anges i lokal valuta)
@@ -1774,10 +2402,9 @@ function nödutgångSignal(h) {
 // Gummiband: avstånd till MA200 (positiv = över)
 function gummibandZon(h) {
   if (!h.ma200||h.ma200===0) return null;
-  // v2.02: lokal kurs jämförs med lokal MA200
   const lokal = lokalKursVärde(h);
   const pct = (lokal-h.ma200)/h.ma200*100;
-  if (pct <= 0) return null; // under eller på MA200 — hanteras av ma200Signal
+  if (pct < 0) return {zon:'under', pct, label:`${pct.toFixed(1)}%`}; // negativt avstånd
   if (pct <= 15) return {zon:'grön', pct, label:`+${pct.toFixed(1)}%`};
   if (pct <= 40) return {zon:'gul', pct, label:`+${pct.toFixed(1)}%`};
   return {zon:'orange', pct, label:`+${pct.toFixed(1)}%`};
@@ -1815,6 +2442,20 @@ function beräknaNettoInsatt() {
   const kassaUt = data.kassaTransaktioner.filter(t=>t.typ==='uttag').reduce((s,t)=>s+t.belopp,0);
   return txIns - txUt + kassaIns - kassaUt;
 }
+function beräknaNettoInsattMellan(frånDatum, tillDatum) {
+  const txIns = data.avanzaTransaktioner.filter(t=>t.datum>=frånDatum&&t.datum<=tillDatum&&t.typ==='Insättning').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
+  const txUt  = data.avanzaTransaktioner.filter(t=>t.datum>=frånDatum&&t.datum<=tillDatum&&t.typ==='Uttag').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
+  const kassaIns = data.kassaTransaktioner.filter(t=>t.datum>=frånDatum&&t.datum<=tillDatum&&t.typ==='insättning').reduce((s,t)=>s+t.belopp,0);
+  const kassaUt  = data.kassaTransaktioner.filter(t=>t.datum>=frånDatum&&t.datum<=tillDatum&&t.typ==='uttag').reduce((s,t)=>s+t.belopp,0);
+  return txIns - txUt + kassaIns - kassaUt;
+}
+function beräknaNettoInsattUnderPeriod(frånDatum) {
+  const txIns = data.avanzaTransaktioner.filter(t=>t.datum>=frånDatum&&t.typ==='Insättning').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
+  const txUt  = data.avanzaTransaktioner.filter(t=>t.datum>=frånDatum&&t.typ==='Uttag').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
+  const kassaIns = data.kassaTransaktioner.filter(t=>t.datum>=frånDatum&&t.typ==='insättning').reduce((s,t)=>s+t.belopp,0);
+  const kassaUt  = data.kassaTransaktioner.filter(t=>t.datum>=frånDatum&&t.typ==='uttag').reduce((s,t)=>s+t.belopp,0);
+  return txIns - txUt + kassaIns - kassaUt;
+}
 function beräknaNettoInsattTillDatum(datum) {
   const txIns = data.avanzaTransaktioner.filter(t=>t.datum<=datum&&t.typ==='Insättning').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
   const txUt = data.avanzaTransaktioner.filter(t=>t.datum<=datum&&t.typ==='Uttag').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
@@ -1841,8 +2482,10 @@ function visaSektion(id, knapp) {
   document.querySelectorAll('#desktopNav button').forEach(b=>b.classList.remove('aktiv'));
   if (knapp) knapp.classList.add('aktiv');
   if (id==='dashboard') ritaDiagram();
-  if (id==='kategorier') renderKategorier();
-  if (id==='importera') renderHistorikLista();
+  if (id==='kategorier') { renderKategorier(); if (_aktivKatTab === 'jämför') renderKategoriJämförelse(); }
+  if (id==='signaler') renderSignaler();
+  if (id==='importera') { renderHistorikLista(); renderBaslinjeUI(); }
+  if (id==='kassa') { initISKÅr(); renderISK(); }
 }
 
 function synkNavKnappar(id) {
@@ -1883,7 +2526,8 @@ function renderDashboard() {
   const iv=beräknaInnehavVärde(), kassa=beräknaTillgängligLikviditet(), kb=beräknaKostnadsbas();
   const total=iv+kassa, orealiserad=iv-kb, orealiserad_pct=kb>0?(orealiserad/kb)*100:0;
   document.getElementById('nk-total').textContent=kr(total);
-  document.getElementById('nk-total-sub').textContent=`Kassa: ${kr(kassa)}`;
+  const harManuellBaslinje = data.historik.some(h=>h.manuell);
+  document.getElementById('nk-total-sub').innerHTML=`Kassa: ${kr(kassa)}${harManuellBaslinje?' &nbsp;<span style="font-size:0.7rem;background:#dbeafe;color:#1d4ed8;border-radius:4px;padding:1px 5px;font-weight:600">📌 Manuell baslinje aktiv</span>':''}`;
   document.getElementById('nk-innehav').textContent=kr(iv);
   document.getElementById('nk-innehav-sub').innerHTML=`Kostnadsbas: ${kr(kb)} &nbsp;<span class="${färg(orealiserad)}">(${orealiserad>=0?'+':''}${kr(orealiserad)})</span>`;
   const avanzaK=beräknaAvanzaKassaTotalt(), manuellK=beräknaKassasaldo();
@@ -1897,23 +2541,97 @@ function renderDashboard() {
   // Period-medvetna nyckeltal
   const etikett=periodEtikett(); // null = Allt
   const startDatum=periodeStartDatum();
-  // Avkastning: Allt → vs nettoinsatt | Period → vs historikpunkt vid periodens start
+  const idag=new Date().toISOString().slice(0,10);
+  // Avkastning mäts alltid från närmaste historikpunkt som bas.
+  // Insättningar FÖRE den punkten är inbakade i startvärdet och räknas EJ av igen.
+  const sortadHÄvk=[...data.historik].sort((a,b)=>a.datum.localeCompare(b.datum));
   let avkKr, avkPct, avkLabel;
-  if(!etikett && nettoInsatt>0){
-    avkKr=total-nettoInsatt; avkPct=(avkKr/nettoInsatt)*100; avkLabel='Total avkastning';
-  } else if(!etikett){
-    avkKr=orealiserad; avkPct=orealiserad_pct; avkLabel='Total avkastning';
+  if(!etikett){
+    // Allt: mät från äldsta historikpunkten
+    const startH=sortadHÄvk[0];
+    if(startH){
+      const insEfterStart=beräknaNettoInsattMellan(startH.datum,idag);
+      avkKr=total-startH.totalVärde-insEfterStart;
+      avkPct=(startH.totalVärde+insEfterStart)>0?(avkKr/(startH.totalVärde+insEfterStart))*100:null;
+      avkLabel=`Avkastning sedan ${startH.datum}`;
+    } else if(nettoInsatt>0){
+      avkKr=total-nettoInsatt; avkPct=(avkKr/nettoInsatt)*100; avkLabel='Total avkastning';
+    } else {
+      avkKr=orealiserad; avkPct=orealiserad_pct; avkLabel='Total avkastning';
+    }
   } else {
     avkLabel=`Avkastning · ${etikett}`;
-    const sortadH=[...data.historik].sort((a,b)=>a.datum.localeCompare(b.datum));
-    const före=sortadH.filter(h=>h.datum<=startDatum);
-    const startH=före.length>0?före[före.length-1]:sortadH[0];
-    avkKr=startH?total-startH.totalVärde:null;
-    avkPct=startH&&startH.totalVärde>0?(avkKr/startH.totalVärde)*100:null;
+    const före=sortadHÄvk.filter(h=>h.datum<=startDatum);
+    const startH=före.length>0?före[före.length-1]:sortadHÄvk[0];
+    const insEfterStart=startH?beräknaNettoInsattMellan(startH.datum,idag):beräknaNettoInsattUnderPeriod(startDatum);
+    avkKr=startH?total-startH.totalVärde-insEfterStart:null;
+    avkPct=startH&&(startH.totalVärde+insEfterStart)>0?(avkKr/(startH.totalVärde+insEfterStart))*100:null;
   }
   document.getElementById('nk-avkastning-label').textContent=avkLabel;
   document.getElementById('nk-avkastning').innerHTML=avkKr!=null?`<span class="${färg(avkKr)}">${avkKr>=0?'+':''}${kr(avkKr)}</span>`:'—';
-  document.getElementById('nk-avkastning-sub').innerHTML=avkPct!=null?`<span class="${färg(avkPct)}">${avkPct>=0?'+':''}${pct(avkPct)}${!etikett?' vs insatt':''}</span>`:'';
+  document.getElementById('nk-avkastning-sub').innerHTML=avkPct!=null?`<span class="${färg(avkPct)}">${avkPct>=0?'+':''}${pct(avkPct)}</span>`:'';
+
+  // ── Periodutveckling-kort ──
+  (()=>{
+    const sortadH=[...data.historik].sort((a,b)=>a.datum.localeCompare(b.datum));
+    const före=sortadH.filter(h=>h.datum<=startDatum);
+    const startH=etikett?(före.length>0?före[före.length-1]:sortadH[0]):sortadH[0];
+    // Nettoinflöde räknas från historikpunktens faktiska datum (inte periodeStartDatum)
+    // för att undvika mismatch när närmaste historikpunkt är äldre än periodestart
+    const idag=new Date().toISOString().slice(0,10);
+    // Alltid: räkna insättningar från historikpunktens datum — aldrig från tidigare än appen spårar
+    const ins=startH?beräknaNettoInsattMellan(startH.datum,idag):(etikett?beräknaNettoInsattUnderPeriod(startDatum):nettoInsatt);
+    const etikettText=etikett||'Allt';
+    document.getElementById('pu-period-rubrik').textContent=etikettText;
+    // Visa startvärde i nk-total-start
+    const startEl=document.getElementById('nk-total-start');
+    if(startEl&&startH&&etikett)startEl.textContent='Start '+etikettText+': '+kr(startH.totalVärde);
+    else if(startEl)startEl.textContent='';
+    if(!startH){
+      ['pu-inkl-kr','pu-inkl-pct','pu-exkl-kr','pu-exkl-pct'].forEach(id=>document.getElementById(id).textContent='—');
+      document.getElementById('pu-start-till').textContent='Ingen historik tillgänglig';
+      const debugEl=document.getElementById('pu-debug');
+      if(debugEl)debugEl.innerHTML='<span style="color:var(--danger)">Ingen historikpunkt hittades. Importera positionsfiler för att bygga historik.</span>';
+      return;
+    }
+    const startV=startH.totalVärde;
+    // Inkl. insättningar
+    const inklKr=total-startV;
+    const inklPct=startV>0?(inklKr/startV)*100:null;
+    // Exkl. insättningar (ins räknat från historikpunktens datum för korrekt matchning)
+    const exklKr=total-startV-ins;
+    const exklPct=(startV+ins)>0?(exklKr/(startV+ins))*100:null;
+    const fSign=v=>v>=0?'+':'';
+    document.getElementById('pu-inkl-kr').innerHTML=`<span class="${färg(inklKr)}">${fSign(inklKr)}${kr(inklKr)}</span>`;
+    document.getElementById('pu-inkl-pct').innerHTML=inklPct!=null?`<span class="${färg(inklPct)}">${fSign(inklPct)}${pct(inklPct)}</span>`:'—';
+    document.getElementById('pu-exkl-kr').innerHTML=`<span class="${färg(exklKr)}">${fSign(exklKr)}${kr(exklKr)}</span>`;
+    document.getElementById('pu-exkl-pct').innerHTML=exklPct!=null?`<span class="${färg(exklPct)}">${fSign(exklPct)}${pct(exklPct)}</span>`:'—';
+    document.getElementById('pu-start-till').innerHTML=`Start: ${kr(startV)}<br>Nu: ${kr(total)}`;
+    const insRad=document.getElementById('pu-insattnings-rad');
+    const insEl=document.getElementById('pu-insatt-belopp');
+    if(ins===0){insRad.style.display='none';}
+    else{insRad.style.display='flex';insEl.textContent=`${ins>=0?'+':'−'}${kr(Math.abs(ins))}`;insEl.style.color=ins<0?'var(--danger)':'var(--primary-mid)';}
+    // ── Beräkningsunderlag (debug) ──
+    const debugEl=document.getElementById('pu-debug');
+    if(debugEl){
+      const txIns=data.avanzaTransaktioner.filter(t=>t.datum>=startH.datum&&t.typ==='Insättning').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
+      const txUt=data.avanzaTransaktioner.filter(t=>t.datum>=startH.datum&&t.typ==='Uttag').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
+      const kassaIns=data.kassaTransaktioner.filter(t=>t.datum>=startH.datum&&t.typ==='insättning').reduce((s,t)=>s+t.belopp,0);
+      const kassaUt=data.kassaTransaktioner.filter(t=>t.datum>=startH.datum&&t.typ==='uttag').reduce((s,t)=>s+t.belopp,0);
+      debugEl.innerHTML=`<table style="width:100%;border-collapse:collapse">
+        <tr><td style="color:var(--muted);padding:1px 0">Sökt periodestart</td><td style="text-align:right">${startDatum}</td></tr>
+        <tr><td style="color:var(--muted);padding:1px 0">Använd historikpunkt</td><td style="text-align:right"><strong>${startH.datum}</strong> (${sortadH.length} punkter totalt)</td></tr>
+        <tr><td style="color:var(--muted);padding:1px 0">Startvärde (historik)</td><td style="text-align:right">${kr(startV)}</td></tr>
+        <tr><td style="color:var(--muted);padding:1px 0">Nuvarande totalvärde</td><td style="text-align:right">${kr(total)}</td></tr>
+        <tr style="border-top:1px solid var(--border)"><td style="color:var(--muted);padding:3px 0 1px">Insättningar sedan ${startH.datum} (Avanza)</td><td style="text-align:right">${kr(txIns)}</td></tr>
+        <tr><td style="color:var(--muted);padding:1px 0">Uttag sedan ${startH.datum} (Avanza)</td><td style="text-align:right">${kr(txUt)}</td></tr>
+        <tr><td style="color:var(--muted);padding:1px 0">Manuella insättn.</td><td style="text-align:right">${kr(kassaIns)}</td></tr>
+        <tr><td style="color:var(--muted);padding:1px 0">Manuella uttag</td><td style="text-align:right">${kr(kassaUt)}</td></tr>
+        <tr style="border-top:1px solid var(--border)"><td style="font-weight:700;padding:3px 0 1px">Nettoinflöde</td><td style="text-align:right;font-weight:700">${ins>=0?'+':'−'}${kr(Math.abs(ins))}</td></tr>
+        <tr><td style="font-weight:700;padding:1px 0">Ren avkastning (kr)</td><td style="text-align:right;font-weight:700" class="${färg(exklKr)}">${fSign(exklKr)}${kr(exklKr)}</td></tr>
+        </table>`;
+    }
+  })();
   // Utdelningar: Allt → totalt | Period → filtrerat
   const utdLabel=etikett?`Utdelningar · ${etikett}`:'Utdelningar totalt';
   const utdBelopp=etikett
@@ -1929,21 +2647,99 @@ function renderDashboard() {
   document.getElementById('nk-realiserat-label').textContent=realLabel;
   document.getElementById('nk-realiserat').innerHTML=real!==0?`<span class="${färg(real)}">${kr(real)}</span>`:'—';
 
+  // ── 2.3 Signalband ──
+  (() => {
+    const band = document.getElementById('signal-band');
+    const bandText = document.getElementById('signal-band-text');
+    if (!band || !bandText) return;
+    const röda = data.innehav.filter(h => { const kat=KATEGORIER[h.kategori]||KATEGORIER[2]; return kat.signal==='ma200'&&ma200Signal(h)==='röd'; });
+    const nöd = data.innehav.filter(h => !!nödutgångSignal(h));
+    const katV2 = beräknaKategorivärden(), kassa2 = Math.max(0, beräknaTillgängligLikviditet()), tot2 = Object.values(katV2).reduce((s,v)=>s+v,0) + kassa2;
+    const ombalans2 = Object.entries(KATEGORIER).filter(([k,kat]) => {
+      const vp = tot2 > 0 ? ((katV2[k]||0)/tot2)*100 : 0;
+      return Math.abs(vp - (kat.målMin+kat.målMax)/2) > 2;
+    });
+    const delar = [];
+    if (röda.length) delar.push(`🔴 ${röda.length} säljsignal${röda.length>1?'er':''}`);
+    if (nöd.length) delar.push(`🛑 ${nöd.length} nödutgång${nöd.length>1?'ar':''}`);
+    if (ombalans2.length) delar.push(`⚖️ ${ombalans2.length} kategori${ombalans2.length>1?'er':''} utanför mål`);
+    if (delar.length === 0) {
+      band.style.display = 'none';
+    } else {
+      band.style.display = 'flex';
+      bandText.textContent = delar.join('  ·  ');
+    }
+  })();
+
+  // ── 2.4 Avkastningsstaplar per kategori ──
+  (() => {
+    const kort = document.getElementById('kat-avkastning-kort');
+    const staplar = document.getElementById('kat-avkastning-staplar');
+    const rubrik = document.getElementById('kat-avkastning-rubrik');
+    if (!kort || !staplar) return;
+    const sd = periodeStartDatum();
+    const etik = periodEtikett();
+    const rader = Object.entries(KATEGORIER).map(([k, kat]) => {
+      const res = beräknaKategoriAvkastning(k, sd);
+      return res ? { k, kat, ...res } : null;
+    }).filter(Boolean);
+    if (!rader.length || !etik) { kort.style.display = 'none'; return; }
+    kort.style.display = 'block';
+    if (rubrik) rubrik.textContent = `Kategoriavkastning · ${etik}`;
+    const maxAbs = Math.max(...rader.map(r => Math.abs(r.avkPct)), 1);
+    staplar.innerHTML = rader.map(r => {
+      const w = Math.min(100, (Math.abs(r.avkPct) / maxAbs) * 100);
+      const pos = r.avkPct >= 0;
+      const fSign = v => v >= 0 ? '+' : '';
+      return `<div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid var(--border)">
+        <div style="width:130px;font-size:0.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${kat.emoji} ${r.kat.namn}</div>
+        <div style="flex:1;position:relative;height:20px;background:#f3f4f6;border-radius:4px;overflow:hidden">
+          <div style="position:absolute;top:0;${pos?'left':'right'}:0;width:${w}%;height:100%;background:${pos?'#16a34a':'#dc2626'};border-radius:4px;opacity:0.85"></div>
+        </div>
+        <div style="width:72px;text-align:right;font-size:0.82rem;font-weight:700;color:${pos?'var(--success)':'var(--danger)'}">${fSign(r.avkPct)}${r.avkPct.toFixed(1)}%</div>
+        <div style="width:80px;text-align:right;font-size:0.78rem;color:var(--muted)">${fSign(r.avkKr)}${kr(r.avkKr)}</div>
+      </div>`;
+    }).join('');
+  })();
+
   const tbody=document.querySelector('#tabellDashboard tbody');
   const kortLista=document.getElementById('dashKortLista');
   if (data.innehav.length===0) {
     tbody.innerHTML='<tr class="tom-rad"><td colspan="8">Inga innehav. Gå till Importera för att läsa in från Avanza.</td></tr>';
     if(kortLista)kortLista.innerHTML='<div style="text-align:center;color:var(--muted);padding:32px">Inga innehav ännu.</div>';
   } else {
-    const s=[...data.innehav].sort((a,b)=>(b.antal*b.aktuelKurs)-(a.antal*a.aktuelKurs));
+    // Sortering: Ankaret (1) → Kassaflödet (2) → övriga bokstavsordnat → inom kat bokstavsordnat
+    const katOrdning = k => k===1?0:k===2?1:KATEGORIER[k]?.namn||'ö';
+    const s=[...data.innehav].sort((a,b)=>{
+      const ka=katOrdning(a.kategori||2), kb=katOrdning(b.kategori||2);
+      const ko=typeof ka==='number'&&typeof kb==='number'?ka-kb:typeof ka==='number'?-1:typeof kb==='number'?1:ka.localeCompare(kb);
+      return ko||a.namn.localeCompare(b.namn);
+    });
+    // Bygg rader med kategoriseparatorer
+    let sistaKat=null;
     tbody.innerHTML=s.map(h=>{
       const mv=h.antal*h.aktuelKurs, vf=mv-h.antal*h.köpkurs, vp=h.antal*h.köpkurs>0?(vf/(h.antal*h.köpkurs))*100:0;
-      return `<tr><td><strong>${h.namn}</strong></td><td>${katBadge(h.kategori||2)}</td><td>${(+h.antal).toLocaleString('sv-SE',{maximumFractionDigits:4})}</td><td>${kr(h.köpkurs,2)}</td><td>${kr(h.aktuelKurs,2)}</td><td><strong>${kr(mv)}</strong></td><td class="${färg(vf)}">${kr(vf)}</td><td><span class="badge ${vf>=0?'badge-pos':'badge-neg'}">${pct(vp)}</span></td></tr>`;
+      const kat=KATEGORIER[h.kategori||2];
+      let sep='';
+      if(h.kategori!==sistaKat){
+        sistaKat=h.kategori;
+        sep=`<tr><td colspan="8" style="background:#f9fafb;padding:6px 13px;font-size:0.74rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;border-bottom:1px solid var(--border)">${kat?.emoji||''} ${kat?.namn||''}</td></tr>`;
+      }
+      return sep+`<tr><td><strong>${h.namn}</strong></td><td>${katBadge(h.kategori||2)}</td><td>${(+h.antal).toLocaleString('sv-SE',{maximumFractionDigits:4})}</td><td>${kr(h.köpkurs,2)}</td><td>${kr(h.aktuelKurs,2)}</td><td><strong>${kr(mv)}</strong></td><td class="${färg(vf)}">${kr(vf)}</td><td><span class="badge ${vf>=0?'badge-pos':'badge-neg'}">${pct(vp)}</span></td></tr>`;
     }).join('');
-    if(kortLista)kortLista.innerHTML=s.slice(0,20).map(h=>{
-      const mv=h.antal*h.aktuelKurs, vf=mv-h.antal*h.köpkurs, vp=h.antal*h.köpkurs>0?(vf/(h.antal*h.köpkurs))*100:0;
-      return `<div class="mobil-kort"><div class="mobil-kort-header"><div><div class="mobil-kort-namn">${h.namn}</div><div style="margin-top:4px">${katBadge(h.kategori||2)}</div></div><div class="${färg(vf)}" style="text-align:right;font-weight:700"><div>${pct(vp)}</div><div style="font-size:1rem">${kr(mv)}</div></div></div><div class="mobil-kort-rad"><span class="etikett">Antal</span><span>${(+h.antal).toLocaleString('sv-SE',{maximumFractionDigits:4})}</span></div><div class="mobil-kort-rad"><span class="etikett">GAV</span><span>${kr(h.köpkurs,2)}</span></div><div class="mobil-kort-rad"><span class="etikett">Akt. kurs</span><span>${kr(h.aktuelKurs,2)}</span></div><div class="mobil-kort-rad"><span class="etikett">Vinst/Förlust</span><span class="${färg(vf)}">${kr(vf)}</span></div></div>`;
-    }).join('');
+    if(kortLista){
+      let sistaKatM=null;
+      kortLista.innerHTML=s.map(h=>{
+        const mv=h.antal*h.aktuelKurs, vf=mv-h.antal*h.köpkurs, vp=h.antal*h.köpkurs>0?(vf/(h.antal*h.köpkurs))*100:0;
+        const kat=KATEGORIER[h.kategori||2];
+        let sepM='';
+        if(h.kategori!==sistaKatM){
+          sistaKatM=h.kategori;
+          sepM=`<div style="padding:10px 4px 4px;font-size:0.74rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em">${kat?.emoji||''} ${kat?.namn||''}</div>`;
+        }
+        return sepM+`<div class="mobil-kort"><div class="mobil-kort-header"><div><div class="mobil-kort-namn">${h.namn}</div><div style="margin-top:4px">${katBadge(h.kategori||2)}</div></div><div class="${färg(vf)}" style="text-align:right;font-weight:700"><div>${pct(vp)}</div><div style="font-size:1rem">${kr(mv)}</div></div></div><div class="mobil-kort-rad"><span class="etikett">Antal</span><span>${(+h.antal).toLocaleString('sv-SE',{maximumFractionDigits:4})}</span></div><div class="mobil-kort-rad"><span class="etikett">GAV</span><span>${kr(h.köpkurs,2)}</span></div><div class="mobil-kort-rad"><span class="etikett">Akt. kurs</span><span>${kr(h.aktuelKurs,2)}</span></div><div class="mobil-kort-rad"><span class="etikett">Vinst/Förlust</span><span class="${färg(vf)}">${kr(vf)}</span></div></div>`;
+      }).join('');
+    }
   }
 
   // Vikter
@@ -1960,47 +2756,291 @@ function renderDashboard() {
 }
 
 // ══════════════════════════════════════════════════════════
+//  KATEGORI-JÄMFÖRELSE (4.2)
+// ══════════════════════════════════════════════════════════
+let _aktivKatTab = 'grid';
+function byttKatTab(tab) {
+  _aktivKatTab = tab;
+  document.getElementById('kat-vy-grid').style.display = tab === 'grid' ? 'block' : 'none';
+  document.getElementById('kat-vy-jämför').style.display = tab === 'jämför' ? 'block' : 'none';
+  const tGrid = document.getElementById('kat-tab-grid');
+  const tJäm = document.getElementById('kat-tab-jämför');
+  const aktiv = 'font-weight:700;color:var(--primary-mid);border-bottom:2px solid var(--primary-mid);margin-bottom:-2px';
+  const inaktiv = 'font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px';
+  if (tGrid) tGrid.style.cssText = `padding:8px 16px;border:none;background:none;cursor:pointer;font-size:0.9rem;${tab==='grid'?aktiv:inaktiv}`;
+  if (tJäm) tJäm.style.cssText = `padding:8px 16px;border:none;background:none;cursor:pointer;font-size:0.9rem;${tab==='jämför'?aktiv:inaktiv}`;
+  if (tab === 'jämför') renderKategoriJämförelse();
+}
+
+function renderKategoriJämförelse() {
+  const ingenData = document.getElementById('kat-jämför-ingen-data');
+  const canvas = document.getElementById('diagramKatJämför');
+  const rubrik = document.getElementById('kat-jämför-rubrik');
+  if (!canvas) return;
+
+  const sd = periodeStartDatum(), etik = periodEtikett() || 'Allt';
+  if (rubrik) rubrik.textContent = `Kategoriutveckling · ${etik} (indexerat till 100)`;
+
+  // Filtrera historikpunkter med katVärden inom vald period
+  const sortadH = [...data.historik]
+    .filter(h => h.katVärden && h.datum >= sd)
+    .sort((a,b) => a.datum.localeCompare(b.datum));
+
+  // Lägg till startankare (sista punkten FÖRE perioden)
+  const före = [...data.historik].filter(h => h.katVärden && h.datum < sd).sort((a,b) => a.datum.localeCompare(b.datum));
+  const ankar = före.length ? [{ ...före[före.length-1], datum: sd }] : [];
+  const punkter = [...ankar, ...sortadH];
+
+  if (punkter.length < 2) {
+    if (ingenData) { ingenData.style.display='block'; ingenData.textContent = 'Inte tillräckligt med historikdata med kategorivärden. Importera fler positionsfiler för att bygga upp jämförelsen.'; }
+    canvas.style.display = 'none';
+    return;
+  }
+  if (ingenData) ingenData.style.display = 'none';
+  canvas.style.display = 'block';
+
+  // Indexera varje kategori till 100 vid första punkten
+  const datasets = Object.entries(KATEGORIER).map(([k, kat]) => {
+    const basV = punkter[0].katVärden[k] ?? 0;
+    if (basV === 0) return null;
+    return {
+      label: `${kat.emoji} ${kat.namn}`,
+      data: punkter.map(h => ({ x: h.datum, y: basV > 0 ? ((h.katVärden[k] ?? basV) / basV * 100) : 100 })),
+      borderColor: kat.färg,
+      backgroundColor: 'transparent',
+      borderWidth: 2,
+      pointRadius: punkter.length < 15 ? 3 : 1,
+      tension: 0.3,
+    };
+  }).filter(Boolean);
+
+  if (window._chartKatJäm) { window._chartKatJäm.destroy(); window._chartKatJäm = null; }
+  window._chartKatJäm = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: { datasets },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      scales: {
+        x: { type: 'time', time: { unit: 'month', tooltipFormat: 'yyyy-MM-dd' }, adapters: { date: { locale: 'sv-SE' } } },
+        y: { ticks: { callback: v => v.toFixed(0) }, title: { display: true, text: 'Indexerat (start = 100)' } }
+      },
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 } } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}` } }
+      }
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════
 //  RENDER — KATEGORIER
 // ══════════════════════════════════════════════════════════
 function renderKategorier() {
-  const katV=beräknaKategorivärden(), tot=Object.values(katV).reduce((s,v)=>s+v,0);
+  const katV=beräknaKategorivärden(), kassa=Math.max(0,beräknaTillgängligLikviditet()), tot=Object.values(katV).reduce((s,v)=>s+v,0)+kassa;
+  const sd=periodeStartDatum(), etik=periodEtikett();
   document.getElementById('kategori-grid').innerHTML=Object.entries(KATEGORIER).map(([k,kat])=>{
     const innehav=data.innehav.filter(h=>String(h.kategori)===k);
     const v=katV[k]||0, vp=tot>0?(v/tot)*100:0;
     const mm=(kat.målMin+kat.målMax)/2, avv=vp-mm;
     let avvBadge=avv>2?`<span class="badge badge-warning">Övervikt ${avv.toFixed(1)}%</span>`:avv<-2?`<span class="badge badge-neg">Undervikt ${Math.abs(avv).toFixed(1)}%</span>`:`<span class="badge badge-pos">OK</span>`;
+    // Periodens avkastning för kategorin (2.1)
+    const katAvk = etik ? beräknaKategoriAvkastning(k, sd) : null;
+    const avkBadge = katAvk
+      ? `<span style="font-size:0.72rem;padding:1px 7px;border-radius:4px;font-weight:700;background:${katAvk.avkPct>=0?'#dcfce7':'#fee2e2'};color:${katAvk.avkPct>=0?'#15803d':'#b91c1c'}" title="Avkastning ${etik} (från ${katAvk.startDatum})">${katAvk.avkPct>=0?'+':''}${katAvk.avkPct.toFixed(1)}%</span>`
+      : '';
     const rader=innehav.length===0?'<p style="color:var(--muted);font-size:0.84rem;padding:6px 0">Inga innehav ännu.</p>':innehav.map(h=>{
       const mv=h.antal*h.aktuelKurs, sig=kat.signal==='ma200'?ma200Signal(h):null;
       const nöd=nödutgångSignal(h);
       const gb=gummibandZon(h);
-      const gbFärger={grön:'#00c853',gul:'#d97706',orange:'#ea580c'};
+      const gbFärger={grön:'#00c853',gul:'#d97706',orange:'#ea580c',under:'#dc2626'};
       const sH=sig&&sig!=='okänd'?`<span class="signal-dot signal-${sig}" style="flex-shrink:0" title="${sig==='grön'?'Över MA200':sig==='gul'?(h.ma200&&h.aktuelKurs<h.ma200?'Dag 1 under MA200 (tvådagarsregel)':'Nära MA200'):'Säljsignal (2 dagar under MA200)'}"></span>`:sig==='okänd'?'<span style="color:var(--muted);font-size:0.8rem;flex-shrink:0" title="MA200 ej angivet">—</span>':'';
       const nödH=nöd==='hård'?`<span style="font-size:0.68rem;background:#fee2e2;color:#b91c1c;padding:1px 6px;border-radius:4px;font-weight:700;margin-left:4px">🛑 HÅRD STOPP</span>`:nöd==='mjuk'?`<span style="font-size:0.68rem;background:#fef3c7;color:#d97706;padding:1px 6px;border-radius:4px;font-weight:700;margin-left:4px">⚠️ MJUK ANALYS</span>`:'';
-      const gbH=gb?`<span style="font-size:0.7rem;background:${gbFärger[gb.zon]}20;color:${gbFärger[gb.zon]};padding:1px 5px;border-radius:4px;font-weight:600;margin-left:2px" title="Gummiband: ${gb.label} över MA200">${gb.label}</span>`:'';
+      const gbH=gb?`<span style="font-size:0.7rem;background:${gbFärger[gb.zon]}20;color:${gbFärger[gb.zon]};padding:1px 5px;border-radius:4px;font-weight:600;margin-left:2px" title="${gb.zon==='under'?'Under MA200: '+gb.label:'Gummiband: '+gb.label+' över MA200'}">${gb.label}</span>`:'';
       return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:0.87rem"><span style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">${sH}<strong>${h.namn}</strong>${nödH}${gbH}</span><span style="color:var(--muted)">${kr(mv)}</span></div>`;
     }).join('');
     const fw=Math.min(100,(vp/Math.max(kat.målMax,vp))*100);
-    return `<div class="kat-kort"><div class="kat-kort-header"><div class="kat-kort-namn"><span style="font-size:1.4rem">${kat.emoji}</span><div><div>${kat.namn}</div><div style="font-size:0.75rem;color:var(--muted);font-weight:400">${kat.undertitel}</div></div></div><div class="kat-kort-siffror"><div class="vikt">${vp.toFixed(1)}%</div><div class="mal">Mål: ${kat.målMin}–${kat.målMax}%</div><div style="margin-top:4px;display:flex;gap:6px;justify-content:flex-end"><button onclick="redigeraKategori(${k})" style="font-size:0.65rem;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:none;cursor:pointer;color:var(--muted)" title="Redigera">✏️</button><button onclick="taBortKategori(${k})" style="font-size:0.65rem;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:none;cursor:pointer;color:var(--danger)" title="Ta bort">🗑</button></div></div></div><div class="kat-kort-body"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:0.78rem;color:var(--muted)">${kr(v)}</span>${avvBadge}</div><div class="vikt-bar-track" style="margin-bottom:12px"><div class="vikt-bar-fill" style="width:${fw}%;background:${kat.färg}"></div><div class="vikt-bar-mal" style="left:${Math.min(100,kat.målMax)}%"></div></div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;font-style:italic">${kat.beskrivning}</div>${rader}</div></div>`;
+    const ombalans = tot > 0 && Math.abs(avv) > 2
+      ? (() => {
+          const mm = (kat.målMin + kat.målMax) / 2;
+          const belopp = Math.abs((mm - vp) / 100) * tot;
+          const övervikt = avv > 0;
+          return `<div style="margin-top:10px;padding:8px 10px;border-radius:6px;background:${övervikt?'var(--warning-light)':'var(--primary-light)'};font-size:0.8rem;display:flex;justify-content:space-between;align-items:center">
+            <span style="color:${övervikt?'var(--warning)':'var(--primary-mid)'}">⚖️ ${övervikt?'Sälj':'Köp'} för att nå mål</span>
+            <strong style="color:${övervikt?'var(--warning)':'var(--primary-mid)'}">${kr(belopp)}</strong>
+          </div>`;
+        })()
+      : '';
+    return `<div class="kat-kort"><div class="kat-kort-header"><div class="kat-kort-namn"><span style="font-size:1.4rem">${kat.emoji}</span><div><div>${kat.namn}</div><div style="font-size:0.75rem;color:var(--muted);font-weight:400">${kat.undertitel}</div></div></div><div class="kat-kort-siffror"><div class="vikt">${vp.toFixed(1)}%</div><div class="mal">Mål: ${kat.målMin}–${kat.målMax}%</div><div style="margin-top:4px;display:flex;gap:6px;justify-content:flex-end"><button onclick="redigeraKategori(${k})" style="font-size:0.65rem;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:none;cursor:pointer;color:var(--muted)" title="Redigera">✏️</button><button onclick="taBortKategori(${k})" style="font-size:0.65rem;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:none;cursor:pointer;color:var(--danger)" title="Ta bort">🗑</button></div></div></div><div class="kat-kort-body"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--muted)">${kr(v)}${avkBadge}</span>${avvBadge}</div><div class="vikt-bar-track" style="margin-bottom:12px"><div class="vikt-bar-fill" style="width:${fw}%;background:${kat.färg}"></div><div class="vikt-bar-mal" style="left:${Math.min(100,kat.målMax)}%"></div></div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;font-style:italic">${kat.beskrivning}</div>${rader}${ombalans}</div></div>`;
   }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+//  RENDER — SIGNALER
+// ══════════════════════════════════════════════════════════
+function renderSignaler() {
+  const el = document.getElementById('signaler-innehall');
+  if (!el) return;
+  if (data.innehav.length === 0) {
+    el.innerHTML = '<div class="banner banner-info" style="margin-bottom:0">📭 Inga innehav importerade ännu.</div>';
+    return;
+  }
+  const totalt = beräknaInnehavVärde();
+
+  // Samla aktioner per grupp
+  const säljSignaler = [], bevakning = [], nödutgångar = [], höKonc = [];
+  data.innehav.forEach(h => {
+    const kat = KATEGORIER[h.kategori] || KATEGORIER[2];
+    const sig = kat.signal === 'ma200' ? ma200Signal(h) : null;
+    const nöd = nödutgångSignal(h);
+    const mv = h.antal * h.aktuelKurs;
+    const andel = totalt > 0 ? (mv / totalt) * 100 : 0;
+    if (sig === 'röd') säljSignaler.push({h, kat, mv, andel});
+    else if (sig === 'gul') bevakning.push({h, kat, mv, andel});
+    if (nöd) nödutgångar.push({h, kat, mv, nöd, andel});
+    if (andel > 8 && h.kategori !== 1) höKonc.push({h, kat, mv, andel});
+  });
+
+  // Kategorier utanför målvikt
+  const katV = beräknaKategorivärden();
+  const kassaSig = Math.max(0, beräknaTillgängligLikviditet());
+  const katTot = Object.values(katV).reduce((s,v) => s+v, 0) + kassaSig;
+  const ombalans = [];
+  Object.entries(KATEGORIER).forEach(([k, kat]) => {
+    const vp = katTot > 0 ? ((katV[k]||0) / katTot) * 100 : 0;
+    const mm = (kat.målMin + kat.målMax) / 2;
+    const avv = vp - mm;
+    if (Math.abs(avv) > 2) ombalans.push({k, kat, vp, avv, v: katV[k]||0});
+  });
+
+  const totalaÅtgärder = säljSignaler.length + nödutgångar.length + ombalans.filter(o=>o.avv<-2).length + höKonc.length;
+
+  const sektion = (rubrik, ikon, färgClass, rader) => rader.length === 0 ? '' :
+    `<div class="card mb20">
+      <div class="card-titel"><span class="card-titel-text">${ikon} ${rubrik}</span>
+        <span class="badge ${färgClass}">${rader.length} st</span></div>
+      ${rader}
+    </div>`;
+
+  const innehavRad = ({h, kat, mv, andel}, extra='') =>
+    `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="kat-badge kat-${h.kategori||2}">${kat.emoji} ${kat.namn}</span>
+        <strong>${h.namn}</strong>${extra}
+      </div>
+      <div style="text-align:right;font-size:0.85rem">
+        <div>${kr(mv)}</div>
+        <div style="color:var(--muted)">${andel.toFixed(1)}% av portfölj</div>
+      </div>
+    </div>`;
+
+  const säljHTML = sektion('Säljsignaler — MA200 röd (tvådagarsregel uppfylld)', '🔴', 'badge-neg',
+    säljSignaler.map(e => innehavRad(e, `<span style="font-size:0.72rem;background:#fee2e2;color:#b91c1c;padding:1px 6px;border-radius:4px;font-weight:700;margin-left:4px">Säljsignal</span>`)).join(''));
+
+  const bevHTML = sektion('Bevakning — nära MA200 (±5%)', '🟡', 'badge-warning',
+    bevakning.map(e => {
+      const lokal = lokalKursVärde(e.h);
+      const avst = e.h.ma200 > 0 ? ((lokal - e.h.ma200) / e.h.ma200 * 100).toFixed(1) : null;
+      const extra = avst !== null ? `<span style="font-size:0.72rem;background:#fef3c7;color:#d97706;padding:1px 6px;border-radius:4px;font-weight:700;margin-left:4px">${avst > 0 ? '+' : ''}${avst}% vs MA200</span>` : '';
+      return innehavRad(e, extra);
+    }).join(''));
+
+  const nödHTML = sektion('Nödutgångar — kurs under 90% av GAV', '🛑', 'badge-neg',
+    nödutgångar.map(e => {
+      const förlust = ((e.h.aktuelKurs - e.h.köpkurs) / e.h.köpkurs * 100).toFixed(1);
+      const extra = `<span style="font-size:0.72rem;background:${e.nöd==='hård'?'#fee2e2':'#fef3c7'};color:${e.nöd==='hård'?'#b91c1c':'#d97706'};padding:1px 6px;border-radius:4px;font-weight:700;margin-left:4px">${e.nöd==='hård'?'🛑 Hård stopp':'⚠️ Mjuk analys'} (${förlust}%)</span>`;
+      return innehavRad(e, extra);
+    }).join(''));
+
+  const ombalansHTML = ombalans.length === 0 ? '' :
+    `<div class="card mb20">
+      <div class="card-titel"><span class="card-titel-text">⚖️ Kategorier utanför målvikt</span>
+        <span class="badge badge-warning">${ombalans.length} st</span></div>
+      ${ombalans.map(({k, kat, vp, avv, v}) => {
+        const mm = (kat.målMin + kat.målMax) / 2;
+        const behov = Math.abs(avv / 100) * katTot;
+        const övervikt = avv > 0;
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="kat-badge kat-${k}">${kat.emoji} ${kat.namn}</span>
+            <span class="badge ${övervikt?'badge-warning':'badge-neg'}">${övervikt?'Övervikt':'Undervikt'} ${Math.abs(avv).toFixed(1)}%</span>
+          </div>
+          <div style="text-align:right;font-size:0.85rem">
+            <div>${vp.toFixed(1)}% (mål ${kat.målMin}–${kat.målMax}%)</div>
+            <div style="color:${övervikt?'var(--warning)':'var(--danger)'}">
+              ${övervikt ? 'Sälj' : 'Köp'} ca ${kr(behov)}
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+
+  const koncHTML = sektion('Hög koncentration — enskilt innehav >8%', '⚠️', 'badge-warning',
+    höKonc.map(e => {
+      const extra = `<span style="font-size:0.72rem;background:#fef3c7;color:#d97706;padding:1px 6px;border-radius:4px;font-weight:700;margin-left:4px">${e.andel.toFixed(1)}% av portfölj</span>`;
+      return innehavRad(e, extra);
+    }).join(''));
+
+  const ingaÅtgärder = totalaÅtgärder === 0 && nödutgångar.length === 0 && bevakning.length === 0;
+
+  el.innerHTML = ingaÅtgärder
+    ? `<div class="card" style="text-align:center;padding:40px 20px">
+        <div style="font-size:2.5rem;margin-bottom:12px">✅</div>
+        <div style="font-size:1.1rem;font-weight:700;margin-bottom:6px">Ingen åtgärd krävs</div>
+        <div style="color:var(--muted)">Portföljen mår bra. Alla signaler är gröna.</div>
+      </div>`
+    : säljHTML + nödHTML + ombalansHTML + bevHTML + koncHTML;
 }
 
 // ══════════════════════════════════════════════════════════
 //  RENDER — INNEHAV
 // ══════════════════════════════════════════════════════════
+function byttInnehavSortering(kol) {
+  if(sorteringKolumn===kol) sorteringRiktning*=-1; else {sorteringKolumn=kol;sorteringRiktning=1;}
+  renderInnehav();
+}
 function renderInnehav() {
   const sok=(document.getElementById('innehavSok')?.value||'').toLowerCase();
+  // Uppdatera thead med klickbara rubriker
+  const thead=document.getElementById('innehavThead');
+  if(thead){
+    const kolumner=[
+      {id:'namn',label:'Namn'},{id:null,label:'Kat.'},{id:null,label:'Valuta'},{id:null,label:'Antal'},
+      {id:null,label:'GAV'},{id:null,label:'Kurs (SEK/Lokal)'},{id:'ma200avst',label:'MA200 (Lokal)'},
+      {id:'signal',label:'Signal'},{id:null,label:'Kostnadsbas'},{id:'värde',label:'Markn.värde'},
+      {id:'avkastning',label:'Vinst/Förlust'},{id:'avkastning',label:'%'},{id:'andel',label:'Andel'},
+      {id:null,label:'Utd.'},{id:null,label:'Åtgärder'}
+    ];
+    thead.innerHTML='<tr>'+kolumner.map(({id,label})=>{
+      if(!id) return `<th>${label}</th>`;
+      const aktiv=sorteringKolumn===id;
+      const pil=aktiv?(sorteringRiktning>0?' ↑':' ↓'):'';
+      return `<th style="cursor:pointer;user-select:none${aktiv?';color:var(--primary)':''}" onclick="byttInnehavSortering('${id}')">${label}${pil}</th>`;
+    }).join('')+'</tr>';
+  }
   const fil=sok?data.innehav.filter(h=>h.namn.toLowerCase().includes(sok)||(h.ticker||'').toLowerCase().includes(sok)):data.innehav;
-  const s=[...fil].sort((a,b)=>String(a.kategori).localeCompare(String(b.kategori))||a.namn.localeCompare(b.namn));
+  const s=[...fil].sort((a,b)=>{
+    const r=sorteringRiktning;
+    if(sorteringKolumn==='namn') return r*a.namn.localeCompare(b.namn);
+    if(sorteringKolumn==='värde') return r*((b.antal*b.aktuelKurs)-(a.antal*a.aktuelKurs));
+    if(sorteringKolumn==='avkastning'){const va=(a.antal*a.aktuelKurs-a.antal*a.köpkurs)/(a.antal*a.köpkurs||1),vb=(b.antal*b.aktuelKurs-b.antal*b.köpkurs)/(b.antal*b.köpkurs||1);return r*(vb-va);}
+    if(sorteringKolumn==='signal'){const ord={grön:0,gul:1,röd:2,okänd:3,null:4};const sa=KATEGORIER[a.kategori]?.signal==='ma200'?ma200Signal(a):null;const sb=KATEGORIER[b.kategori]?.signal==='ma200'?ma200Signal(b):null;return r*((ord[sa]??4)-(ord[sb]??4));}
+    if(sorteringKolumn==='andel'){const tv=beräknaInnehavVärde();return r*((b.antal*b.aktuelKurs)-(a.antal*a.aktuelKurs));}
+    if(sorteringKolumn==='ma200avst'){const la=lokalKursVärde(a),lb=lokalKursVärde(b);const da=a.ma200>0?(la-a.ma200)/a.ma200:null,db=b.ma200>0?(lb-b.ma200)/b.ma200:null;if(da===null&&db===null)return 0;if(da===null)return 1;if(db===null)return -1;return r*(da-db);}
+    return String(a.kategori).localeCompare(String(b.kategori))||a.namn.localeCompare(b.namn);
+  });
   const tbody=document.querySelector('#tabellInnehav tbody');
   const kl=document.getElementById('innehavKortLista');
-  if(s.length===0){tbody.innerHTML='<tr class="tom-rad"><td colspan="14">Inga innehav.</td></tr>';if(kl)kl.innerHTML='<div style="text-align:center;color:var(--muted);padding:32px">Inga innehav.</div>';return;}
+  const totaltIV=beräknaInnehavVärde();
+  if(s.length===0){tbody.innerHTML='<tr class="tom-rad"><td colspan="15">Inga innehav.</td></tr>';if(kl)kl.innerHTML='<div style="text-align:center;color:var(--muted);padding:32px">Inga innehav.</div>';return;}
   tbody.innerHTML=s.map(h=>{
     const kb=h.antal*h.köpkurs,mv=h.antal*h.aktuelKurs,vf=mv-kb,vp=kb>0?(vf/kb)*100:0;
+    const andel=totaltIV>0?(mv/totaltIV)*100:0;
+    const andelFärg=h.kategori===1?'color:var(--muted)':andel>12?'color:#ea580c;font-weight:700':andel>8?'color:var(--warning);font-weight:700':'color:var(--muted)';
     const ud=totalUtdelningFörInnehav(h);
     const kat=KATEGORIER[h.kategori]||KATEGORIER[2],sig=kat.signal==='ma200'?ma200Signal(h):null;
     const nöd=nödutgångSignal(h);
     const gb=gummibandZon(h);
-    const gbFärger={grön:'#00c853',gul:'#d97706',orange:'#ea580c'};
+    const gbFärger={grön:'#00c853',gul:'#d97706',orange:'#ea580c',under:'#dc2626'};
     const sH=sig&&sig!=='okänd'?`<span class="signal-dot signal-${sig}"></span>`:sig==='okänd'?'<span style="color:var(--muted)">—</span>':'<span style="color:var(--muted)">—</span>';
     const nödH=nöd==='hård'?`<span class="badge" style="background:#fee2e2;color:#b91c1c">🛑 Stopp</span>`:nöd==='mjuk'?`<span class="badge" style="background:#fef3c7;color:#d97706">⚠️ Analys</span>`:'';
     const gbH=gb?`<span style="font-size:0.7rem;color:${gbFärger[gb.zon]};font-weight:600;background:${gbFärger[gb.zon]}22;padding:1px 5px;border-radius:4px">${gb.label}</span>`:'';
@@ -2009,14 +3049,16 @@ function renderInnehav() {
       ?`${kr(h.aktuelKurs,2)}<br><small style="color:var(--muted);font-size:0.72rem">${lokal.toFixed(2)}\u00a0${h.valuta}</small>`
       :kr(h.aktuelKurs,2);
     const ma200Vis=h.ma200>0?`${h.ma200.toFixed(h.ma200>=10?0:2)}${gbH?'<br>'+gbH:''}`:'—';
-    return `<tr><td><strong>${h.namn}</strong>${h.notat?`<br><small style="color:var(--muted)">${h.notat}</small>`:''}</td><td>${katBadge(h.kategori||2)}</td><td><span class="chip">${h.valuta||'SEK'}</span></td><td>${(+h.antal).toLocaleString('sv-SE',{maximumFractionDigits:4})}</td><td>${kr(h.köpkurs,2)}</td><td>${kursVis}</td><td>${ma200Vis}</td><td style="text-align:center">${sH}${nödH?'<br>'+nödH:''}</td><td>${kr(kb)}</td><td><strong>${kr(mv)}</strong></td><td class="${färg(vf)}">${(()=>{const d=beräknaVinstDekomponering(h);return d.hasFX?`${kr(vf)}<br><small style="color:var(--muted);font-size:0.72rem" title="Bolagsvinst: ${kr(d.bolag)} | Valutavinst: ${kr(d.valuta)}">🏢 ${kr(d.bolag,0)} 💱 ${kr(d.valuta,0)}</small>`:kr(vf);})()}</td><td><span class="badge ${vf>=0?'badge-pos':'badge-neg'}">${pct(vp)}</span></td><td>${ud>0?kr(ud):'—'}</td><td style="white-space:nowrap"><button class="btn btn-primary btn-sm" onclick="redigeraInnehav('${h.id}')">✏️</button> <button class="btn btn-success btn-sm" onclick="öppnaUtdelning('${h.id}')">💰</button> <button class="btn btn-danger btn-sm" onclick="raderaInnehav('${h.id}')">✕</button></td></tr>`;
+    return `<tr><td><strong>${h.namn}</strong>${h.notat?`<br><small style="color:var(--muted)">${h.notat}</small>`:''}</td><td>${katBadge(h.kategori||2)}</td><td><span class="chip">${h.valuta||'SEK'}</span></td><td>${(+h.antal).toLocaleString('sv-SE',{maximumFractionDigits:4})}</td><td>${kr(h.köpkurs,2)}</td><td>${kursVis}</td><td>${ma200Vis}</td><td style="text-align:center">${sH}${nödH?'<br>'+nödH:''}</td><td>${kr(kb)}</td><td><strong>${kr(mv)}</strong></td><td class="${färg(vf)}">${(()=>{const d=beräknaVinstDekomponering(h);return d.hasFX?`${kr(vf)}<br><small style="color:var(--muted);font-size:0.72rem" title="Bolagsvinst: ${kr(d.bolag)} | Valutavinst: ${kr(d.valuta)}">🏢 ${kr(d.bolag,0)} 💱 ${kr(d.valuta,0)}</small>`:kr(vf);})()}</td><td><span class="badge ${vf>=0?'badge-pos':'badge-neg'}">${pct(vp)}</span></td><td style="${andelFärg}">${andel.toFixed(1)}%</td><td>${ud>0?kr(ud):'—'}</td><td style="white-space:nowrap"><button class="btn btn-primary btn-sm" onclick="redigeraInnehav('${h.id}')">✏️</button> <button class="btn btn-success btn-sm" onclick="öppnaUtdelning('${h.id}')">💰</button> <button class="btn btn-danger btn-sm" onclick="raderaInnehav('${h.id}')">✕</button></td></tr>`;
   }).join('');
   if(kl)kl.innerHTML=s.map(h=>{
     const kb=h.antal*h.köpkurs,mv=h.antal*h.aktuelKurs,vf=mv-kb,vp=kb>0?(vf/kb)*100:0;
+    const andelM=totaltIV>0?(mv/totaltIV)*100:0;
+    const andelMFärg=h.kategori===1?'':andelM>12?'color:#ea580c;font-weight:700':andelM>8?'color:var(--warning);font-weight:700':'';
     const kat=KATEGORIER[h.kategori]||KATEGORIER[2],sig=kat.signal==='ma200'?ma200Signal(h):null;
     const sT=sig==='grön'?'🟢':sig==='gul'?'🟡':sig==='röd'?'🔴':'';
     const udM=totalUtdelningFörInnehav(h);
-    return `<div class="mobil-kort"><div class="mobil-kort-header"><div><div class="mobil-kort-namn">${sT} ${h.namn}</div><div style="margin-top:5px">${katBadge(h.kategori||2)}</div></div><div class="${färg(vf)}" style="text-align:right;font-weight:700"><div style="font-size:0.85rem">${pct(vp)}</div><div>${kr(mv)}</div></div></div><div class="mobil-kort-rad"><span class="etikett">Antal</span><span>${(+h.antal).toLocaleString('sv-SE',{maximumFractionDigits:4})}</span></div><div class="mobil-kort-rad"><span class="etikett">GAV</span><span>${kr(h.köpkurs,2)}</span></div><div class="mobil-kort-rad"><span class="etikett">Akt. kurs</span><span>${kr(h.aktuelKurs,2)}</span></div>${h.ma200>0?`<div class="mobil-kort-rad"><span class="etikett">MA200</span><span>${kr(h.ma200,0)}</span></div>`:''}<div class="mobil-kort-rad"><span class="etikett">Vinst/Förlust</span><span class="${färg(vf)}">${kr(vf)}</span></div>${udM>0?`<div class="mobil-kort-rad"><span class="etikett">Utdelningar</span><span style="color:var(--success)">${kr(udM)}</span></div>`:''}<div class="mobil-kort-åtgärder"><button class="btn btn-primary btn-sm" onclick="redigeraInnehav('${h.id}');window.scrollTo({top:0,behavior:'smooth'})">✏️ Redigera</button><button class="btn btn-success btn-sm" onclick="öppnaUtdelning('${h.id}')">💰</button><button class="btn btn-danger btn-sm" onclick="raderaInnehav('${h.id}')">✕</button></div></div>`;
+    return `<div class="mobil-kort"><div class="mobil-kort-header"><div><div class="mobil-kort-namn">${sT} ${h.namn}</div><div style="margin-top:5px">${katBadge(h.kategori||2)}</div></div><div class="${färg(vf)}" style="text-align:right;font-weight:700"><div style="font-size:0.85rem">${pct(vp)}</div><div>${kr(mv)}</div></div></div><div class="mobil-kort-rad"><span class="etikett">Antal</span><span>${(+h.antal).toLocaleString('sv-SE',{maximumFractionDigits:4})}</span></div><div class="mobil-kort-rad"><span class="etikett">GAV</span><span>${kr(h.köpkurs,2)}</span></div><div class="mobil-kort-rad"><span class="etikett">Akt. kurs</span><span>${kr(h.aktuelKurs,2)}</span></div>${h.ma200>0?`<div class="mobil-kort-rad"><span class="etikett">MA200</span><span>${kr(h.ma200,0)}</span></div>`:''}<div class="mobil-kort-rad"><span class="etikett">Vinst/Förlust</span><span class="${färg(vf)}">${kr(vf)}</span></div>${(andelM>8&&h.kategori!==1)?`<div class="mobil-kort-rad"><span class="etikett">Andel</span><span style="${andelMFärg}">${andelM.toFixed(1)}%</span></div>`:''}${udM>0?`<div class="mobil-kort-rad"><span class="etikett">Utdelningar</span><span style="color:var(--success)">${kr(udM)}</span></div>`:''}${h.ma200Varning?`<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;padding:6px 10px;margin:6px 0;font-size:0.77rem;color:#b91c1c">⚠ ${h.ma200Varning}</div>`:''}<div class="mobil-kort-åtgärder"><button class="btn btn-primary btn-sm" onclick="redigeraInnehav('${h.id}');window.scrollTo({top:0,behavior:'smooth'})">✏️ Redigera</button><button class="btn btn-success btn-sm" onclick="öppnaUtdelning('${h.id}')">💰</button><button class="btn btn-danger btn-sm" onclick="raderaInnehav('${h.id}')">✕</button></div></div>`;
   }).join('');
 }
 
@@ -2110,12 +3152,20 @@ function renderKassa() {
   tbody.innerHTML=[...data.kassaTransaktioner].reverse().map(t=>`<tr><td>${t.datum}</td><td><span class="badge ${t.typ==='insättning'?'badge-pos':'badge-neg'}">${t.typ}</span></td><td class="${t.typ==='insättning'?'pos':'neg'}">${t.typ==='insättning'?'+':'−'}${kr(t.belopp)}</td><td>${t.notat||'—'}</td><td><button class="btn btn-danger btn-sm" onclick="raderaKassa('${t.id}')">✕</button></td></tr>`).join('');
 }
 
-function renderAllt() { renderDashboard(); renderInnehav(); renderTransaktioner(); renderBeslutslogg(); renderKassa(); renderSenasteImport(); ritaDiagram(); }
+function renderAllt() { renderDashboard(); renderFXExponering(); renderUtdelningskalender(); renderKategorier(); renderSignaler(); renderInnehav(); renderTransaktioner(); renderBeslutslogg(); renderKassa(); renderSenasteImport(); ritaDiagram(); }
 
 // ══════════════════════════════════════════════════════════
 //  DIAGRAM
 // ══════════════════════════════════════════════════════════
 let chartK=null, chartH=null, historikPeriod=90;
+let sorteringKolumn='kategori', sorteringRiktning=1;
+let diagramVy='total';
+function växlaDiagramVy(vy, knapp) {
+  diagramVy=vy;
+  document.querySelectorAll('#dv-knapp-total,#dv-knapp-just').forEach(b=>b.classList.remove('aktiv'));
+  if(knapp) knapp.classList.add('aktiv');
+  ritaDiagram();
+}
 function periodeStartDatum() {
   const idag=new Date().toISOString().slice(0,10);
   if(historikPeriod==='år') return new Date().getFullYear()+'-01-01';
@@ -2129,6 +3179,8 @@ function periodEtikett() {
   if(historikPeriod===180)return '6M';
   if(historikPeriod===90)return '90D';
   if(historikPeriod===30)return '30D';
+  if(historikPeriod===7)return 'Vecka';
+  if(historikPeriod===1)return 'Idag';
   return '';
 }
 function byttHistorikPeriod(period, knapp) {
@@ -2137,6 +3189,9 @@ function byttHistorikPeriod(period, knapp) {
   if(knapp) knapp.classList.add('aktiv');
   ritaDiagram();
   renderDashboard();
+  renderFXExponering();
+  renderKategorier();
+  if (_aktivKatTab === 'jämför') renderKategoriJämförelse();
 }
 const donutCenterPlugin = {
   id: 'centerText',
@@ -2157,21 +3212,37 @@ const donutCenterPlugin = {
 };
 function ritaDiagram() {
   const cK=document.getElementById('diagramKategori')?.getContext('2d');
-  if(cK){if(chartK)chartK.destroy();const kV=beräknaKategorivärden();
-    chartK=new Chart(cK,{type:'doughnut',data:{labels:Object.entries(KATEGORIER).map(([k,kat])=>`${kat.emoji} ${kat.namn}`),datasets:[{data:Object.keys(KATEGORIER).map(k=>kV[k]||0),backgroundColor:Object.values(KATEGORIER).map(kat=>kat.färg),borderWidth:3,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:10}}}},plugins:[donutCenterPlugin]});}
+  if(cK){if(chartK)chartK.destroy();const kV=beräknaKategorivärden();const kassaVal=Math.max(0,beräknaTillgängligLikviditet());
+    const katLabels=Object.entries(KATEGORIER).map(([k,kat])=>`${kat.emoji} ${kat.namn}`);const katData=Object.keys(KATEGORIER).map(k=>kV[k]||0);const katFärger=Object.values(KATEGORIER).map(kat=>kat.färg);
+    if(kassaVal>0){katLabels.push('💵 Kassa');katData.push(kassaVal);katFärger.push('#94a3b8');}
+    chartK=new Chart(cK,{type:'doughnut',data:{labels:katLabels,datasets:[{data:katData,backgroundColor:katFärger,borderWidth:3,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:10}}}},plugins:[donutCenterPlugin]});}
   const cH=document.getElementById('diagramHistorik')?.getContext('2d');
   if(cH){if(chartH)chartH.destroy();
     const idag=new Date().toISOString().slice(0,10);
     const sortadHistorik=[...data.historik].sort((a,b)=>a.datum.localeCompare(b.datum));
     let hi, xMin;
-    if(historikPeriod==='år'){xMin=new Date().getFullYear()+'-01-01';hi=sortadHistorik.filter(h=>h.datum>=xMin);}
-    else if(historikPeriod===0){xMin=sortadHistorik[0]?.datum||idag;hi=sortadHistorik;}
-    else{const d=new Date();d.setDate(d.getDate()-historikPeriod);xMin=d.toISOString().slice(0,10);hi=sortadHistorik.filter(h=>h.datum>=xMin);}
+    if(historikPeriod==='år'){xMin=new Date().getFullYear()+'-01-01';}
+    else if(historikPeriod===0){xMin=sortadHistorik[0]?.datum||idag;}
+    else{const d=new Date();d.setDate(d.getDate()-historikPeriod);xMin=d.toISOString().slice(0,10);}
+    // Inkludera sista punkt INNAN perioden som ankarpunkt så linjen fyller hela bredden
+    const inomPeriod=sortadHistorik.filter(h=>h.datum>=xMin);
+    const föreperiod=sortadHistorik.filter(h=>h.datum<xMin);
+    const ankar=föreperiod.length>0?[{...föreperiod[föreperiod.length-1],datum:xMin}]:[];
+    hi=historikPeriod===0?sortadHistorik:[...ankar,...inomPeriod];
     const hiMedNI=hi.map(h=>({...h,ni:beräknaNettoInsattTillDatum(h.datum)}));
     const harNI=hiMedNI.some(h=>h.ni>0);
     const datasets=[{label:'Portföljvärde',data:hiMedNI.map(h=>({x:h.datum,y:h.totalVärde})),borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,0.07)',borderWidth:2,pointRadius:hiMedNI.length<20?4:1,fill:true,tension:0.3}];
     if(harNI)datasets.push({label:'Nettoinsatt',data:hiMedNI.map(h=>({x:h.datum,y:h.ni})),borderColor:'#94a3b8',borderDash:[5,5],borderWidth:1.5,pointRadius:0,fill:false,tension:0});
-    chartH=new Chart(cH,{type:'line',data:{datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:harNI,labels:{font:{size:11},boxWidth:20,padding:10}}},scales:{x:{type:'time',min:xMin,max:idag,time:{unit:historikPeriod===0||historikPeriod==='år'||historikPeriod>=180?'month':historikPeriod<=30?'day':'week',tooltipFormat:'yyyy-MM-dd',displayFormats:{day:'d MMM',week:'d MMM',month:'MMM yyyy'}},ticks:{maxTicksLimit:8,maxRotation:45}},y:{ticks:{callback:v=>(v/1000).toFixed(0)+'k kr'}}}}});}
+    // "Exkl. insättningar"-läge: visa justerad linje (totalvärde minus ackumulerade insättningar sedan periodens start)
+    if(diagramVy==='justerat'&&harNI){
+      const justData=hiMedNI.map(h=>{
+        const ins=beräknaNettoInsattMellan(xMin,h.datum);
+        return {x:h.datum,y:h.totalVärde-ins};
+      });
+      datasets.push({label:'Exkl. insättningar',data:justData,borderColor:'#16a34a',backgroundColor:'rgba(22,163,74,0.06)',borderWidth:2,pointRadius:hiMedNI.length<20?3:1,fill:true,tension:0.3,borderDash:[4,3]});
+    }
+    const visaLegend=harNI||diagramVy==='justerat';
+    chartH=new Chart(cH,{type:'line',data:{datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:visaLegend,labels:{font:{size:11},boxWidth:20,padding:10}}},scales:{x:{type:'time',min:xMin,max:idag,time:{unit:historikPeriod===0||historikPeriod==='år'||historikPeriod>=180?'month':historikPeriod<=7?'day':'week',tooltipFormat:'yyyy-MM-dd',displayFormats:{day:'d MMM',week:'d MMM',month:'MMM yyyy'}},ticks:{maxTicksLimit:8,maxRotation:45}},y:{ticks:{callback:v=>(v/1000).toFixed(0)+'k kr'}}}}});}
 }
 
 // ══════════════════════════════════════════════════════════
@@ -2504,11 +3575,12 @@ function importeraPositioner(text, filNamn='') {
   if (upd===0 && nya===0) {
     loggImport('fel', '⚠️ Inga innehav importerades. Kontrollera att rätt konton valdes vid export.');
   }
-  // Spara historikpunkt med filens datum
+  // Spara historikpunkt med filens datum + katVärden för kategoriavkastning (2.1)
   const tv = beräknaTotalVärde();
+  const katV = beräknaKategorivärden();
   const befH = data.historik.find(h => h.datum === datumFil);
-  if (!befH) data.historik.push({datum: datumFil, totalVärde: tv, importerad: true});
-  else { befH.totalVärde = tv; befH.importerad = true; }
+  if (!befH) data.historik.push({datum: datumFil, totalVärde: tv, katVärden: katV, importerad: true});
+  else { befH.totalVärde = tv; befH.katVärden = katV; befH.importerad = true; }
   loggImport('info', `📈 Historikpunkt tillagd: ${datumFil}`);
   spara(); renderAllt(); renderStatusPanel();
 }
@@ -2642,12 +3714,282 @@ function renderHistorikLista() {
   const el = document.getElementById('historik-lista');
   if (!el) return;
   const sortad = [...data.historik].sort((a,b)=>b.datum.localeCompare(a.datum));
-  if (!sortad.length) { el.innerHTML='<p style="color:var(--muted);font-size:0.85rem;padding:8px 0">Inga historikposter.</p>'; return; }
+  if (!sortad.length) { el.innerHTML='<p style="color:var(--muted);font-size:0.85rem;padding:8px 0">Inga historikposter. Importera positionsfiler eller ange en manuell baslinje ovan.</p>'; return; }
   el.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:0.85rem">' +
     '<thead><tr><th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--border)">Datum</th><th style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--border)">Portföljvärde</th><th style="padding:6px 8px;border-bottom:1px solid var(--border)"></th></tr></thead><tbody>' +
-    sortad.map(h=>`<tr><td style="padding:6px 8px">${h.datum}</td><td style="text-align:right;padding:6px 8px">${kr(h.totalVärde)}</td><td style="padding:6px 8px;text-align:right"><button class="btn btn-danger btn-sm" onclick="raderaHistorikPost('${h.datum}')">✕</button></td></tr>`).join('') +
+    sortad.map(h=>`<tr style="${h.manuell?'background:#eff6ff':''}"><td style="padding:6px 8px">${h.manuell?'📍 ':''}<strong>${h.datum}</strong>${h.manuell?' <span style="font-size:0.7rem;color:var(--primary-mid);font-weight:700">BASLINJE</span>':''}</td><td style="text-align:right;padding:6px 8px">${kr(h.totalVärde)}</td><td style="padding:6px 8px;text-align:right">${h.manuell?`<button class="btn btn-danger btn-sm" onclick="raderaManuellBaslinje()">✕</button>`:`<button class="btn btn-danger btn-sm" onclick="raderaHistorikPost('${h.datum}')">✕</button>`}</td></tr>`).join('') +
     '</tbody></table>';
+  // Uppdatera baslinje-UI
+  renderBaslinjeUI();
 }
+function renderBaslinjeUI() {
+  const befintlig = document.getElementById('baslinje-befintlig');
+  const visning = document.getElementById('baslinje-visning');
+  const form = document.getElementById('baslinje-form');
+  const baslinje = data.historik.find(h => h.manuell);
+  if (baslinje) {
+    if (befintlig) { befintlig.style.display = 'flex'; befintlig.style.flexDirection = 'row'; }
+    if (visning) visning.textContent = `${baslinje.datum} — ${kr(baslinje.totalVärde)}`;
+    if (form) form.style.opacity = '0.5';
+  } else {
+    if (befintlig) { befintlig.style.display = 'none'; }
+    if (form) form.style.opacity = '1';
+  }
+}
+function sparaManuellBaslinje() {
+  const datum = document.getElementById('baslinje-datum').value;
+  const värdeRå = document.getElementById('baslinje-värde').value;
+  if (!datum) { alert('Ange ett datum.'); return; }
+  const värde = parseFloat(värdeRå);
+  if (!värde || värde <= 0) { alert('Ange ett portföljvärde i kronor (t.ex. 850000).'); return; }
+  // Ta bort ev. befintlig manuell baslinje
+  data.historik = data.historik.filter(h => !h.manuell);
+  // Lägg till ny
+  data.historik.push({ datum, totalVärde: värde, manuell: true, importerad: true });
+  spara(); renderHistorikLista(); ritaDiagram(); renderDashboard();
+  document.getElementById('baslinje-datum').value = '';
+  document.getElementById('baslinje-värde').value = '';
+}
+function raderaManuellBaslinje() {
+  if (!confirm('Ta bort den manuella baslinjen?')) return;
+  data.historik = data.historik.filter(h => !h.manuell);
+  spara(); renderHistorikLista(); ritaDiagram(); renderDashboard();
+}
+
+// ══════════════════════════════════════════════════════════
+//  MÖRKT TEMA (4.1)
+// ══════════════════════════════════════════════════════════
+function växlaTema() {
+  const mörkt = document.body.classList.toggle('mörkt');
+  localStorage.setItem('portfölj_tema', mörkt ? 'mörkt' : 'ljust');
+  const knapp = document.getElementById('tema-knapp');
+  if (knapp) knapp.textContent = mörkt ? '🌙' : '☀️';
+}
+function initTema() {
+  const tema = localStorage.getItem('portfölj_tema');
+  if (tema === 'mörkt') {
+    document.body.classList.add('mörkt');
+    const knapp = document.getElementById('tema-knapp');
+    if (knapp) knapp.textContent = '🌙';
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+//  ISK/KF SCHABLONINTÄKT (3.1)
+// ══════════════════════════════════════════════════════════
+function initISKÅr() {
+  const sel = document.getElementById('isk-år');
+  if (!sel) return;
+  const idag = new Date();
+  const år = idag.getFullYear();
+  sel.innerHTML = [år, år-1, år-2].map(y => `<option value="${y}">${y}</option>`).join('');
+  // Standardvärde SLR: sparas per år i localStorage
+  const slrInput = document.getElementById('isk-slr');
+  if (slrInput) slrInput.value = localStorage.getItem(`slr_${år}`) || '2.37';
+}
+
+function renderISK() {
+  const sel = document.getElementById('isk-år');
+  const slrInput = document.getElementById('isk-slr');
+  if (!sel || !slrInput) return;
+  const år = parseInt(sel.value);
+  const slr = parseFloat(slrInput.value) || 2.37;
+  localStorage.setItem(`slr_${år}`, slr);
+  const totalRänta = slr + 1;
+  const totalRäntaEl = document.getElementById('isk-total-ränta');
+  if (totalRäntaEl) totalRäntaEl.textContent = totalRänta.toFixed(2) + '%';
+
+  // Hitta närmaste historikpunkt för varje kvartalsskifte
+  const kvartal = [
+    `${år}-01-01`, `${år}-04-01`, `${år}-07-01`, `${år}-10-01`
+  ];
+  const sortadH = [...data.historik].sort((a,b)=>a.datum.localeCompare(b.datum));
+
+  function närmastVärde(måldatum) {
+    // Sök närmaste punkt inom ±45 dagar
+    const måld = new Date(måldatum).getTime();
+    let bäst = null, bästDiff = Infinity;
+    sortadH.forEach(h => {
+      const diff = Math.abs(new Date(h.datum).getTime() - måld);
+      if (diff < bästDiff) { bästDiff = diff; bäst = h; }
+    });
+    if (!bäst || bästDiff > 45 * 86400000) return null;
+    return bäst;
+  }
+
+  const kvH = kvartal.map(d => ({ mål: d, h: närmastVärde(d) }));
+  const kvartalVärden = kvH.map(k => k.h ? k.h.totalVärde : null);
+
+  // Insättningar jan–jun (H1)
+  const h1Start = `${år}-01-01`, h1Slut = `${år}-06-30`;
+  const h1Ins = data.avanzaTransaktioner
+    .filter(t => t.datum >= h1Start && t.datum <= h1Slut && t.typ === 'Insättning')
+    .reduce((s,t) => s + Math.abs(parseSE(t.belopp)), 0);
+  const h1Ut = data.avanzaTransaktioner
+    .filter(t => t.datum >= h1Start && t.datum <= h1Slut && t.typ === 'Uttag')
+    .reduce((s,t) => s + Math.abs(parseSE(t.belopp)), 0);
+  const h1Netto = h1Ins - h1Ut;
+
+  const kändaVärden = kvartalVärden.filter(v => v !== null);
+  const harTillräcklig = kändaVärden.length >= 2;
+
+  // Kapitalunderlag: genomsnitt av kvartalsvärden + H1-nettoinflöde
+  // Om ett kvartal saknas interpoleras med senast kända
+  let summa = 0;
+  const kvDetalj = kvH.map((k, i) => {
+    let v = k.h ? k.h.totalVärde : (kändaVärden.length ? kändaVärden[kändaVärden.length-1] : null);
+    if (v !== null) summa += v;
+    return { mål: k.mål, datum: k.h?.datum, värde: v, interpolerad: !k.h };
+  });
+  summa += h1Netto;
+  const kapitalunderlag = kändaVärden.length > 0 ? summa / 4 : null;
+  const schablonintäkt = kapitalunderlag !== null ? kapitalunderlag * (totalRänta / 100) : null;
+  const skatt = schablonintäkt !== null ? schablonintäkt * 0.30 : null;
+
+  // Uppdatera nyckeltal
+  document.getElementById('isk-underlag').textContent = kapitalunderlag !== null ? kr(kapitalunderlag) : '—';
+  document.getElementById('isk-underlag-sub').textContent = `${kändaVärden.length}/4 kvartal + H1-inflöde ${kr(h1Netto)}`;
+  document.getElementById('isk-schablonintäkt').textContent = schablonintäkt !== null ? kr(schablonintäkt) : '—';
+  document.getElementById('isk-schablonintäkt-sub').textContent = `${totalRänta.toFixed(2)}% × kapitalunderlag`;
+  document.getElementById('isk-skatt').textContent = skatt !== null ? kr(skatt) : '—';
+  document.getElementById('isk-skatt-sub').textContent = skatt !== null ? `≈ ${(skatt/12).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,'.')} kr/mån` : '';
+
+  // Kvartal-detalj
+  const detaljEl = document.getElementById('isk-kvartal-detalj');
+  if (detaljEl) {
+    detaljEl.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:0.8rem">
+      <thead><tr>
+        <th style="text-align:left;padding:5px 8px;border-bottom:1px solid var(--border);color:var(--muted)">Kvartalsskifte</th>
+        <th style="text-align:right;padding:5px 8px;border-bottom:1px solid var(--border);color:var(--muted)">Portföljvärde</th>
+        <th style="text-align:left;padding:5px 8px;border-bottom:1px solid var(--border);color:var(--muted)">Källa</th>
+      </tr></thead>
+      <tbody>
+        ${kvDetalj.map(k => `<tr>
+          <td style="padding:5px 8px;border-bottom:1px solid var(--border)">${k.mål}</td>
+          <td style="text-align:right;padding:5px 8px;border-bottom:1px solid var(--border)">${k.värde !== null ? kr(k.värde) : '<span style="color:var(--muted)">—</span>'}</td>
+          <td style="padding:5px 8px;border-bottom:1px solid var(--border);color:var(--muted)">${k.datum ? k.datum : (k.värde !== null ? '<em>interpolerad</em>' : '<span style="color:var(--danger)">saknas</span>')}</td>
+        </tr>`).join('')}
+        <tr style="background:var(--primary-light)">
+          <td style="padding:5px 8px;font-weight:600">H1-insättningar jan–jun</td>
+          <td style="text-align:right;padding:5px 8px;font-weight:600">${kr(h1Netto)}</td>
+          <td style="padding:5px 8px;color:var(--muted)">från transaktioner</td>
+        </tr>
+      </tbody></table></div>`;
+    if (kändaVärden.length < 4) {
+      detaljEl.innerHTML += `<p style="font-size:0.78rem;color:var(--warning);margin-top:8px">⚠️ ${4 - kändaVärden.length} kvartalsvärden saknas — importera positionsfiler kring kvartalsskiftena för bättre precision.</p>`;
+    }
+  }
+
+  // Insättningstajmings-varning: visa skatteeffekt av insättning nu vs efter nästa kvartal
+  const tajmingEl = document.getElementById('isk-tajming-varning');
+  if (tajmingEl && kapitalunderlag !== null) {
+    const idag = new Date();
+    const nästaKv = kvartal.find(d => new Date(d) > idag);
+    if (nästaKv) {
+      const dagaTillKv = Math.ceil((new Date(nästaKv) - idag) / 86400000);
+      const exempelInsättning = 100000;
+      const skatteökningNu = exempelInsättning * (totalRänta / 100) * 0.30;
+      const kvKvar = kvartal.filter(d => new Date(d) > idag).length;
+      const skatteÖkning = (exempelInsättning / 4) * kvKvar * (totalRänta / 100) * 0.30;
+      tajmingEl.style.display = 'block';
+      tajmingEl.innerHTML = `<div style="padding:10px 14px;background:var(--primary-light);border-radius:8px;border:1px solid var(--primary-mid);font-size:0.82rem;margin-top:4px">
+        💡 <strong>Insättningstajming:</strong> Nästa kvartalsskifte är <strong>${nästaKv}</strong> (om ${dagaTillKv} dagar).
+        En insättning av 100 000 kr <em>nu</em> ökar årets schablonintäkt med ca <strong>${kr(skatteÖkning)}</strong> i extra skatt.
+        Insättning <em>efter</em> ${nästaKv} räknas inte med i detta kvartal.
+      </div>`;
+    } else {
+      tajmingEl.style.display = 'none';
+    }
+  }
+
+  // Round-trip varning: uttag + insättning samma år
+  const roundtripEl = document.getElementById('isk-roundtrip-varning');
+  if (roundtripEl) {
+    const insÅr = data.avanzaTransaktioner.filter(t => t.datum?.startsWith(String(år)) && t.typ === 'Insättning').length;
+    const utÅr = data.avanzaTransaktioner.filter(t => t.datum?.startsWith(String(år)) && t.typ === 'Uttag').length;
+    if (insÅr > 0 && utÅr > 0) {
+      roundtripEl.style.display = 'block';
+      roundtripEl.innerHTML = `<div style="padding:10px 14px;background:var(--warning-light);border-radius:8px;border:1px solid var(--warning);font-size:0.82rem;margin-top:8px">
+        ⚠️ <strong>Round-trip varning:</strong> Du har gjort både insättningar (${insÅr} st) och uttag (${utÅr} st) under ${år}.
+        Uttag minskar inte kapitalunderlaget retroaktivt — se över om uttag kan ersättas med att undvika ny insättning.
+      </div>`;
+    } else {
+      roundtripEl.style.display = 'none';
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+//  UTDELNINGSKALENDER (4.3)
+// ══════════════════════════════════════════════════════════
+function renderUtdelningskalender() {
+  const kort = document.getElementById('utdelningskalender-kort');
+  const innehall = document.getElementById('utdelningskalender-innehall');
+  if (!kort || !innehall) return;
+
+  // Samla historiska utdelningar per aktie (från avanzaTransaktioner)
+  const utdPerAktie = {};
+  data.avanzaTransaktioner.filter(t => t.typ === 'Utdelning').forEach(t => {
+    const namn = t.värdepapper || '';
+    if (!namn) return;
+    const månad = (t.datum || '').slice(5, 7);
+    if (!månad) return;
+    if (!utdPerAktie[namn]) utdPerAktie[namn] = {};
+    utdPerAktie[namn][månad] = (utdPerAktie[namn][månad] || 0) + 1; // räkna utdelningar per månad
+  });
+
+  // Generera förväntade utdelningar nästa 90 dagar
+  const idag = new Date();
+  const om90 = new Date(idag.getTime() + 90 * 86400000);
+  const förväntade = [];
+
+  data.innehav.forEach(h => {
+    const hist = utdPerAktie[h.namn];
+    if (!hist) return;
+    // Den månad som historiskt haft flest utdelningar = förväntad utdelningsmånad
+    const [vanligastMånad] = Object.entries(hist).sort((a,b) => b[1]-a[1])[0];
+    // Konstruera förväntade datum för innevarande + nästa år
+    [idag.getFullYear(), idag.getFullYear()+1].forEach(år => {
+      const förväntat = new Date(`${år}-${vanligastMånad}-15`); // mitten av månaden som approximation
+      if (förväntat >= idag && förväntat <= om90) {
+        const senastUtd = data.avanzaTransaktioner
+          .filter(t => t.typ === 'Utdelning' && t.värdepapper === h.namn)
+          .sort((a,b) => b.datum.localeCompare(a.datum))[0];
+        const belopp = senastUtd ? Math.abs(parseSE(senastUtd.belopp)) * h.antal : null;
+        förväntade.push({ namn: h.namn, månad: vanligastMånad, år, datum: förväntat, belopp, kat: h.kategori });
+      }
+    });
+  });
+
+  if (!förväntade.length) { kort.style.display = 'none'; return; }
+  förväntade.sort((a,b) => a.datum - b.datum);
+  kort.style.display = 'block';
+
+  const månadsNamn = ['','Jan','Feb','Mar','Apr','Maj','Jun','Jul','Aug','Sep','Okt','Nov','Dec'];
+  const totalFörväntat = förväntade.reduce((s, u) => s + (u.belopp || 0), 0);
+
+  innehall.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span style="font-size:0.8rem;color:var(--muted)">${förväntade.length} utdelningar · Summa ca</span>
+      <strong style="color:var(--success)">${kr(totalFörväntat)}</strong>
+    </div>
+    ${förväntade.map(u => {
+      const dagKvar = Math.ceil((u.datum - idag) / 86400000);
+      const kat = KATEGORIER[u.kat] || KATEGORIER[2];
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:0.72rem;padding:1px 8px;border-radius:10px;background:var(--primary-light);color:var(--primary-mid);font-weight:700">${månadsNamn[parseInt(u.månad)]} ${u.år}</span>
+          <div><div style="font-weight:600;font-size:0.86rem">${u.namn}</div><div style="font-size:0.72rem;color:var(--muted)">${kat.emoji} ${kat.namn}</div></div>
+        </div>
+        <div style="text-align:right">
+          ${u.belopp ? `<div style="font-weight:700;color:var(--success);font-size:0.88rem">~${kr(u.belopp)}</div>` : ''}
+          <div style="font-size:0.72rem;color:var(--muted)">om ${dagKvar} dagar</div>
+        </div>
+      </div>`;
+    }).join('')}
+    <p style="font-size:0.72rem;color:var(--muted);margin-top:8px">Baseras på historiska utdelningsmånader. Belopp är uppskattning från senaste kända utdelning × antal aktier.</p>`;
+}
+
 function raderaHistorikPost(datum) {
   if (!confirm(`Ta bort historikposten för ${datum}?`)) return;
   data.historik = data.historik.filter(h => h.datum !== datum);
@@ -3439,12 +4781,167 @@ function stangModal(id){document.getElementById(id).classList.remove('visa');}
 document.querySelectorAll('.modal-backdrop').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('visa');});});
 
 // ══════════════════════════════════════════════════════════
+//  AVSTÄMNINGSPANEL (3.2)
+// ══════════════════════════════════════════════════════════
+let _aktivAvsteg = 1;
+
+function växlaAvstämning() {
+  const panel = document.getElementById('avstämning-panel');
+  const knapp = document.querySelector('[onclick="växlaAvstämning()"]');
+  const öppen = panel.style.display !== 'none';
+  panel.style.display = öppen ? 'none' : 'block';
+  if (knapp) knapp.textContent = öppen ? '▼ Öppna' : '▲ Stäng';
+  if (!öppen) { gåTillAvsteg(1); renderAvstämningHistorik(); }
+}
+
+function gåTillAvsteg(steg) {
+  _aktivAvsteg = steg;
+  [1,2,3,4].forEach(s => {
+    const el = document.getElementById(`avsteg-${s}`);
+    if (el) el.style.display = s === steg ? 'block' : 'none';
+  });
+  if (steg === 1) renderAvsteg1();
+  if (steg === 3) renderAvsteg3();
+  if (steg === 4) renderAvsteg4();
+}
+
+function renderAvsteg1() {
+  const el = document.getElementById('avst-steg1-innehall');
+  if (!el) return;
+  const iv = beräknaInnehavVärde();
+  const kassa = beräknaTillgängligLikviditet();
+  const total = iv + kassa;
+  const idag = new Date().toISOString().slice(0,10);
+  const senastPos = data.senastImport?.positioner || '—';
+  const senastTx = data.senastImport?.transaktioner || '—';
+  const fxStatus = Object.entries(liveFX||{}).map(([v,r])=>`${v}: ${r.toFixed(4)}`).join(' · ') || 'Ej hämtade';
+  el.innerHTML = `
+    <div class="avst-diff-rad"><span style="color:var(--muted)">Innehavens marknadsvärde</span><strong>${kr(iv)}</strong></div>
+    <div class="avst-diff-rad"><span style="color:var(--muted)">Tillgänglig likviditet (kassa)</span><strong>${kr(kassa)}</strong></div>
+    <div class="avst-diff-rad"><span style="color:var(--muted)">Totalt portföljvärde (app)</span><strong>${kr(total)}</strong></div>
+    <div class="avst-diff-rad"><span style="color:var(--muted)">Antal innehav</span><strong>${data.innehav.length} st</strong></div>
+    <div class="avst-diff-rad"><span style="color:var(--muted)">Senaste positionsimport</span><strong>${senastPos}</strong></div>
+    <div class="avst-diff-rad"><span style="color:var(--muted)">Senaste transaktionsimport</span><strong>${senastTx}</strong></div>
+    <div class="avst-diff-rad"><span style="color:var(--muted)">Live FX-kurser</span><span style="font-size:0.78rem">${fxStatus}</span></div>`;
+}
+
+function renderAvsteg3() {
+  const el = document.getElementById('avst-diff-innehall');
+  if (!el) return;
+  const avanzaTotal = parseFloat(document.getElementById('avst-avanza-total')?.value) || 0;
+  const avanzaKassa = parseFloat(document.getElementById('avst-avanza-kassa')?.value) || 0;
+  const appIV = beräknaInnehavVärde();
+  const appKassa = beräknaTillgängligLikviditet();
+  const appTotal = appIV + appKassa;
+  const avanzaIV = avanzaTotal - avanzaKassa;
+  if (!avanzaTotal) { el.innerHTML = '<p style="color:var(--danger)">Ange Avanza-totaler i steg 2.</p>'; return; }
+
+  const diffIV = avanzaIV - appIV;
+  const diffKassa = avanzaKassa - appKassa;
+  const diffTotal = avanzaTotal - appTotal;
+  const diffPct = appTotal > 0 ? (diffTotal / appTotal * 100) : null;
+
+  const färgDiff = v => Math.abs(v) < 500 ? 'color:var(--success)' : Math.abs(v) < 5000 ? 'color:var(--warning)' : 'color:var(--danger)';
+
+  let orsaker = [];
+  if (Math.abs(diffIV) > 500) {
+    orsaker.push('Kurser i appen kan vara föråldrade — importera ny positionsfil eller uppdatera kurserna i steg 4.');
+    if (Object.values(liveFX||{}).length === 0) orsaker.push('FX-kurser ej hämtade — USD/EUR-innehav kan visa fel SEK-värde.');
+  }
+  if (Math.abs(diffKassa) > 100) orsaker.push('Kassasaldo matchar inte — uppdatera "Tillgängligt för köp" under Kassa-fliken.');
+  if (Math.abs(diffTotal) < 200) orsaker.push('Differensen är liten (< 200 kr) — troligen avrundnings- eller tidsskillnad.');
+
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px">
+      <div style="background:var(--primary-light);border-radius:8px;padding:10px 14px">
+        <div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px">APP (innehav)</div>
+        <div style="font-weight:700">${kr(appIV)}</div>
+      </div>
+      <div style="background:var(--primary-light);border-radius:8px;padding:10px 14px">
+        <div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px">AVANZA (innehav)</div>
+        <div style="font-weight:700">${kr(avanzaIV)}</div>
+      </div>
+      <div style="background:${Math.abs(diffIV)<1000?'var(--success-light)':'var(--danger-light)'};border-radius:8px;padding:10px 14px">
+        <div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px">DIFFERENS</div>
+        <div style="font-weight:700;${färgDiff(diffIV)}">${diffIV>=0?'+':''}${kr(diffIV)}</div>
+      </div>
+    </div>
+    <div class="avst-diff-rad"><span style="color:var(--muted)">Kassadifferens (Avanza − App)</span><span style="${färgDiff(diffKassa)}">${diffKassa>=0?'+':''}${kr(diffKassa)}</span></div>
+    <div class="avst-diff-rad"><span style="color:var(--muted)">Totaldifferens</span><strong style="${färgDiff(diffTotal)}">${diffTotal>=0?'+':''}${kr(diffTotal)} ${diffPct!==null?`(${diffPct>=0?'+':''}${diffPct.toFixed(2)}%)`:''}</strong></div>
+    ${orsaker.length ? `<div style="margin-top:12px;padding:10px 14px;background:var(--warning-light);border-radius:8px;border:1px solid var(--warning);font-size:0.8rem"><strong>Möjliga orsaker:</strong><ul style="margin:6px 0 0 16px;line-height:1.8">${orsaker.map(o=>`<li>${o}</li>`).join('')}</ul></div>` : ''}`;
+}
+
+function renderAvsteg4() {
+  const lista = document.getElementById('avst-innehav-lista');
+  if (!lista) return;
+  lista.innerHTML = `<table style="width:100%;border-collapse:collapse">
+    <thead><tr>
+      <th style="text-align:left;padding:5px 8px;border-bottom:1px solid var(--border);font-size:0.78rem;color:var(--muted)">Innehav</th>
+      <th style="text-align:right;padding:5px 8px;border-bottom:1px solid var(--border);font-size:0.78rem;color:var(--muted)">Kurs i app</th>
+      <th style="text-align:right;padding:5px 8px;border-bottom:1px solid var(--border);font-size:0.78rem;color:var(--muted)">Kurs i Avanza</th>
+    </tr></thead>
+    <tbody>${data.innehav.map(h => `
+      <tr>
+        <td style="padding:5px 8px;border-bottom:1px solid var(--border)">${h.namn}<br><span style="font-size:0.7rem;color:var(--muted)">${h.valuta||'SEK'}</span></td>
+        <td style="text-align:right;padding:5px 8px;border-bottom:1px solid var(--border)">${kr(h.aktuelKurs,2)}</td>
+        <td style="padding:5px 8px;border-bottom:1px solid var(--border)"><input data-id="${h.id}" class="input avst-kurs-input" type="number" step="any" placeholder="${h.aktuelKurs}" style="width:100px;padding:4px 8px;text-align:right;font-size:0.83rem"></td>
+      </tr>`).join('')}
+    </tbody></table>`;
+}
+
+function tillämpAvstämningKurser() {
+  let uppdaterade = 0;
+  document.querySelectorAll('.avst-kurs-input').forEach(input => {
+    if (!input.value) return;
+    const kurs = parseFloat(input.value);
+    if (!kurs || kurs <= 0) return;
+    const h = data.innehav.find(x => x.id === input.dataset.id);
+    if (h) { h.aktuelKurs = kurs; uppdaterade++; }
+  });
+  if (uppdaterade === 0) { alert('Inga kurser angavs.'); return; }
+  sparaAvstämning();
+  spara(); renderAllt();
+  alert(`✓ ${uppdaterade} kurser uppdaterade.`);
+  växlaAvstämning();
+}
+
+function sparaAvstämning() {
+  if (!data.avstämningar) data.avstämningar = [];
+  const avanzaTotal = parseFloat(document.getElementById('avst-avanza-total')?.value) || 0;
+  const avanzaKassa = parseFloat(document.getElementById('avst-avanza-kassa')?.value) || 0;
+  const appTotal = beräknaInnehavVärde() + beräknaTillgängligLikviditet();
+  const idag = new Date().toISOString().slice(0,10);
+  data.avstämningar.unshift({ datum: idag, appTotal, avanzaTotal, avanzaKassa, diff: avanzaTotal - appTotal });
+  if (data.avstämningar.length > 12) data.avstämningar = data.avstämningar.slice(0, 12);
+  spara();
+  renderAvstämningHistorik();
+  const prog = document.createElement('div');
+  prog.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1e293b;color:#f1f5f9;padding:10px 20px;border-radius:8px;font-size:0.85rem;z-index:9999';
+  prog.textContent = '✓ Avstämning sparad';
+  document.body.appendChild(prog);
+  setTimeout(() => prog.remove(), 2500);
+}
+
+function renderAvstämningHistorik() {
+  const el = document.getElementById('avst-historik');
+  const lista = document.getElementById('avst-historik-lista');
+  if (!el || !lista || !data.avstämningar?.length) { if(el) el.style.display='none'; return; }
+  el.style.display = 'block';
+  lista.innerHTML = data.avstämningar.map(a => {
+    const diffFärg = Math.abs(a.diff) < 1000 ? 'var(--success)' : Math.abs(a.diff) < 10000 ? 'var(--warning)' : 'var(--danger)';
+    return `<div class="avst-diff-rad"><span>${a.datum}</span><span style="color:var(--muted)">App: ${kr(a.appTotal)} · Avanza: ${kr(a.avanzaTotal)}</span><span style="color:${diffFärg};font-weight:700">${a.diff>=0?'+':''}${kr(a.diff)}</span></div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════════════════
 ladda();
+initTema();
 uppdateraKatBadgeCSS();
 uppdateraKatDropdown();
 renderAllt();
+renderUtdelningskalender();
 renderStatusPanel();
 hämtaLiveFX(); // Hämtar live valutakurser asynkront
 </script>
