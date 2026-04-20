@@ -171,11 +171,12 @@ Alla 46 testfall i `Testprotokoll_Strategiportfoljen_v208.xlsx` analyserade mot 
 
 ## Version
 
-**v3.01** — april 2026
+**v3.02** — april 2026
 
 Byggt för Martin · Strategi från januari 2026
 
 ### Ändringslogg
+- **v3.02** — Ny Avstämningsflik: saldon per konto direkt från positionsfilen med automatisk kontroll mot appens portföljvärde och inbyggd diff-förklaring. Nettoinsatt kapital är nu periodbaserat på Dashboard. Kassa-flikens kontoordning matchar Avanza.
 - **v3.01** — Kategoriutveckling på Dashboard: tabell med kr, % och andel per kategori, sorterad efter störst förändring, alltid synlig med GAV-fallback
 - **v3.00** — Buggfixar: `liveFXRater`→`liveFX` i Avstämningspanel, signalband inkluderar kassa i ombalanseringskontrollen, `hämtaAllaMA200()` uppdaterar diagram och signaler, signal-band display-konflikt åtgärdad, MA200-varning i mobilkort. UX: inline tickersök-modal (ersätter prompt-dialoger), manuell baslinje-badge i portföljvärde-kortet. Ny hjälpsektion "Kontrollräkna för hand". FAQ utökad (kassa + ombalanseringsformel). GitHub-avsnitt flyttat till separat dokument. Kursmaterial PowerPoint (13 bilder). Dokumentet "Strategiportföljen_Beskrivning_v300" med kontrollräkna-appendix.
 - **v3.0** — Global periodväljare, Signaler-flik, Ombalanseringsassistent, Koncentrationsrisk, Sorterbar innehavstabell, Kategoriprestation per period, Kategori-jämförelsevy, FX-exponeringsöversikt, Avkastningsstaplar, Tickers & automatisk MA200-hämtning (Alpha Vantage), Manuell baslinje, Visa beräkningsunderlag, ISK/KF-skattesektion, Avstämningspanel, Utdelningskalender, Mörkt tema
