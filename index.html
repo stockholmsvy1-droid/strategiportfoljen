@@ -3453,15 +3453,17 @@ function renderAvstemning() {
   const rader = sorterade.map(dataNamn => {
     const info = avanzaKontoInfo(dataNamn);
     const visning = info ? info.namn : dataNamn;
+    const kontoNr = info ? info.nr : '';
     const belopp = pkv[dataNamn] || 0;
     const tillgObj = perKonto[dataNamn] ?? perKontoNorm[normNamn(dataNamn)];
     const tillg = tillgObj?.belopp || 0;
     totaltVärde += belopp;
     totaltTillg += tillg;
+    const subrad = [kontoNr, `Tillgängligt för köp: ${kr(tillg,0)}`].filter(Boolean).join(' · ');
     return `<div class="avst-diff-rad" style="align-items:center;padding:10px 0">
       <div>
         <div style="font-weight:600">${visning}</div>
-        <div style="font-size:0.78rem;color:var(--muted);margin-top:2px">Tillgängligt för köp: ${kr(tillg,0)}</div>
+        <div style="font-size:0.78rem;color:var(--muted);margin-top:2px">${subrad}</div>
       </div>
       <strong style="font-size:1.05rem">${kr(belopp)}</strong>
     </div>`;
