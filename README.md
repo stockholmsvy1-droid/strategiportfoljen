@@ -123,7 +123,7 @@ Appen väntar automatiskt 15 sekunder mellan anrop (gratis-planen: 5 req/min). G
 
 Gå sedan till **Importera**-fliken i appen och välj filen. Datumet i positionsfilens namn används automatiskt som historikpunkt i värdeutvecklingsdiagrammet — importera äldre filer för att bygga upp historiken bakåt.
 
-**Filtreras alltid bort:** Pensionskontot `9557-7346055` och värdepapperet Zomedica.
+**Filtreras alltid bort:** Pensionskontot och alla konton utanför de 6 konfigurerade. Värdepapperet Zomedica filtreras alltid.
 
 ---
 
@@ -171,11 +171,12 @@ Alla 46 testfall i `Testprotokoll_Strategiportfoljen_v208.xlsx` analyserade mot 
 
 ## Version
 
-**v3.02** — april 2026
+**v3.03** — april 2026
 
 Byggt för Martin · Strategi från januari 2026
 
 ### Ändringslogg
+- **v3.03** — Avstämning komplett: alla 6 konton visas med namn + kontonummer, Avanza sparande Martin som manuell rad, sparkontosaldo uppdaterar avstämning direkt. Allow-list i positionsimport (bara konfigurerade konton). Kassa-dropdown alltid komplett. Importknappar robustare på iPad (label-mönster). Buggfix: kontonamn med numeriskt prefix (1./2.) matchades fel av normNamn.
 - **v3.02** — Ny Avstämningsflik: saldon per konto direkt från positionsfilen med automatisk kontroll mot appens portföljvärde och inbyggd diff-förklaring. Nettoinsatt kapital är nu periodbaserat på Dashboard. Kassa-flikens kontoordning matchar Avanza.
 - **v3.01** — Kategoriutveckling på Dashboard: tabell med kr, % och andel per kategori, sorterad efter störst förändring, alltid synlig med GAV-fallback
 - **v3.00** — Buggfixar: `liveFXRater`→`liveFX` i Avstämningspanel, signalband inkluderar kassa i ombalanseringskontrollen, `hämtaAllaMA200()` uppdaterar diagram och signaler, signal-band display-konflikt åtgärdad, MA200-varning i mobilkort. UX: inline tickersök-modal (ersätter prompt-dialoger), manuell baslinje-badge i portföljvärde-kortet. Ny hjälpsektion "Kontrollräkna för hand". FAQ utökad (kassa + ombalanseringsformel). GitHub-avsnitt flyttat till separat dokument. Kursmaterial PowerPoint (13 bilder). Dokumentet "Strategiportföljen_Beskrivning_v300" med kontrollräkna-appendix.

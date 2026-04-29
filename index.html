@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Strategiportföljen">
   <meta name="theme-color" content="#1e3a5f">
-  <title>Strategiportföljen v3.02</title>
+  <title>Strategiportföljen v3.03</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231e3a5f'/%3E%3Cpolyline points='3,25 9,17 15,21 21,11 29,5' stroke='%230ea5e9' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='29' cy='5' r='2.5' fill='%234ade80'/%3E%3C/svg%3E">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
@@ -517,7 +517,7 @@
 <!-- ══ HEADER ══ -->
 <header>
   <div>
-    <h1>📈 Strategiportföljen <span class="header-badge">v3.02</span></h1>
+    <h1>📈 Strategiportföljen <span class="header-badge">v3.03</span></h1>
     <div class="header-subtitle">The Magnificent Martin's Money-Making Machine</div>
   </div>
   <div class="header-actions">
@@ -1152,28 +1152,39 @@
       </div>
     </div>
 
-    <!-- NYHETER v3.02 -->
+    <!-- NYHETER v3.03 -->
     <div class="hjalp-kapitel" id="hk-nyheter">
-      <div class="hjalp-rubrik">✨ Nyheter i version 3.02</div>
-      <div class="hjalp-ingress">Version 3.02 tillför en ny Avstämningsflik för att kontrollera att appens värden stämmer mot Avanza, periodomsättning för Nettoinsatt kapital samt ordningsförbättringar i Kassa-fliken.</div>
+      <div class="hjalp-rubrik">✨ Nyheter i version 3.03</div>
+      <div class="hjalp-ingress">Version 3.03 förbättrar Avstämningsfliken markant — alla 6 konton visas nu korrekt med rätt namn och nummer, och sparkontot hanteras separat via manuellt saldo.</div>
 
-      <div class="hjalp-h2">🔍 Ny flik: Avstämning</div>
-      <div class="hjalp-p">En helt ny flik låter dig stämma av appens beräknade portföljvärde mot Avanza. Kontoöversikten byggs automatiskt från den senast importerade positionsfilen — du behöver inte mata in något manuellt.</div>
+      <div class="hjalp-h2">🔍 Saldon per konto — förbättrad</div>
+      <div class="hjalp-p">Kontoöversikten i Avstämning är nu komplett och korrekt:</div>
       <ul class="hjalp-ul">
-        <li><strong>Saldon per konto</strong> — kontots namn (exakt som i Avanza), tillgängligt för köp (från Kassa-fliken) och totalt marknadsvärde från positionsfilen.</li>
-        <li><strong>Kontroll mot app</strong> — jämförelse mellan positionsfilens summavärde och appens beräknade totala portföljvärde, med differens i kr och procent.</li>
-        <li><strong>Förklaringstext</strong> — inbyggd förklaring av varför en liten differens är normal (FX-kursskillnader, manuell kassa, dolda konton).</li>
+        <li><strong>Alla 6 konton visas</strong> — ISK, Kapitalförsäkring och sparkonto syns alltid.</li>
+        <li><strong>Namn och kontonummer</strong> — kontonamnet visas som rubrik och kontonumret som undertext för enkel verifiering mot Avanza.</li>
+        <li><strong>Avanza sparande Martin</strong> — sparkontot visas alltid som en separat rad. Ange saldot under Kassa → Tillgängligt för köp per konto, så uppdateras Avstämning direkt.</li>
+        <li><strong>Allow-list</strong> — bara de 6 konfigurerade kontona importeras. Okända konton och pensionskontot filtreras automatiskt bort.</li>
       </ul>
       <div class="hjalp-ruta hjalp-ruta-tips">
-        <div class="hjalp-ruta-titel">💡 Konton uppdateras vid import</div>
-        Kontosaldona uppdateras automatiskt varje gång du importerar en ny positionsfil. En differens under 1 % är helt acceptabel och beror normalt på att appen och Avanza använder olika valutakurser för utländska innehav.
+        <div class="hjalp-ruta-titel">💡 Stämmer mot Avanza när kassan är uppdaterad</div>
+        ISK- och KF-kontona inkluderar likvida medel automatiskt från positionsfilen. Sparkontot (Avanza sparande Martin) anges manuellt i Kassa-fliken. När båda är uppdaterade ska totalsumman i Saldon per konto matcha Avanzas totala portföljvärde.
       </div>
 
-      <div class="hjalp-h2">📅 Nettoinsatt kapital per period</div>
-      <div class="hjalp-p">Nyckeltalskortet "Nettoinsatt kapital" på Dashboard är nu periodmedvetet. När ett periodfilter är aktivt (t.ex. i År) visas nettoinflödet under perioden, med totalt nettoinsatt sedan start som undertext. Vid "Allt" visas det ackumulerade totalt som tidigare.</div>
+      <div class="hjalp-h2">💰 Kassa-dropdown — alltid komplett</div>
+      <div class="hjalp-p">Väljarmenyn under Kassa → Tillgängligt för köp visar nu alltid alla 6 konton — även om transaktionsfil inte importerats ännu. Du kan direkt ange saldo för sparkontot utan att behöva importera något först.</div>
 
-      <div class="hjalp-h2">💰 Ordning i Kassa-fliken</div>
-      <div class="hjalp-p">Konton i "Tillgängligt för köp"-tabellen och väljarmenyn visas nu i samma ordning som Avanza — inte längre alfabetiskt.</div>
+      <div class="hjalp-h2">📱 Förbättrad import på iPad</div>
+      <div class="hjalp-p">Alla importknappar använder nu en robustare iOS-kompatibel teknik som ger bättre stöd för flervalsläge i Files-appen på iPad och iPhone.</div>
+
+      <div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border)">
+        <div class="hjalp-h2" style="margin-top:0">📊 Nyheter i version 3.02</div>
+        <div class="hjalp-ingress">Version 3.02 tillförde Avstämningsflik, periodbaserat nettoinsatt kapital och ordningsförbättringar i Kassa-fliken.</div>
+        <ul class="hjalp-ul">
+          <li><strong>Saldon per konto</strong> — kontots namn, tillgängligt för köp och marknadsvärde från positionsfilen.</li>
+          <li><strong>Nettoinsatt kapital per period</strong> — nyckeltalskortet är nu periodmedvetet.</li>
+          <li><strong>Kassa-ordning</strong> — konton visas i samma ordning som Avanza.</li>
+        </ul>
+      </div>
 
       <div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border)">
         <div class="hjalp-h2" style="margin-top:0">📊 Nyheter i version 3.01</div>
