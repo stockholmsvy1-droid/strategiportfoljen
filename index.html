@@ -1942,7 +1942,7 @@ const EXKLUDERA_VP = ['zomedica'];
 const AVANZA_KONTON_LIST = [
   { namn: '1. Sverige nov 2025',      nr: '1914035',   typ: 'ISK'  },
   { namn: '2. Norden nov 2025',       nr: '1080302',   typ: 'ISK'  },
-  { namn: 'Eget fondsparande',        nr: '7346055',   typ: 'ISK'  },
+  { namn: 'Eget fondsparande',        nr: '6014837',   typ: 'ISK'  },
   { namn: '1. Utländska Aktier 2025', nr: '7882604',   typ: 'KF'   },
   { namn: '2. Utländska Aktier 2025', nr: '1913799',   typ: 'KF'   },
   { namn: 'Avanza sparande Martin',   nr: '40080455',  typ: 'SPAR' },
@@ -3445,13 +3445,8 @@ function renderAvstemning() {
   const perKontoNorm = {};
   Object.entries(perKonto).forEach(([k,v]) => { perKontoNorm[normNamn(k)] = v; });
 
-  // Manuellt satt saldo för sparkonton (visas som egna rader)
+  // Sparkonton visas alltid som manuella rader (oavsett om saldo är satt)
   const sparKonton = AVANZA_KONTON_LIST.filter(k => k.typ === 'SPAR');
-  const sparRader = sparKonton.map(k => {
-    const manuell = perKonto[k.namn] ?? perKontoNorm[normNamn(k.namn)];
-    const belopp = manuell?.belopp || 0;
-    return { namn: k.namn, belopp };
-  }).filter(r => r.belopp > 0);
 
   let totaltVärde = 0, totaltTillg = 0;
   const rader = sorterade.map(dataNamn => {
@@ -3473,15 +3468,20 @@ function renderAvstemning() {
     </div>`;
   }).join('');
 
-  const sparHtml = sparRader.map(r => `
+  const sparHtml = sparKonton.map(k => {
+    const manuell = perKonto[k.namn] ?? perKontoNorm[normNamn(k.namn)];
+    const belopp = manuell?.belopp || 0;
+    totaltVärde += belopp;
+    const sub = belopp > 0 ? 'Manuellt saldo' : '<span style="color:var(--warning,#d97706)">Ange saldo i Kassa-fliken</span>';
+    return `
     <div class="avst-diff-rad" style="align-items:center;padding:10px 0">
       <div>
-        <div style="font-weight:600">${r.namn}</div>
-        <div style="font-size:0.78rem;color:var(--muted);margin-top:2px">Manuellt saldo</div>
+        <div style="font-weight:600">${k.namn}</div>
+        <div style="font-size:0.78rem;color:var(--muted);margin-top:2px">${sub}</div>
       </div>
-      <strong style="font-size:1.05rem">${kr(r.belopp)}</strong>
-    </div>`).join('');
-  sparRader.forEach(r => { totaltVärde += r.belopp; });
+      <strong style="font-size:1.05rem">${belopp > 0 ? kr(belopp) : '—'}</strong>
+    </div>`;
+  }).join('');
 
   kt.innerHTML = `
     <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px">Sparande</div>
