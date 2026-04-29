@@ -3378,12 +3378,16 @@ function renderKassa() {
   const kassal = document.getElementById('avanza-kassa-lista');
   const perKonto = beräknaAvanzaKassaPerKonto();
   const kontoNamn = Object.keys(perKonto);
-  // Populera kontoval i formuläret
+  // Populera kontoval — alltid alla 6 konton, plus eventuella transaktionskonton
   const sel = document.getElementById('ks-konto');
   if (sel) {
     const prev = sel.value;
+    const allaKonton = [...new Set([
+      ...AVANZA_KONTON_LIST.map(k => k.namn),
+      ...kontoNamn
+    ])];
     sel.innerHTML = '<option value="">— välj konto —</option>' +
-      sorteraKonton(kontoNamn).map(k=>`<option value="${k}"${k===prev?' selected':''}>${k}</option>`).join('');
+      sorteraKonton(allaKonton).map(k=>`<option value="${k}"${k===prev?' selected':''}>${k}</option>`).join('');
   }
   if (kontoNamn.length === 0) {
     kassal.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;margin:8px 0">Importera en transaktionsfil för att se konton.</p>';
