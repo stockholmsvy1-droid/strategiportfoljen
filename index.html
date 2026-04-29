@@ -816,22 +816,22 @@
     <div class="card">
       <div class="card-titel"><span class="card-titel-text">📊 Positioner</span></div>
       <p style="font-size:0.84rem;color:var(--muted);margin-bottom:14px;line-height:1.5">Avanza (Safari) → Min ekonomi → Innehav → <strong>Exportera</strong><br>Fil: <code>positioner_DATUM.csv</code></p>
-      <button class="import-knapp-stor" onclick="document.getElementById('filPositioner').click()"
+      <label class="import-knapp-stor" for="filPositioner"
         ondragover="dragOver(event,this)" ondragleave="dragLeave(this)" ondrop="dropFil(event,'positioner',this)">
         <span class="import-ikon">📂</span>
         <div class="import-text"><strong>Tryck eller dra filer hit</strong><span>Uppdaterar kurser och innehav — flera filer stöds</span></div>
-      </button>
+      </label>
       <input type="file" id="filPositioner" accept=".csv" multiple style="display:none" onchange="läsFil(event,'positioner')">
     </div>
 
     <div class="card">
       <div class="card-titel"><span class="card-titel-text">🔄 Transaktioner</span></div>
       <p style="font-size:0.84rem;color:var(--muted);margin-bottom:14px;line-height:1.5">Avanza (Safari) → Min ekonomi → Transaktioner → <strong>Exportera transaktioner</strong><br>Fil: <code>transaktioner_DATUM.csv</code></p>
-      <button class="import-knapp-stor" onclick="document.getElementById('filTransaktioner').click()"
+      <label class="import-knapp-stor" for="filTransaktioner"
         ondragover="dragOver(event,this)" ondragleave="dragLeave(this)" ondrop="dropFil(event,'transaktioner',this)">
         <span class="import-ikon">📂</span>
         <div class="import-text"><strong>Tryck eller dra filer hit</strong><span>Köp, sälj, utdelningar och courtage — flera filer stöds</span></div>
-      </button>
+      </label>
       <input type="file" id="filTransaktioner" accept=".csv" multiple style="display:none" onchange="läsFil(event,'transaktioner')">
     </div>
   </div>
@@ -842,22 +842,22 @@
     <div class="card">
       <div class="card-titel"><span class="card-titel-text">📈 Inköpskurshistorik</span></div>
       <p style="font-size:0.84rem;color:var(--muted);margin-bottom:14px;line-height:1.5">Avanza (Safari) → Innehav → <strong>Exportera inköpskurser</strong><br>Fil: <code>inkopskurs_DATUM.csv</code><br>Innehåller GAV-historik månadsvis sedan du startade.</p>
-      <button class="import-knapp-stor" onclick="document.getElementById('filInkopskurs').click()"
+      <label class="import-knapp-stor" for="filInkopskurs"
         ondragover="dragOver(event,this)" ondragleave="dragLeave(this)" ondrop="dropFil(event,'inkopskurs',this)">
         <span class="import-ikon">📂</span>
         <div class="import-text"><strong>Tryck eller dra fil hit</strong><span>Uppdaterar GAV på befintliga innehav</span></div>
-      </button>
+      </label>
       <input type="file" id="filInkopskurs" accept=".csv" style="display:none" onchange="läsFil(event,'inkopskurs')">
     </div>
 
     <div class="card">
       <div class="card-titel"><span class="card-titel-text">📓 Investeringslogg (Excel)</span></div>
       <p style="font-size:0.84rem;color:var(--muted);margin-bottom:14px;line-height:1.5">Din befintliga Excel-logg: <code>Investeringslogg_Martin_2026.xlsx</code><br>Importerar beslutsloggposter (V4–V13) och portföljvärdeshistorik till diagrammet.</p>
-      <button class="import-knapp-stor" onclick="document.getElementById('filExcelLogg').click()"
+      <label class="import-knapp-stor" for="filExcelLogg"
         ondragover="dragOver(event,this)" ondragleave="dragLeave(this)" ondrop="dropFil(event,'excelLogg',this)">
         <span class="import-ikon">📂</span>
         <div class="import-text"><strong>Tryck eller dra fil hit</strong><span>Läser in historisk beslutslogg och diagram</span></div>
-      </button>
+      </label>
       <input type="file" id="filExcelLogg" accept=".xlsx,.xls" style="display:none" onchange="läsFil(event,'excelLogg')">
     </div>
   </div>
@@ -867,11 +867,11 @@
   <div class="card mb20">
     <div class="card-titel"><span class="card-titel-text">📓 Beslutslogg (CSV)</span></div>
     <p style="font-size:0.84rem;color:var(--muted);margin-bottom:14px;line-height:1.5">Importera din historiska beslutslogg som CSV. Format: <code>Vecka;Datum;Portföljvärde;Tankar;Åtgärder</code></p>
-    <button class="import-knapp-stor" onclick="document.getElementById('filBeslutslogg').click()"
+    <label class="import-knapp-stor" for="filBeslutslogg"
       ondragover="dragOver(event,this)" ondragleave="dragLeave(this)" ondrop="dropFil(event,'beslutsloggCSV',this)">
       <span class="import-ikon">📂</span>
       <div class="import-text"><strong>Tryck eller dra fil hit</strong><span>Beslutslogg.csv — importerar historiska loggposter</span></div>
-    </button>
+    </label>
     <input type="file" id="filBeslutslogg" accept=".csv" style="display:none" onchange="läsFil(event,'beslutsloggCSV')">
   </div>
 
@@ -1466,7 +1466,7 @@
       <div class="hjalp-p"><strong>📡 Tickers &amp; MA200 (kollapsbar sektion):</strong> Ange börssymboler per aktie och klicka "Uppdatera alla MA200" för automatisk hämtning via Alpha Vantage. Använd <strong>🔍-knappen</strong> per rad för att söka rätt ticker direkt i Alpha Vantages databas — välj rätt börs och valuta ur listan. API-nyckel anges en gång och sparas lokalt. Rött ⚠ varnar om hämtat värde verkar ha fel valuta.</div>
 
       <div class="hjalp-h2">⬆ Importera</div>
-      <div class="hjalp-p">Importera CSV-filer från Avanza. Positioner och Transaktioner accepterar flera filer på en gång (drag &amp; drop stöds). Kontonummer <code>9557-7346055</code> (pension) och Zomedica filtreras alltid bort.</div>
+      <div class="hjalp-p">Importera CSV-filer från Avanza. Positioner och Transaktioner accepterar flera filer på en gång (drag &amp; drop stöds). Bara de 6 konfigurerade kontona importeras — pension och okända konton filtreras automatiskt bort. Zomedica filtreras alltid bort.</div>
       <div class="hjalp-p"><strong>Manuell baslinje:</strong> Ange ett datum + portföljvärde som fast startpunkt för avkastningsberäkningar.</div>
       <div class="hjalp-p"><strong>Avstämningspanel:</strong> 4-stegs guidad jämförelse av portföljens siffror mot Avanzas totaler.</div>
       <div class="hjalp-p"><strong>Backup &amp; Återställning:</strong> Exportera/importera hela portföljen som Excel (7 ark). Använd vid byte av enhet.</div>
@@ -1531,7 +1531,7 @@
 
       <div class="hjalp-ruta hjalp-ruta-varning" style="margin-top:18px">
         <div class="hjalp-ruta-titel">🚫 Exkludering</div>
-        Pensionskontot (<code>9557-7346055</code>) och värdepapperet Zomedica exkluderas helt från all strategisk analys. Dessa filtreras automatiskt bort vid import.
+        Bara de 6 konfigurerade kontona importeras. Pensionskontot och okända konton filtreras automatiskt bort. Zomedica exkluderas alltid från strategisk analys.
       </div>
 
       <div class="hjalp-h2">2. Tekniska regler — MA200 &amp; Gummibandet</div>
@@ -1940,11 +1940,11 @@ const EXKLUDERA_VP = ['zomedica'];
 
 // ── Kända Avanza-konton (namn = exakt som i Avanza CSV-export) ──
 const AVANZA_KONTON_LIST = [
-  { namn: '1. Sverige nov 2025',      nr: '19140351',  typ: 'ISK'  },
-  { namn: '2. Norden nov 2025',       nr: '10803022',  typ: 'ISK'  },
+  { namn: '1. Sverige nov 2025',      nr: '1914035',   typ: 'ISK'  },
+  { namn: '2. Norden nov 2025',       nr: '1080302',   typ: 'ISK'  },
   { namn: 'Eget fondsparande',        nr: '7346055',   typ: 'ISK'  },
-  { namn: '1. Utländska Aktier 2025', nr: '78826041',  typ: 'KF'   },
-  { namn: '2. Utländska Aktier 2025', nr: '19137992',  typ: 'KF'   },
+  { namn: '1. Utländska Aktier 2025', nr: '7882604',   typ: 'KF'   },
+  { namn: '2. Utländska Aktier 2025', nr: '1913799',   typ: 'KF'   },
   { namn: 'Avanza sparande Martin',   nr: '40080455',  typ: 'SPAR' },
 ];
 const AVANZA_NR_TILL_NAMN = Object.fromEntries(AVANZA_KONTON_LIST.map(k=>[k.nr, k.namn]));
@@ -2165,11 +2165,11 @@ function sparaKontoStartsaldo() {
   if (!data.kontoStartsaldo) data.kontoStartsaldo = {};
   data.kontoStartsaldo[konto] = belopp;
   document.getElementById('ks-belopp').value = '';
-  spara(); renderKassa();
+  spara(); renderKassa(); renderAvstemning();
 }
 function raderaKontoStartsaldo(konto) {
   delete data.kontoStartsaldo[konto];
-  spara(); renderKassa();
+  spara(); renderKassa(); renderAvstemning();
 }
 function utdelningarFörInnehav(h) {
   if (!h.isin && !h.namn) return [];
@@ -3441,6 +3441,14 @@ function renderAvstemning() {
   const perKontoNorm = {};
   Object.entries(perKonto).forEach(([k,v]) => { perKontoNorm[normNamn(k)] = v; });
 
+  // Manuellt satt saldo för sparkonton (visas som egna rader)
+  const sparKonton = AVANZA_KONTON_LIST.filter(k => k.typ === 'SPAR');
+  const sparRader = sparKonton.map(k => {
+    const manuell = perKonto[k.namn] ?? perKontoNorm[normNamn(k.namn)];
+    const belopp = manuell?.belopp || 0;
+    return { namn: k.namn, belopp };
+  }).filter(r => r.belopp > 0);
+
   let totaltVärde = 0, totaltTillg = 0;
   const rader = sorterade.map(dataNamn => {
     const info = avanzaKontoInfo(dataNamn);
@@ -3459,9 +3467,19 @@ function renderAvstemning() {
     </div>`;
   }).join('');
 
+  const sparHtml = sparRader.map(r => `
+    <div class="avst-diff-rad" style="align-items:center;padding:10px 0">
+      <div>
+        <div style="font-weight:600">${r.namn}</div>
+        <div style="font-size:0.78rem;color:var(--muted);margin-top:2px">Manuellt saldo</div>
+      </div>
+      <strong style="font-size:1.05rem">${kr(r.belopp)}</strong>
+    </div>`).join('');
+  sparRader.forEach(r => { totaltVärde += r.belopp; });
+
   kt.innerHTML = `
     <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px">Sparande</div>
-    ${rader}
+    ${rader}${sparHtml}
     <div class="avst-diff-rad" style="align-items:center;padding:10px 0;border-top:2px solid var(--border);margin-top:4px">
       <div>
         <div style="font-weight:700">Summa</div>
@@ -3848,6 +3866,7 @@ function importeraPositioner(text, filNamn='') {
   rader.forEach(r=>{
     const knr=r['Kontonummer']||'';
     if(EXKLUDERA_KONTON.some(k=>knr.includes(k)))return;
+    if(!AVANZA_KONTON_LIST.some(k=>knr.includes(k.nr)))return;
     const isin=r['ISIN']||'';
     if(isin){if(!kontonummerISIN[knr])kontonummerISIN[knr]=[];kontonummerISIN[knr].push(isin);}
   });
@@ -3869,6 +3888,7 @@ function importeraPositioner(text, filNamn='') {
   rader.forEach(r=>{
     const konto=r['Kontonummer']||'';
     if(EXKLUDERA_KONTON.some(k=>konto.includes(k))){exkl++;return;}
+    if(!AVANZA_KONTON_LIST.some(k=>konto.includes(k.nr))){exkl++;return;}
     const namn=r['Namn']||'',kortnamn=r['Kortnamn']||'';
     const volym=parseSE(r['Volym']||0),mv=parseSE(r['Marknadsvärde']||0);
     const gav=parseSE(r['GAV (SEK)']||r['GAV']||0),valuta=r['Valuta']||'SEK',isin=r['ISIN']||'';
