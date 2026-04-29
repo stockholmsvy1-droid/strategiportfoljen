@@ -1950,9 +1950,15 @@ const AVANZA_KONTON_LIST = [
 const AVANZA_NR_TILL_NAMN = Object.fromEntries(AVANZA_KONTON_LIST.map(k=>[k.nr, k.namn]));
 // Normalisera kontonamn: ta bort ev. "1. " / "2. "-prefix och lowercase för jämförelse
 function normNamn(n) { return (n||'').replace(/^\d+\.\s*/,'').toLowerCase().trim(); }
-// Hitta AVANZA_KONTON_LIST-post som matchar ett datanyckelnamn (med eller utan prefix)
+// Hitta AVANZA_KONTON_LIST-post som matchar ett datanyckelnamn.
+// Exakt matchning går före normaliserad — normNamn används bara om exakt ett konto matchar,
+// annars missar vi distinktionen mellan t.ex. "1. Utländska" och "2. Utländska".
 function avanzaKontoInfo(dataNamn) {
-  return AVANZA_KONTON_LIST.find(k => k.namn===dataNamn || k.nr===dataNamn || normNamn(k.namn)===normNamn(dataNamn));
+  const exact = AVANZA_KONTON_LIST.find(k => k.namn===dataNamn || k.nr===dataNamn);
+  if (exact) return exact;
+  const norm = normNamn(dataNamn);
+  const träffar = AVANZA_KONTON_LIST.filter(k => normNamn(k.namn)===norm);
+  return träffar.length === 1 ? träffar[0] : null;
 }
 // Sortera en lista med kontonamn i Avanza-ordning
 function sorteraKonton(konton) {
