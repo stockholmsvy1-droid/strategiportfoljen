@@ -4,3 +4,18 @@ Testprotokoll_Strategiportfoljen_v208_IFYLLT.xlsx
 Testprotokoll_Strategiportfoljen_v208_b.xlsx
 Strategiportfoljen_Analys_Vision_v3.docx
 Claim your Free API Key.docx
+
+# Office temporärfiler
+~$*
+
+# Python-cache
+__pycache__/
+*.pyc
+
+# Temporära omdöpningsfiler
+*_ny.docx
+
+# Engångsdebug-skript
+patch_avk.py
+patch_avk2.py
+patch_debug.py
