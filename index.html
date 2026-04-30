@@ -4896,9 +4896,14 @@ function exporteraExcel() {
   ];
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summRader), 'Sammanfattning');
 
-  // ── Ark 5: Historik (för värdeutvecklingsdiagram) ──
-  const histHdr = ['Datum','Värde','Importerad'];
-  const histRader = data.historik.map(h=>[h.datum, h.värde, h.importerad?1:0]);
+  // ── Ark 5: Historik (för värdeutvecklingsdiagram + kategoriutveckling) ──
+  const histHdr = ['Datum','Värde','Importerad','KatVärden'];
+  const histRader = data.historik.map(h=>[
+    h.datum,
+    h.totalVärde,
+    h.importerad ? 1 : 0,
+    h.katVärden ? JSON.stringify(h.katVärden) : ''
+  ]);
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([histHdr,...histRader]), 'Historik');
 
   // ── Ark 6: Kassa (kassaTransaktioner + kontoStartsaldo i två sektioner) ──
@@ -5055,11 +5060,17 @@ function importeraExcelBackup(event) {
         const hc = name => colIdx(histHdr, name);
         nyaHistorik = histSheet.slice(1)
           .filter(r => r[hc('Datum')])
-          .map(r => ({
-            datum:     String(r[hc('Datum')] || ''),
-            värde:     parseFloat(r[hc('Värde')]) || 0,
-            importerad: r[hc('Importerad')] == 1 || r[hc('Importerad')] === true,
-          }));
+          .map(r => {
+            let katVärden = null;
+            const kvRaw = r[hc('KatVärden')];
+            if (kvRaw) { try { katVärden = JSON.parse(kvRaw); } catch(e) {} }
+            return {
+              datum:      String(r[hc('Datum')] || ''),
+              totalVärde: parseFloat(r[hc('Värde')]) || 0,
+              importerad: r[hc('Importerad')] == 1 || r[hc('Importerad')] === true,
+              katVärden,
+            };
+          });
       }
 
       // ── Kassa (kassaTransaktioner + kontoStartsaldo) ──
@@ -5116,15 +5127,16 @@ function importeraExcelBackup(event) {
 
       // ── Bygg nytt data-objekt och spara ──
       data = {
-        innehav:            nyaInnehav,
-        kassaTransaktioner: nyaKassaTx,
-        avanzaTransaktioner: nyaTx,
-        beslutslogg:        nyaLogg,
-        historik:           nyaHistorik,
-        senastImport:       {},
-        avanzaKassa:        0,
-        kontoStartsaldo:    nyttKontoSaldo,
-        positionsKassa:     {},
+        innehav:              nyaInnehav,
+        kassaTransaktioner:   nyaKassaTx,
+        avanzaTransaktioner:  nyaTx,
+        beslutslogg:          nyaLogg,
+        historik:             nyaHistorik,
+        senastImport:         {},
+        avanzaKassa:          0,
+        kontoStartsaldo:      nyttKontoSaldo,
+        positionsKassa:       {},
+        positionsKontoVärden: {},
       };
       spara();
 
