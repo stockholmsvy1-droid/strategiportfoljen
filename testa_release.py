@@ -61,6 +61,46 @@ if v_readme:
     else:
         warn(f"README-version ({v_readme.group(1)}) matchar inte app ({ver})")
 
+# ── 2b. README-kvalitet ───────────────────────────────────────────────
+# Extrahera den aktuella versionens changelog-rad
+entry_match = re.search(
+    r'\- \*\*' + re.escape(ver) + r'\*\* — (.+?)(?=\n- \*\*|\Z)',
+    readme, re.DOTALL)
+if entry_match:
+    entry = entry_match.group(1).strip()
+    entry_len = len(entry)
+    if entry_len >= 150:
+        good(f"README-entry är substantiell ({entry_len} tecken)")
+    elif entry_len >= 60:
+        warn(f"README-entry är kortfattad ({entry_len} tecken) — överväg att beskriva alla nyheter")
+    else:
+        err(f"README-entry är för kort ({entry_len} tecken) — uppdatera med alla förändringar")
+
+    # Buggfix omnämnd om git log nämner det
+    try:
+        git_log_msg = subprocess.run(
+            ["git", "log", "--oneline", "-10"], capture_output=True, text=True, cwd=DIR
+        ).stdout.lower()
+        has_bugfix_commit = any(w in git_log_msg for w in ["buggfix","bugfix","fix","rätta","rättar"])
+        readme_has_bugfix = any(w in entry.lower() for w in ["buggfix","bugfix","fix","rättad"])
+        if has_bugfix_commit and not readme_has_bugfix:
+            warn("Git-loggen innehåller buggfixar men README-entry nämner det inte")
+        elif has_bugfix_commit and readme_has_bugfix:
+            good("Buggfixar dokumenterade i README")
+    except Exception:
+        pass
+else:
+    warn(f"Ingen changelog-entry hittad för {ver} i README — lägg till under 'Ändringslogg'")
+
+# Featurelistan i toppen av README — kontrollera att den inte är tom/förlegad
+feature_list = re.findall(r'^- .+$', readme, re.MULTILINE)
+if len(feature_list) >= 8:
+    good(f"README-featurelista har {len(feature_list)} punkter")
+elif len(feature_list) > 0:
+    warn(f"README-featurelistan har bara {len(feature_list)} punkter — är den uppdaterad?")
+else:
+    warn("Ingen featurelista hittad i README")
+
 # ── 3. Kritiska funktioner ───────────────────────────────────────────
 required_funcs = [
     # Render
