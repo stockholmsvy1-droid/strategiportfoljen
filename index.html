@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Strategiportföljen">
   <meta name="theme-color" content="#1e3a5f">
-  <title>Strategiportföljen v3.10</title>
+  <title>Strategiportföljen v3.11</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231e3a5f'/%3E%3Cpolyline points='3,25 9,17 15,21 21,11 29,5' stroke='%230ea5e9' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='29' cy='5' r='2.5' fill='%234ade80'/%3E%3C/svg%3E">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
@@ -534,7 +534,7 @@
 <!-- ══ HEADER ══ -->
 <header>
   <div>
-    <h1>📈 Strategiportföljen <span class="header-badge">v3.10</span></h1>
+    <h1>📈 Strategiportföljen <span class="header-badge">v3.11</span></h1>
     <div class="header-subtitle">The Magnificent Martin's Money-Making Machine</div>
   </div>
   <div class="header-actions">
@@ -555,6 +555,7 @@
   <button onclick="visaSektion('beslutslogg',this)">📓 Beslutslogg</button>
   <button onclick="visaSektion('kassa',this)">💰 Kassa</button>
   <button onclick="visaSektion('avstamning',this)">🔍 Avstämning</button>
+  <button onclick="visaSektion('installningar',this)">⚙️ Inställningar</button>
   <button onclick="visaSektion('hjalp',this)">❓ Hjälp</button>
 </nav>
 
@@ -588,6 +589,7 @@
   <button class="mer-meny-knapp" onclick="mobilNav('beslutslogg',-1);stängMerMeny()"><span class="mm-ikon">📓</span>Beslutslogg</button>
   <button class="mer-meny-knapp" onclick="mobilNav('kassa',-1);stängMerMeny()"><span class="mm-ikon">💰</span>Kassa</button>
   <button class="mer-meny-knapp" onclick="mobilNav('avstamning',-1);stängMerMeny()"><span class="mm-ikon">🔍</span>Avstämning</button>
+  <button class="mer-meny-knapp" onclick="mobilNav('installningar',-1);stängMerMeny()"><span class="mm-ikon">⚙️</span>Inställningar</button>
   <button class="mer-meny-knapp" onclick="mobilNav('hjalp',-1);stängMerMeny()"><span class="mm-ikon">❓</span>Hjälp</button>
 </div>
 
@@ -1160,13 +1162,8 @@
 <section id="kassa" class="sektion">
   <div class="card mb20">
     <div class="card-titel"><span class="card-titel-text">💰 Tillgängligt för köp per konto</span><span style="font-size:0.75rem;color:var(--muted);font-weight:400">Från positionsfil · 📄 automatisk</span></div>
-    <div class="banner banner-info mb12" style="font-size:0.82rem">Värden hämtas automatiskt från positionsfilen (📄). Använd formuläret nedan för att ange ett manuellt värde (✅) som då skriver över positionsfilens siffra.</div>
+    <div class="banner banner-info mb12" style="font-size:0.82rem">Värden hämtas automatiskt från positionsfilen (📄). Ange ett belopp direkt på raden och tryck <strong>Spara</strong> (✅) för att skriva över positionsfilens siffra. Tryck Enter för att spara snabbt.</div>
     <div id="avanza-kassa-lista"></div>
-    <div class="form-grid mt12" style="grid-template-columns:1fr 1fr auto;align-items:flex-end;gap:8px">
-      <div class="fält"><label>Konto</label><select id="ks-konto"><option value="">— välj konto —</option></select></div>
-      <div class="fält"><label>Tillgängligt för köp (kr)</label><input id="ks-belopp" type="number" step="any" placeholder="108" inputmode="decimal"/></div>
-      <button class="btn btn-primary" onclick="sparaKontoStartsaldo()" style="margin-bottom:0">Spara</button>
-    </div>
   </div>
   <div class="kassa-grid mb20">
     <div class="card saldo-box">
@@ -1217,6 +1214,54 @@
     <div id="isk-kvartal-detalj" style="margin-bottom:14px;font-size:0.82rem"></div>
     <div id="isk-tajming-varning" style="display:none"></div>
     <div id="isk-roundtrip-varning" style="display:none"></div>
+  </div>
+</section>
+
+<!-- ══ INSTÄLLNINGAR ══ -->
+<section id="installningar" class="sektion">
+  <div class="card mb20">
+    <div class="card-titel"><span class="card-titel-text">⚙️ Kontokonfiguration</span><span style="font-size:0.75rem;color:var(--muted);font-weight:400">Konton som importeras och visas i appen</span></div>
+    <div class="banner banner-info mb12" style="font-size:0.82rem">Lägg till, redigera eller ta bort Avanza-konton. Ändringarna gäller vid nästa positionsimport. Befintliga portföljdata påverkas inte.</div>
+    <div id="konto-konfig-lista"></div>
+    <div class="mt12" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-primary" onclick="laggTillKontoKonfig()">+ Lägg till konto</button>
+      <button class="btn btn-ghost btn-sm" onclick="återställKontonKonfig()">↺ Återställ fabriksinställningar</button>
+    </div>
+  </div>
+  <div class="card mb20">
+    <div class="card-titel"><span class="card-titel-text">📂 Kategori-editor</span><span style="font-size:0.75rem;color:var(--muted);font-weight:400">Konfigurера kategorier och vikter</span></div>
+    <div class="banner banner-info mb12" style="font-size:0.82rem">Redigera namn, emoji, färg, målvikter och signaltyp. Ändringar gäller direkt.</div>
+    <div id="kat-editor-lista"></div>
+    <div class="mt12" style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="laggTillKatEditor()">+ Lägg till kategori</button>
+      <button class="btn btn-ghost btn-sm" onclick="återställKatEditor()">↺ Återställ standard</button>
+    </div>
+  </div>
+  <div class="card mb20">
+    <div class="card-titel"><span class="card-titel-text">🎛 Strategiparametrar</span><span style="font-size:0.75rem;color:var(--muted);font-weight:400">Signalgränser och tröskelvärden</span></div>
+    <div class="banner banner-info mb12" style="font-size:0.82rem">Ändring av MA200-gränser påverkar signalstatus för alla innehav direkt — ingen re-import krävs. Fält med ändrat värde markeras med blå kant.</div>
+    <div id="strategi-params-lista"></div>
+    <div class="mt12"><button class="btn btn-ghost btn-sm" onclick="återställAllaStrategiParams()">↺ Återställ alla till standard</button></div>
+  </div>
+  <div class="card mb20">
+    <div class="card-titel"><span class="card-titel-text">👤 Profil & information</span><span style="font-size:0.75rem;color:var(--muted);font-weight:400">Visas i exporter och strategi-rapport</span></div>
+    <div id="profil-info-form"></div>
+  </div>
+  <div class="card mb20">
+    <div class="card-titel"><span class="card-titel-text">🚫 Värdepappersfilter</span><span style="font-size:0.75rem;color:var(--muted);font-weight:400">Exkluderas vid import</span></div>
+    <div class="banner banner-info mb12" style="font-size:0.82rem">Värdepapper och konton i dessa listor ignoreras helt vid CSV-import, oavsett konto.</div>
+    <div id="vp-filter-lista"></div>
+  </div>
+  <div class="card mb20">
+    <div class="card-titel"><span class="card-titel-text">📤 Export/import av inställningar</span><span style="font-size:0.75rem;color:var(--muted);font-weight:400">Flytta din strategi mellan enheter</span></div>
+    <p style="font-size:0.84rem;color:var(--muted);margin-bottom:14px;line-height:1.5">Exportera alla inställningar (konton, kategorier, parametrar, filter, profil) som en JSON-fil. Importera på en annan enhet. Portföljdata (innehav, historik, transaktioner) påverkas inte.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-primary" onclick="exporteraInstallningar()" style="min-height:var(--touch)">⬇ Exportera inställningar (JSON)</button>
+      <label class="btn btn-ghost" style="cursor:pointer;min-height:var(--touch);display:inline-flex;align-items:center">
+        ⬆ Importera inställningar
+        <input type="file" accept=".json" style="display:none" onchange="importeraInstallningarFrånFil(this)">
+      </label>
+    </div>
   </div>
 </section>
 
@@ -1618,8 +1663,11 @@
       <div class="hjalp-p">Skriv veckoanteckningar om marknadsläget och dina beslut. Exportera loggen till Excel. Att dokumentera beslut är ett av de effektivaste sätten att bli en bättre investerare.</div>
 
       <div class="hjalp-h2">💰 Kassa</div>
-      <div class="hjalp-p"><strong>Tillgängligt för köp per konto</strong> hämtas automatiskt från positionsfilen vid varje import (📄). Du kan skriva över ett enskilt konto manuellt via formuläret (✅). Sparkontot (Avanza sparande Martin) visas inte i Kassa-tabellen — det följs istället i Avstämning.</div>
+      <div class="hjalp-p"><strong>Tillgängligt för köp per konto</strong> hämtas automatiskt från positionsfilen vid varje import (📄). Du kan skriva över ett enskilt konto manuellt via formuläret (✅). Sparkontot (Avanza sparande Martin) visas som en separat rad längst ned i tabellen — ej inkluderat i totalt tillgängligt för köp — och följs även i Avstämning. Tabellen visar alla konton med inline-inmatning per rad.</div>
       <div class="hjalp-p">Kassa-fliken innehåller även <strong>ISK-skatt</strong>-sektionen som beräknar schablonintäkt och förväntad skatt för innevarande år baserat på kvartalsvärden och insättningar.</div>
+
+      <div class="hjalp-h2">⚙️ Inställningar</div>
+      <div class="hjalp-p">Samlad konfiguration av appen — nås via navigeringsmenyn. Innehåller: <strong>Kontokonfiguration</strong> (lägg till/redigera/ta bort Avanza-konton), <strong>Kategori-editor</strong> (ersätter de gamla prompt-dialogerna — redigera namn, emoji, färg, vikter och signaltyp), <strong>Strategiparametrar</strong> (MA200-gränser, nödutgång, ombalansering, koncentrationsrisk), <strong>Profil &amp; information</strong> (namn och strategi-titel i exporter), <strong>Värdepappersfilter</strong> (exkludera VP/konton vid import) och <strong>Export/import av inställningar</strong> (flytta din strategikonfiguration mellan enheter som JSON).</div>
 
       <div class="hjalp-h2">📊 Avstämning</div>
       <div class="hjalp-p">Fliken Avstämning visar alla 6 kontons saldon direkt från positionsfilen — inklusive sparkonto — och summerar dem till ett totalt portföljvärde som ska stämma mot Avanzas "Sparande".</div>
@@ -2030,49 +2078,9 @@ function nästaKatId() {
   const ids = Object.keys(KATEGORIER).map(Number);
   return Math.max(...ids, 0) + 1;
 }
-function läggTillKategori() {
-  const namn = prompt('Namn på ny kategori:');
-  if (!namn || !namn.trim()) return;
-  const undertitel = prompt('Undertitel (kort beskrivning):') || '';
-  const emoji = prompt('Emoji (t.ex. 🎯):') || '📂';
-  const färg = prompt('Färg (hex, t.ex. #6366f1):') || '#6366f1';
-  const målMin = parseInt(prompt('Målvikt min % (t.ex. 5):') || '0') || 0;
-  const målMax = parseInt(prompt('Målvikt max % (t.ex. 10):') || '5') || 5;
-  const signal = confirm('Använda MA200-regel med tvådagarsregel?') ? 'ma200' : 'ingen';
-  const beskrivning = prompt('Beskrivning (strategi):') || '';
-  const id = nästaKatId();
-  KATEGORIER[id] = { namn: namn.trim(), undertitel: undertitel.trim(), emoji, färg, målMin, målMax, signal, beskrivning };
-  sparaKategorier();
-}
-function redigeraKategori(id) {
-  const kat = KATEGORIER[id];
-  if (!kat) return;
-  const namn = prompt('Namn:', kat.namn);
-  if (namn === null) return;
-  kat.namn = namn.trim() || kat.namn;
-  kat.undertitel = (prompt('Undertitel:', kat.undertitel) || kat.undertitel).trim();
-  kat.emoji = prompt('Emoji:', kat.emoji) || kat.emoji;
-  kat.färg = prompt('Färg (hex):', kat.färg) || kat.färg;
-  kat.målMin = parseInt(prompt('Målvikt min %:', kat.målMin)) || 0;
-  kat.målMax = parseInt(prompt('Målvikt max %:', kat.målMax)) || 5;
-  kat.signal = confirm('Använda MA200-regel?') ? 'ma200' : 'ingen';
-  kat.beskrivning = (prompt('Beskrivning:', kat.beskrivning) || kat.beskrivning).trim();
-  sparaKategorier();
-}
-function taBortKategori(id) {
-  const kat = KATEGORIER[id];
-  if (!kat) return;
-  const antal = data.innehav.filter(h => h.kategori == id).length;
-  if (antal > 0) {
-    if (!confirm(`Kategorin "${kat.namn}" har ${antal} innehav. Dessa flyttas till kategori 1. Fortsätt?`)) return;
-    data.innehav.forEach(h => { if (h.kategori == id) h.kategori = 1; });
-    spara();
-  } else {
-    if (!confirm(`Ta bort kategorin "${kat.namn}"?`)) return;
-  }
-  delete KATEGORIER[id];
-  sparaKategorier();
-}
+function läggTillKategori() { visaSektion('installningar'); laggTillKatEditor(); }
+function redigeraKategori(id) { visaSektion('installningar'); redigeraKatEditor(id); }
+function taBortKategori(id) { visaSektion('installningar'); taBortKatEditor(id); }
 function återställKategorier() {
   if (!confirm('Återställ till standardkategorier? Befintliga innehav behåller sina kategori-ID.')) return;
   KATEGORIER = JSON.parse(JSON.stringify(DEFAULT_KATEGORIER));
@@ -2105,19 +2113,30 @@ function uppdateraKontoRegister(kontonr, namn, datum) {
 laddaKontoRegister();
 
 // ── Hardkodade filter — exkluderas alltid ──
-const EXKLUDERA_KONTON = ['9557-7346055'];
-const EXKLUDERA_VP = ['zomedica'];
+const DEFAULT_EXKLUDERA_KONTON = ['9557-7346055'];
+const DEFAULT_EXKLUDERA_VP = ['zomedica'];
+let EXKLUDERA_KONTON = [...DEFAULT_EXKLUDERA_KONTON];
+let EXKLUDERA_VP = [...DEFAULT_EXKLUDERA_VP];
 
-// ── Kända Avanza-konton (namn = exakt som i Avanza CSV-export) ──
-const AVANZA_KONTON_LIST = [
+const DEFAULT_STRATEGI_PARAMS = {
+  ma200GrönGräns: 5,       // % över MA200 = grön signal
+  ma200GulGräns:  5,       // % under MA200 = fortfarande gul (tvådagarsregel gäller)
+  nödutgångGräns: 10,      // % under köpkurs = nödutgångssignal
+  ombalanseringsGräns: 2,  // % avvikelse från målmitten = ombalanseringsvarning
+  konGräns: 8              // % av portföljvärde = hög koncentrationsrisk
+};
+let STRATEGI_PARAMS = {...DEFAULT_STRATEGI_PARAMS};
+
+// ── Kända Avanza-konton — fabriksinställning (redigeras via Inställningar) ──
+const DEFAULT_AVANZA_KONTON = [
   { namn: '1. Sverige nov 2025',      nr: '1914035',   typ: 'ISK'  },
   { namn: '2. Norden nov 2025',       nr: '1080302',   typ: 'ISK'  },
   { namn: 'Eget fondsparande',        nr: '6014837',   typ: 'ISK'  },
   { namn: '1. Utländska Aktier 2025', nr: '7882604',   typ: 'KF'   },
   { namn: '2. Utländska Aktier 2025', nr: '1913799',   typ: 'KF'   },
-  { namn: 'Avanza sparande Martin',   nr: '40080455',  typ: 'SPAR' },
+  { namn: 'Avanza sparande Martin',   nr: '0040080455', typ: 'SPAR' },
 ];
-const AVANZA_NR_TILL_NAMN = Object.fromEntries(AVANZA_KONTON_LIST.map(k=>[k.nr, k.namn]));
+let AVANZA_KONTON_LIST = DEFAULT_AVANZA_KONTON;
 // Normalisera kontonamn: ta bort ev. "1. " / "2. "-prefix och lowercase för jämförelse
 function normNamn(n) { return (n||'').replace(/^\d+\.\s*/,'').toLowerCase().trim(); }
 // Hitta AVANZA_KONTON_LIST-post som matchar ett datanyckelnamn.
@@ -2245,7 +2264,8 @@ function aktivFXKurs(valuta) {
 // ══════════════════════════════════════════════════════════
 let data = {
   innehav:[], kassaTransaktioner:[], avanzaTransaktioner:[],
-  beslutslogg:[], historik:[], senastImport:{}, avanzaKassa:0, kontoStartsaldo:{}, positionsKassa:{}
+  beslutslogg:[], historik:[], senastImport:{}, avanzaKassa:0, kontoStartsaldo:{}, positionsKassa:{},
+  kontokonfiguration:[]
 };
 
 function ladda() {
@@ -2269,6 +2289,7 @@ function ladda() {
     if (!data.positionsKontoVärden) data.positionsKontoVärden = {};
     if (!data.avstämningar) data.avstämningar = [];
     if (!data.avanzaKontoData) data.avanzaKontoData = { konton: {}, senastUppdaterad: null };
+    if (!data.kontokonfiguration) data.kontokonfiguration = [];
     // Migration: märk befintliga poster som importerad:true så de inte raderas
     data.historik.forEach(h => {
       if (!h.importerad) h.importerad = true;
@@ -2276,6 +2297,19 @@ function ladda() {
       if (h.katVärden === undefined) h.katVärden = null; // null = okänd (äldre import)
     });
   }
+  // Initiera kontokonfiguration (migration för befintliga användare + nya användare)
+  if (!data.kontokonfiguration || !data.kontokonfiguration.length) {
+    data.kontokonfiguration = JSON.parse(JSON.stringify(DEFAULT_AVANZA_KONTON));
+  }
+  AVANZA_KONTON_LIST = data.kontokonfiguration;
+  if (!data.strategiParams) data.strategiParams = {...DEFAULT_STRATEGI_PARAMS};
+  else { Object.keys(DEFAULT_STRATEGI_PARAMS).forEach(k=>{ if(data.strategiParams[k]===undefined) data.strategiParams[k]=DEFAULT_STRATEGI_PARAMS[k]; }); }
+  STRATEGI_PARAMS = data.strategiParams;
+  if (!data.profilInfo || !data.profilInfo.visningsNamn) data.profilInfo = { visningsNamn:'Martin', strategiTitel:'Aktiestrategi 2026' };
+  if (!data.exkluderaVP) data.exkluderaVP = [...DEFAULT_EXKLUDERA_VP];
+  if (!data.exkluderaKonton) data.exkluderaKonton = [...DEFAULT_EXKLUDERA_KONTON];
+  EXKLUDERA_VP = data.exkluderaVP;
+  EXKLUDERA_KONTON = data.exkluderaKonton;
   // Migrera från V1
   const v1 = localStorage.getItem('portfölj_v1');
   if (v1 && data.innehav.length === 0) {
@@ -2339,19 +2373,389 @@ function beräknaAvanzaKassaPerKonto() {
   });
   return result;
 }
-function sparaKontoStartsaldo() {
-  const konto = document.getElementById('ks-konto').value;
-  const belopp = parseFloat(document.getElementById('ks-belopp').value);
+function sparaKontoStartsaldoInline(tr) {
+  const konto = tr.dataset.konto;
+  const belopp = parseFloat(tr.querySelector('.ks-inline-belopp').value);
   if (!konto || isNaN(belopp)) return;
   if (!data.kontoStartsaldo) data.kontoStartsaldo = {};
   data.kontoStartsaldo[konto] = belopp;
-  document.getElementById('ks-belopp').value = '';
   spara(); renderKassa(); renderAvstemning();
 }
 function raderaKontoStartsaldo(konto) {
   delete data.kontoStartsaldo[konto];
   spara(); renderKassa(); renderAvstemning();
 }
+
+// ══════════════════════════════════════════════════════════
+//  INSTÄLLNINGAR — KONTOKONFIGURATION
+// ══════════════════════════════════════════════════════════
+let kontoKonfigEditIndex = -1;
+
+function renderInstallningar() {
+  const lista = document.getElementById('konto-konfig-lista');
+  if (!lista) return;
+  const konton = data.kontokonfiguration || DEFAULT_AVANZA_KONTON;
+  const typMärke = t => {
+    const s = t==='ISK' ? 'background:#e8f4e8;color:#2d7a2d' : t==='KF' ? 'background:#fff0e0;color:#b35400' : 'background:#e8eef8;color:#2c5aa0';
+    return `<span style="${s};border-radius:4px;padding:2px 7px;font-size:0.75rem;font-weight:700">${t}</span>`;
+  };
+  if (!konton.length) {
+    lista.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;margin:8px 0">Inga konton konfigurerade.</p>';
+    renderKategoriEditor(); renderStrategiParams(); renderProfilInfo(); renderVPFilter();
+    return;
+  }
+  lista.innerHTML = `<div class="tabell-wrap"><table>
+    <thead><tr><th>Namn</th><th>Kontonummer</th><th>Typ</th><th style="text-align:center">Ordning</th><th></th></tr></thead>
+    <tbody>${konton.map((k,i) => {
+      if (i === kontoKonfigEditIndex) {
+        return `<tr style="background:var(--primary-light)">
+          <td><input id="kk-namn-${i}" class="input" value="${k.namn}" style="width:100%;min-width:140px;min-height:var(--touch)"></td>
+          <td><input id="kk-nr-${i}" class="input" value="${k.nr}" style="width:100%;min-width:100px;min-height:var(--touch)" inputmode="numeric"></td>
+          <td><select id="kk-typ-${i}" class="input" style="min-width:72px;min-height:var(--touch)">
+            <option value="ISK"${k.typ==='ISK'?' selected':''}>ISK</option>
+            <option value="KF"${k.typ==='KF'?' selected':''}>KF</option>
+            <option value="SPAR"${k.typ==='SPAR'?' selected':''}>SPAR</option>
+          </select></td>
+          <td></td>
+          <td style="white-space:nowrap">
+            <button class="btn btn-primary btn-sm" onclick="sparaKontoKonfigRad(${i})" style="min-height:var(--touch)">✓ Spara</button>
+            <button class="btn btn-ghost btn-sm" onclick="avbrytKontoKonfigEdit()" style="min-height:var(--touch)">✗</button>
+          </td></tr>`;
+      }
+      return `<tr>
+        <td style="font-weight:500">${k.namn||'<em style="color:var(--muted)">Ej satt</em>'}</td>
+        <td style="font-size:0.82rem;color:var(--muted)">${k.nr||'—'}</td>
+        <td>${typMärke(k.typ)}</td>
+        <td style="text-align:center;white-space:nowrap">
+          <button class="btn btn-ghost btn-sm" onclick="flyttaKontoKonfig(${i},-1)"${i===0?' disabled':''} style="min-height:var(--touch)" title="Flytta upp">↑</button>
+          <button class="btn btn-ghost btn-sm" onclick="flyttaKontoKonfig(${i},1)"${i===konton.length-1?' disabled':''} style="min-height:var(--touch)" title="Flytta ner">↓</button>
+        </td>
+        <td style="white-space:nowrap">
+          <button class="btn btn-ghost btn-sm" onclick="redigeraKontoKonfig(${i})" style="min-height:var(--touch)">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="taBortKontoKonfig(${i})" style="min-height:var(--touch)">✕</button>
+        </td></tr>`;
+    }).join('')}
+    </tbody></table></div>`;
+  renderKategoriEditor();
+  renderStrategiParams();
+  renderProfilInfo();
+  renderVPFilter();
+}
+
+function redigeraKontoKonfig(i) { kontoKonfigEditIndex = i; renderInstallningar(); }
+function avbrytKontoKonfigEdit() { kontoKonfigEditIndex = -1; renderInstallningar(); }
+
+function sparaKontoKonfigRad(i) {
+  const namn = document.getElementById(`kk-namn-${i}`).value.trim();
+  const nr   = document.getElementById(`kk-nr-${i}`).value.trim();
+  const typ  = document.getElementById(`kk-typ-${i}`).value;
+  if (!namn || !nr) return;
+  data.kontokonfiguration[i] = { namn, nr, typ };
+  AVANZA_KONTON_LIST = data.kontokonfiguration;
+  kontoKonfigEditIndex = -1;
+  spara(); renderInstallningar(); renderKassa(); renderAvstemning();
+}
+
+function laggTillKontoKonfig() {
+  if (!data.kontokonfiguration) data.kontokonfiguration = JSON.parse(JSON.stringify(DEFAULT_AVANZA_KONTON));
+  data.kontokonfiguration.push({ namn: '', nr: '', typ: 'ISK' });
+  AVANZA_KONTON_LIST = data.kontokonfiguration;
+  kontoKonfigEditIndex = data.kontokonfiguration.length - 1;
+  spara(); renderInstallningar();
+}
+
+function taBortKontoKonfig(i) {
+  if (!confirm(`Ta bort kontot "${data.kontokonfiguration[i].namn}"?\n\nBefintlig portföljdata påverkas inte.`)) return;
+  data.kontokonfiguration.splice(i, 1);
+  AVANZA_KONTON_LIST = data.kontokonfiguration;
+  if (kontoKonfigEditIndex >= i) kontoKonfigEditIndex = -1;
+  spara(); renderInstallningar(); renderKassa(); renderAvstemning();
+}
+
+function flyttaKontoKonfig(i, dir) {
+  const j = i + dir;
+  if (j < 0 || j >= data.kontokonfiguration.length) return;
+  [data.kontokonfiguration[i], data.kontokonfiguration[j]] = [data.kontokonfiguration[j], data.kontokonfiguration[i]];
+  AVANZA_KONTON_LIST = data.kontokonfiguration;
+  spara(); renderInstallningar(); renderKassa(); renderAvstemning();
+}
+
+function återställKontonKonfig() {
+  if (!confirm('Återställa alla kontoinställningar till fabriksinställningarna?\n\nPortföljdata (innehav, historik, transaktioner) påverkas inte.')) return;
+  data.kontokonfiguration = JSON.parse(JSON.stringify(DEFAULT_AVANZA_KONTON));
+  AVANZA_KONTON_LIST = data.kontokonfiguration;
+  kontoKonfigEditIndex = -1;
+  spara(); renderInstallningar(); renderKassa(); renderAvstemning();
+}
+
+// ── Kategori-editor ──
+let katEditorEditId = null;
+
+function renderKategoriEditor() {
+  const lista = document.getElementById('kat-editor-lista');
+  if (!lista) return;
+  const ids = Object.keys(KATEGORIER).map(Number).sort((a,b)=>a-b);
+  const EMOJIS = ['⚓','💰','⚙️','🧠','🛡️','✨','📊','🎯','🚀','💎','🌍','🏦','⚡','🔥','🌿','🏗️','💡','🎲','🔬','🌐','🏆','💼','🎪','🌟','🔮','🦁','🐉','🌊'];
+  if (!ids.length) { lista.innerHTML='<p style="color:var(--muted);font-size:0.85rem;margin:8px 0">Inga kategorier.</p>'; return; }
+  lista.innerHTML = ids.map(id => {
+    const k = KATEGORIER[id];
+    if (id === katEditorEditId) {
+      return `<div style="border:2px solid var(--primary);border-radius:8px;padding:14px;margin-bottom:10px;background:var(--primary-light)">
+        <div class="form-grid" style="grid-template-columns:1fr 1fr;gap:10px">
+          <div class="fält"><label style="font-size:0.78rem">Namn</label><input id="ke-namn-${id}" class="input" value="${k.namn}" maxlength="20" style="min-height:var(--touch)"></div>
+          <div class="fält"><label style="font-size:0.78rem">Undertitel</label><input id="ke-undertitel-${id}" class="input" value="${k.undertitel||''}" maxlength="20" style="min-height:var(--touch)"></div>
+          <div class="fält"><label style="font-size:0.78rem">Emoji</label>
+            <select id="ke-emoji-${id}" class="input" style="min-height:var(--touch)">
+              ${EMOJIS.map(e=>`<option value="${e}"${k.emoji===e?' selected':''}>${e}</option>`).join('')}
+            </select></div>
+          <div class="fält"><label style="font-size:0.78rem">Färg</label><input id="ke-farg-${id}" type="color" class="input" value="${k.färg||'#1e40af'}" style="min-height:var(--touch);padding:4px"></div>
+          <div class="fält"><label style="font-size:0.78rem">Målvikt min %</label><input id="ke-min-${id}" class="input" type="number" min="0" max="100" value="${k.målMin}" style="min-height:var(--touch)"></div>
+          <div class="fält"><label style="font-size:0.78rem">Målvikt max %</label><input id="ke-max-${id}" class="input" type="number" min="0" max="100" value="${k.målMax}" style="min-height:var(--touch)"></div>
+          <div class="fält" style="grid-column:1/-1"><label style="font-size:0.78rem">Signal</label>
+            <select id="ke-signal-${id}" class="input" style="min-height:var(--touch)">
+              <option value="ingen"${k.signal==='ingen'?' selected':''}>Ingen signal (köp och håll)</option>
+              <option value="ma200"${k.signal==='ma200'?' selected':''}>MA200 med tvådagarsregel</option>
+            </select></div>
+          <div class="fält" style="grid-column:1/-1"><label style="font-size:0.78rem">Beskrivning</label><input id="ke-beskr-${id}" class="input" value="${k.beskrivning||''}" style="min-height:var(--touch)"></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn btn-primary btn-sm" onclick="sparaKatEditor(${id})" style="min-height:var(--touch)">✓ Spara</button>
+          <button class="btn btn-ghost btn-sm" onclick="avbrytKatEditor()" style="min-height:var(--touch)">✗ Avbryt</button>
+        </div>
+      </div>`;
+    }
+    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:1.4rem;width:30px;text-align:center">${k.emoji}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600">${k.namn} <span style="font-size:0.78rem;color:var(--muted)">${k.undertitel||''}</span></div>
+        <div style="font-size:0.78rem;color:var(--muted)">${k.målMin}–${k.målMax}% · ${k.signal==='ma200'?'MA200':'Ingen signal'}</div>
+      </div>
+      <span style="width:14px;height:14px;border-radius:50%;background:${k.färg};display:inline-block;flex-shrink:0"></span>
+      <button class="btn btn-ghost btn-sm" onclick="redigeraKatEditor(${id})" style="min-height:var(--touch)">✏️</button>
+      <button class="btn btn-danger btn-sm" onclick="taBortKatEditor(${id})" style="min-height:var(--touch)">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function redigeraKatEditor(id) { katEditorEditId = id; renderKategoriEditor(); }
+function avbrytKatEditor() { katEditorEditId = null; renderKategoriEditor(); }
+
+function sparaKatEditor(id) {
+  const namn = document.getElementById(`ke-namn-${id}`).value.trim();
+  if (!namn) return;
+  KATEGORIER[id] = {
+    namn,
+    undertitel: document.getElementById(`ke-undertitel-${id}`).value.trim(),
+    emoji: document.getElementById(`ke-emoji-${id}`).value,
+    färg: document.getElementById(`ke-farg-${id}`).value,
+    målMin: parseInt(document.getElementById(`ke-min-${id}`).value)||0,
+    målMax: parseInt(document.getElementById(`ke-max-${id}`).value)||5,
+    signal: document.getElementById(`ke-signal-${id}`).value,
+    beskrivning: document.getElementById(`ke-beskr-${id}`).value.trim()
+  };
+  katEditorEditId = null;
+  sparaKategorier(); renderKategoriEditor(); renderAllt();
+}
+
+function laggTillKatEditor() {
+  const id = Math.max(0, ...Object.keys(KATEGORIER).map(Number)) + 1;
+  KATEGORIER[id] = { namn:'Ny kategori', undertitel:'', emoji:'📂', färg:'#6366f1', målMin:0, målMax:5, signal:'ingen', beskrivning:'' };
+  katEditorEditId = id;
+  sparaKategorier(); renderKategoriEditor();
+}
+
+function taBortKatEditor(id) {
+  const kat = KATEGORIER[id];
+  if (!kat) return;
+  const antal = data.innehav.filter(h=>h.kategori==id).length;
+  const msg = antal > 0
+    ? `Ta bort kategorin "${kat.namn}"?\n\n${antal} innehav flyttas automatiskt till kategori 2 (Kassaflödet).`
+    : `Ta bort kategorin "${kat.namn}"?`;
+  if (!confirm(msg)) return;
+  if (antal > 0) { data.innehav.forEach(h=>{ if(h.kategori==id) h.kategori=2; }); spara(); }
+  delete KATEGORIER[id];
+  katEditorEditId = null;
+  sparaKategorier(); renderKategoriEditor(); renderAllt();
+}
+
+function återställKatEditor() {
+  if (!confirm('Återställa alla kategorier till fabriksinställningarna?\n\nBefintliga innehav behåller sina kategoritilldelningar.')) return;
+  KATEGORIER = JSON.parse(JSON.stringify(DEFAULT_KATEGORIER));
+  katEditorEditId = null;
+  sparaKategorier(); renderKategoriEditor(); renderAllt();
+}
+
+// ── Strategiparametrar ──
+function renderStrategiParams() {
+  const lista = document.getElementById('strategi-params-lista');
+  if (!lista) return;
+  const defs = [
+    { key:'ma200GrönGräns',   label:'MA200 — grön signal',         enhet:'% över MA200',   förklaring:'Kurs minst X% över MA200 ger grön signal.' },
+    { key:'ma200GulGräns',    label:'MA200 — gul/röd gräns',        enhet:'% under MA200',  förklaring:'Kurs upp till X% under MA200 ger gul signal (tvådagarsregel). Mer än X% → röd.' },
+    { key:'nödutgångGräns',   label:'Nödutgångssignal',             enhet:'% under köpkurs',förklaring:'Röd nödutgångssignal om kursen fallit X% under köpkursen (GAV).' },
+    { key:'ombalanseringsGräns',label:'Ombalanseringsvarning',      enhet:'% avvikelse',    förklaring:'Kategori flaggas för ombalansering om vikten avviker mer än X procentenheter från målmitten.' },
+    { key:'konGräns',         label:'Koncentrationsrisk',           enhet:'% av portföljen',förklaring:'Enskilt innehav med mer än X% av portföljvärdet flaggas som hög koncentration.' }
+  ];
+  lista.innerHTML = defs.map(d => {
+    const val = STRATEGI_PARAMS[d.key];
+    const isDefault = val === DEFAULT_STRATEGI_PARAMS[d.key];
+    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);flex-wrap:wrap">
+      <div style="flex:1;min-width:160px">
+        <div style="font-weight:500;font-size:0.9rem">${d.label} <span title="${d.förklaring}" style="cursor:help;color:var(--muted);font-size:0.8rem">?</span></div>
+        <div style="font-size:0.75rem;color:var(--muted)">${d.enhet}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <input type="number" class="input" min="0" max="100" step="0.5" value="${val}"
+          style="width:70px;min-height:var(--touch);${!isDefault?'border-color:var(--primary);':''}text-align:right"
+          onchange="sparaStrategiParam('${d.key}',this.value)" oninput="sparaStrategiParam('${d.key}',this.value)">
+        <span style="font-size:0.8rem;color:var(--muted);min-width:80px">${d.enhet}</span>
+        ${!isDefault ? `<button class="btn btn-ghost btn-sm" onclick="återställStrategiParam('${d.key}')" style="font-size:0.75rem;min-height:var(--touch)" title="Återställ till ${DEFAULT_STRATEGI_PARAMS[d.key]}">↺ ${DEFAULT_STRATEGI_PARAMS[d.key]}</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function sparaStrategiParam(key, val) {
+  const n = parseFloat(val);
+  if (isNaN(n) || n < 0) return;
+  data.strategiParams[key] = n;
+  STRATEGI_PARAMS = data.strategiParams;
+  spara(); renderStrategiParams();
+  if (['ma200GrönGräns','ma200GulGräns','konGräns','ombalanseringsGräns'].includes(key)) renderAllt();
+}
+
+function återställStrategiParam(key) {
+  data.strategiParams[key] = DEFAULT_STRATEGI_PARAMS[key];
+  STRATEGI_PARAMS = data.strategiParams;
+  spara(); renderStrategiParams();
+}
+
+function återställAllaStrategiParams() {
+  if (!confirm('Återställa alla strategiparametrar till standardvärden?')) return;
+  data.strategiParams = {...DEFAULT_STRATEGI_PARAMS};
+  STRATEGI_PARAMS = data.strategiParams;
+  spara(); renderStrategiParams(); renderAllt();
+}
+
+// ── Profil & information ──
+function renderProfilInfo() {
+  const el = document.getElementById('profil-info-form');
+  if (!el) return;
+  const p = data.profilInfo || {};
+  el.innerHTML = `<div class="form-grid" style="grid-template-columns:1fr 1fr;gap:12px;max-width:480px">
+    <div class="fält"><label>Ditt namn</label><input id="profil-namn" class="input" value="${p.visningsNamn||'Martin'}" placeholder="Martin" style="min-height:var(--touch)"></div>
+    <div class="fält"><label>Strategi-titel</label><input id="profil-titel" class="input" value="${p.strategiTitel||'Aktiestrategi 2026'}" placeholder="Aktiestrategi 2026" style="min-height:var(--touch)"></div>
+  </div>
+  <button class="btn btn-primary mt12" onclick="sparaProfilInfo()" style="min-height:var(--touch)">Spara</button>`;
+}
+
+function sparaProfilInfo() {
+  if (!data.profilInfo) data.profilInfo = {};
+  data.profilInfo.visningsNamn = document.getElementById('profil-namn').value.trim() || 'Martin';
+  data.profilInfo.strategiTitel = document.getElementById('profil-titel').value.trim() || 'Aktiestrategi 2026';
+  spara(); renderProfilInfo();
+}
+
+// ── Värdepappersfilter ──
+function renderVPFilter() {
+  const el = document.getElementById('vp-filter-lista');
+  if (!el) return;
+  const evp = data.exkluderaVP || [];
+  const ekonto = data.exkluderaKonton || [];
+  el.innerHTML = `
+    <div style="margin-bottom:16px">
+      <div style="font-weight:600;margin-bottom:8px">Exkluderade värdepapper <span style="font-size:0.78rem;color:var(--muted);font-weight:400">(namn, case-insensitivt)</span></div>
+      ${evp.map((v,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+        <span style="flex:1">${v}</span>
+        <button class="btn btn-danger btn-sm" onclick="taBortExkluderaVP(${i})" style="min-height:var(--touch)">✕</button>
+      </div>`).join('')}
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <input id="ny-exkl-vp" class="input" placeholder="t.ex. zomedica" style="flex:1;min-height:var(--touch)">
+        <button class="btn btn-primary btn-sm" onclick="laggTillExkluderaVP()" style="min-height:var(--touch)">+ Lägg till</button>
+      </div>
+    </div>
+    <div>
+      <div style="font-weight:600;margin-bottom:8px">Exkluderade konton <span style="font-size:0.78rem;color:var(--muted);font-weight:400">(kontonummer)</span></div>
+      ${ekonto.map((v,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+        <span style="flex:1;font-size:0.85rem;font-family:monospace">${v}</span>
+        <button class="btn btn-danger btn-sm" onclick="taBortExkluderaKonto(${i})" style="min-height:var(--touch)">✕</button>
+      </div>`).join('')}
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <input id="ny-exkl-konto" class="input" placeholder="t.ex. 9557-7346055" style="flex:1;min-height:var(--touch)">
+        <button class="btn btn-primary btn-sm" onclick="laggTillExkluderaKonto()" style="min-height:var(--touch)">+ Lägg till</button>
+      </div>
+    </div>`;
+}
+
+function laggTillExkluderaVP() {
+  const v = document.getElementById('ny-exkl-vp').value.trim().toLowerCase();
+  if (!v) return;
+  if (!data.exkluderaVP) data.exkluderaVP = [];
+  if (!data.exkluderaVP.includes(v)) data.exkluderaVP.push(v);
+  EXKLUDERA_VP = data.exkluderaVP;
+  spara(); renderVPFilter();
+}
+function taBortExkluderaVP(i) {
+  data.exkluderaVP.splice(i,1);
+  EXKLUDERA_VP = data.exkluderaVP;
+  spara(); renderVPFilter();
+}
+function laggTillExkluderaKonto() {
+  const v = document.getElementById('ny-exkl-konto').value.trim();
+  if (!v) return;
+  if (!data.exkluderaKonton) data.exkluderaKonton = [];
+  if (!data.exkluderaKonton.includes(v)) data.exkluderaKonton.push(v);
+  EXKLUDERA_KONTON = data.exkluderaKonton;
+  spara(); renderVPFilter();
+}
+function taBortExkluderaKonto(i) {
+  data.exkluderaKonton.splice(i,1);
+  EXKLUDERA_KONTON = data.exkluderaKonton;
+  spara(); renderVPFilter();
+}
+
+// ── Export/import av inställningar ──
+function exporteraInstallningar() {
+  const paket = {
+    version: '1.0',
+    exportDatum: new Date().toISOString().slice(0,10),
+    kontokonfiguration: data.kontokonfiguration,
+    kategorier: KATEGORIER,
+    strategiParams: data.strategiParams,
+    profilInfo: data.profilInfo,
+    exkluderaVP: data.exkluderaVP,
+    exkluderaKonton: data.exkluderaKonton
+  };
+  const blob = new Blob([JSON.stringify(paket, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `installningar_strategiportfoljen_${paket.exportDatum}.json`;
+  a.click();
+}
+
+function importeraInstallningarFrånFil(input) {
+  const fil = input.files[0];
+  if (!fil) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const p = JSON.parse(e.target.result);
+      if (!p.kontokonfiguration && !p.kategorier) { alert('Ogiltig inställningsfil.'); return; }
+      if (!confirm('Importera inställningar?\n\nPortföljdata påverkas inte. Befintliga inställningar skrivs över.')) return;
+      if (p.kontokonfiguration?.length) { data.kontokonfiguration = p.kontokonfiguration; AVANZA_KONTON_LIST = data.kontokonfiguration; }
+      if (p.kategorier) { KATEGORIER = p.kategorier; sparaKategorier(); }
+      if (p.strategiParams) { data.strategiParams = p.strategiParams; STRATEGI_PARAMS = data.strategiParams; }
+      if (p.profilInfo) data.profilInfo = p.profilInfo;
+      if (p.exkluderaVP) { data.exkluderaVP = p.exkluderaVP; EXKLUDERA_VP = data.exkluderaVP; }
+      if (p.exkluderaKonton) { data.exkluderaKonton = p.exkluderaKonton; EXKLUDERA_KONTON = data.exkluderaKonton; }
+      spara(); renderAllt();
+      alert('Inställningar importerade!');
+    } catch(err) { alert('Kunde inte läsa filen: ' + err.message); }
+  };
+  reader.readAsText(fil);
+  input.value = '';
+}
+
 function utdelningarFörInnehav(h) {
   if (!h.isin && !h.namn) return [];
   return data.avanzaTransaktioner.filter(t =>
@@ -2728,8 +3132,8 @@ function ma200Signal(h) {
   const p = (lokal-h.ma200)/h.ma200;
   const kat = h.kategori||2;
   const harTvådagars = [3,4,5,6].includes(kat);
-  if (p >= 0.05) return 'grön';
-  if (p >= -0.05) return 'gul';
+  if (p >= STRATEGI_PARAMS.ma200GrönGräns/100) return 'grön';
+  if (p >= -STRATEGI_PARAMS.ma200GulGräns/100) return 'gul';
   // Under MA200
   if (harTvådagars) {
     // Tvådagarsregeln: röd signal kräver att tvådagarsAktiv är satt
@@ -2741,7 +3145,7 @@ function ma200Signal(h) {
 // Nödutgång: 90% av GAV
 function nödutgångSignal(h) {
   if (!h.köpkurs||h.köpkurs===0) return null;
-  const gräns = h.köpkurs * 0.9;
+  const gräns = h.köpkurs * (1 - STRATEGI_PARAMS.nödutgångGräns/100);
   if (h.aktuelKurs >= gräns) return null;
   const kat = h.kategori||2;
   return [3,4,5,6].includes(kat) ? 'hård' : 'mjuk';
@@ -3015,7 +3419,7 @@ function renderDashboard() {
     const katV2 = beräknaKategorivärden(), kassa2 = Math.max(0, beräknaTillgängligLikviditet()), tot2 = Object.values(katV2).reduce((s,v)=>s+v,0) + kassa2;
     const ombalans2 = Object.entries(KATEGORIER).filter(([k,kat]) => {
       const vp = tot2 > 0 ? ((katV2[k]||0)/tot2)*100 : 0;
-      return Math.abs(vp - (kat.målMin+kat.målMax)/2) > 2;
+      return Math.abs(vp - (kat.målMin+kat.målMax)/2) > STRATEGI_PARAMS.ombalanseringsGräns;
     });
     const delar = [];
     if (röda.length) delar.push(`🔴 ${röda.length} säljsignal${röda.length>1?'er':''}`);
@@ -3299,7 +3703,7 @@ function renderKategorier() {
       return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:0.87rem"><span style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">${sH}<strong>${h.namn}</strong>${nödH}${gbH}</span><span style="color:var(--muted)">${kr(mv)}</span></div>`;
     }).join('');
     const fw=Math.min(100,(vp/Math.max(kat.målMax,vp))*100);
-    const ombalans = tot > 0 && Math.abs(avv) > 2
+    const ombalans = tot > 0 && Math.abs(avv) > STRATEGI_PARAMS.ombalanseringsGräns
       ? (() => {
           const mm = (kat.målMin + kat.målMax) / 2;
           const belopp = Math.abs((mm - vp) / 100) * tot;
@@ -3337,7 +3741,7 @@ function renderSignaler() {
     if (sig === 'röd') säljSignaler.push({h, kat, mv, andel});
     else if (sig === 'gul') bevakning.push({h, kat, mv, andel});
     if (nöd) nödutgångar.push({h, kat, mv, nöd, andel});
-    if (andel > 8 && h.kategori !== 1) höKonc.push({h, kat, mv, andel});
+    if (andel > STRATEGI_PARAMS.konGräns && h.kategori !== 1) höKonc.push({h, kat, mv, andel});
   });
 
   // Kategorier utanför målvikt
@@ -3349,10 +3753,10 @@ function renderSignaler() {
     const vp = katTot > 0 ? ((katV[k]||0) / katTot) * 100 : 0;
     const mm = (kat.målMin + kat.målMax) / 2;
     const avv = vp - mm;
-    if (Math.abs(avv) > 2) ombalans.push({k, kat, vp, avv, v: katV[k]||0});
+    if (Math.abs(avv) > STRATEGI_PARAMS.ombalanseringsGräns) ombalans.push({k, kat, vp, avv, v: katV[k]||0});
   });
 
-  const totalaÅtgärder = säljSignaler.length + nödutgångar.length + ombalans.filter(o=>o.avv<-2).length + höKonc.length;
+  const totalaÅtgärder = säljSignaler.length + nödutgångar.length + ombalans.filter(o=>o.avv<-STRATEGI_PARAMS.ombalanseringsGräns).length + höKonc.length;
 
   const sektion = (rubrik, ikon, färgClass, rader) => rader.length === 0 ? '' :
     `<div class="card mb20">
@@ -3475,7 +3879,7 @@ function renderInnehav() {
   tbody.innerHTML=s.map(h=>{
     const kb=h.antal*h.köpkurs,mv=h.antal*h.aktuelKurs,vf=mv-kb,vp=kb>0?(vf/kb)*100:0;
     const andel=totaltIV>0?(mv/totaltIV)*100:0;
-    const andelFärg=h.kategori===1?'color:var(--muted)':andel>12?'color:#ea580c;font-weight:700':andel>8?'color:var(--warning);font-weight:700':'color:var(--muted)';
+    const andelFärg=h.kategori===1?'color:var(--muted)':andel>STRATEGI_PARAMS.konGräns*1.5?'color:#ea580c;font-weight:700':andel>STRATEGI_PARAMS.konGräns?'color:var(--warning);font-weight:700':'color:var(--muted)';
     const ud=totalUtdelningFörInnehav(h);
     const kat=KATEGORIER[h.kategori]||KATEGORIER[2],sig=kat.signal==='ma200'?ma200Signal(h):null;
     const nöd=nödutgångSignal(h);
@@ -3558,34 +3962,24 @@ function renderKassa() {
   // Kassa per konto
   const kassal = document.getElementById('avanza-kassa-lista');
   const perKonto = beräknaAvanzaKassaPerKonto();
-  const kontoNamn = Object.keys(perKonto);
-  // Populera kontoval — alltid alla 6 konton, plus eventuella transaktionskonton
-  const sel = document.getElementById('ks-konto');
-  if (sel) {
-    const prev = sel.value;
-    const allaKonton = [...new Set([
-      ...AVANZA_KONTON_LIST.map(k => k.namn),
-      ...kontoNamn
-    ])];
-    sel.innerHTML = '<option value="">— välj konto —</option>' +
-      sorteraKonton(allaKonton).map(k=>`<option value="${k}"${k===prev?' selected':''}>${k}</option>`).join('');
-  }
-  // Kassa-tabellen visar "Tillgängligt för köp" för ISK/KF-konton (ej sparkonto)
-  const sparTyper = new Set(AVANZA_KONTON_LIST.filter(k=>k.typ==='SPAR').map(k=>normNamn(k.namn)));
-  const iskKfKonton = sorteraKonton(kontoNamn).filter(k => !sparTyper.has(normNamn(k)));
-  if (iskKfKonton.length === 0) {
-    kassal.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;margin:8px 0">Importera en positionsfil för att se tillgängliga belopp per konto.</p>';
-  } else {
-    const total = iskKfKonton.reduce((s,k)=>s+(perKonto[k]?.belopp||0),0);
-    kassal.innerHTML = `<div class="tabell-wrap"><table><thead><tr><th>Konto</th><th style="text-align:right">Tillgängligt för köp</th><th style="text-align:center">Källa</th></tr></thead><tbody>` +
-      iskKfKonton.map(k => {
-        const {belopp, källa} = perKonto[k];
-        const ikon = källa==='manuell' ? '✅' : källa==='positionsfil' ? '📄' : '<span title="Ange värdet manuellt nedan." style="cursor:help">⚠️</span>';
-        return `<tr><td>${k}</td><td style="text-align:right" class="${belopp>=0?'pos':'neg'}">${belopp>=0?'+':''}${kr(belopp,2)}</td><td style="text-align:center;font-size:1.1rem">${ikon}</td></tr>`;
-      }).join('') +
-      `<tr style="font-weight:600;border-top:2px solid var(--border)"><td>Totalt</td><td style="text-align:right" class="${total>=0?'pos':'neg'}">${total>=0?'+':''}${kr(total,2)}</td><td></td></tr>` +
-      `</tbody></table></div>`;
-  }
+  // Kassa-tabellen: alla konton alltid, inline-inmatning per rad
+  const iskKfDefinitioner = AVANZA_KONTON_LIST.filter(k=>k.typ!=='SPAR');
+  const sparKonton = AVANZA_KONTON_LIST.filter(k=>k.typ==='SPAR').map(k=>k.namn);
+  const total = iskKfDefinitioner.reduce((s,k)=>s+(perKonto[k.namn]?.belopp||0),0);
+  const radHtml = (k, dimmed) => {
+    const entry = perKonto[k];
+    const belopp = entry?.belopp ?? null;
+    const källa = entry?.källa;
+    const ikon = källa==='manuell' ? '✅' : källa==='positionsfil' ? '📄' : '⚠️';
+    const inputVal = belopp !== null ? belopp : '';
+    const suffix = dimmed ? ` <span style="font-size:0.72rem;color:var(--muted)">(sparkonto · ej inkl. i totalt)</span>` : '';
+    return `<tr${dimmed?' style="opacity:0.75"':''} data-konto="${k}"><td>${k}${suffix}</td><td><div style="display:flex;align-items:center;gap:6px"><input class="ks-inline-belopp input" type="number" step="any" value="${inputVal}" placeholder="—" inputmode="decimal" style="min-height:var(--touch);width:110px" onkeydown="if(event.key==='Enter')sparaKontoStartsaldoInline(this.closest('tr'))"><button class="btn btn-primary btn-sm" onclick="sparaKontoStartsaldoInline(this.closest('tr'))" style="min-height:var(--touch)">Spara</button><span style="font-size:1rem">${ikon}</span></div></td></tr>`;
+  };
+  kassal.innerHTML = `<div class="tabell-wrap"><table><thead><tr><th>Konto</th><th>Tillgängligt för köp</th></tr></thead><tbody>${
+    iskKfDefinitioner.map(k=>radHtml(k.namn,false)).join('')
+  }<tr style="font-weight:600;border-top:2px solid var(--border)"><td>Totalt tillgängligt för köp</td><td class="${total>=0?'pos':'neg'}">${total>=0?'+':''}${kr(total,2)}</td></tr>${
+    sparKonton.map(k=>radHtml(k,true)).join('')
+  }</tbody></table></div>`;
   // Manuell kassa
   const s=beräknaKassasaldo();
   document.getElementById('kassaSaldo').textContent=kr(s,2);
@@ -3709,7 +4103,7 @@ function renderAvstemning() {
     </div>`;
 }
 
-function renderAllt() { renderDashboard(); renderFXExponering(); renderUtdelningskalender(); renderKategorier(); renderSignaler(); renderInnehav(); renderTransaktioner(); renderBeslutslogg(); renderKassa(); renderSenasteImport(); ritaDiagram(); renderKatNyckeltal(); renderAvstemning(); }
+function renderAllt() { renderDashboard(); renderFXExponering(); renderUtdelningskalender(); renderKategorier(); renderSignaler(); renderInnehav(); renderTransaktioner(); renderBeslutslogg(); renderKassa(); renderSenasteImport(); ritaDiagram(); renderKatNyckeltal(); renderAvstemning(); renderInstallningar(); }
 
 // ══════════════════════════════════════════════════════════
 //  DIAGRAM
