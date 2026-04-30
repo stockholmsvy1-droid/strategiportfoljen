@@ -32,7 +32,7 @@ Personlig portföljapp byggd för iPad och dator. Öppnas direkt i webbläsaren 
 - Importerar positioner och transaktioner direkt från Avanza (CSV) — dra filer eller välj flera samtidigt
 - Sålda innehav tas bort automatiskt när senaste positionsfilen importeras
 - **Utdelningar kopplas automatiskt** per aktie via ISIN från transaktionsfilen — ingen manuell inmatning
-- **Tillgängligt för köp per konto** — ange värdet manuellt från Avanza en gång i veckan för exakt saldo (ISK, AF, Sparkonto m.m.)
+- **Tillgängligt för köp per konto** — hämtas automatiskt från positionsfilen vid varje import; manuell override möjlig per konto
 - Beräknar nettoinsatt kapital och tillgänglig likviditet (inkl. Avanza-kassa från positionsfil)
 - **FX-motor:** separerar bolagsvinst från valutavinst för utländska innehav
 - Visar MA200-signaler i **lokal valuta** — jämför USD mot USD, SEK mot SEK
@@ -176,7 +176,8 @@ Alla 46 testfall i `Testprotokoll_Strategiportfoljen_v208.xlsx` analyserade mot 
 Byggt för Martin · Strategi från januari 2026
 
 ### Ändringslogg
-- **v3.03** — Avstämning komplett: alla 6 konton visas med namn + kontonummer, Avanza sparande Martin som manuell rad, sparkontosaldo uppdaterar avstämning direkt. Allow-list i positionsimport (bara konfigurerade konton). Kassa-dropdown alltid komplett. Importknappar robustare på iPad (label-mönster). Buggfix: kontonamn med numeriskt prefix (1./2.) matchades fel av normNamn.
+- **v3.10** — Nytt interaktivt portföljutvecklingsdiagram på Dashboard (period, serier, kategorier, linje/stapel). Kontoregister auto-synkar kontonamn vid namnbyte i Avanza med historikspårning. Importordningsguide med live-status (✅/⚠️) på Importera-fliken. Varning vid inköpskursimport om inga innehav finns. Förbättrad diff-wizard: exakt Avanza-navigering i steg 2, prioriterad beslutsgraf i steg 3. Post-import-tips till Avstämning. Förbättrade nyckeltalskort med ikoner och förklaringstext.
+- **v3.03** — Avstämning komplett: alla 6 konton visas med namn + kontonummer, alla saldon (inkl. Avanza sparande Martin) hämtas automatiskt från positionsfilen. Kassa-fliken visar Tillgängligt för köp automatiskt från positionsfilen (ej manuellt). Allow-list i positionsimport (bara konfigurerade konton). Importknappar robustare på iPad (label-mönster). Buggfix: kontonamn med numeriskt prefix (1./2.) matchades fel av normNamn.
 - **v3.02** — Ny Avstämningsflik: saldon per konto direkt från positionsfilen med automatisk kontroll mot appens portföljvärde och inbyggd diff-förklaring. Nettoinsatt kapital är nu periodbaserat på Dashboard. Kassa-flikens kontoordning matchar Avanza.
 - **v3.01** — Kategoriutveckling på Dashboard: tabell med kr, % och andel per kategori, sorterad efter störst förändring, alltid synlig med GAV-fallback
 - **v3.00** — Buggfixar: `liveFXRater`→`liveFX` i Avstämningspanel, signalband inkluderar kassa i ombalanseringskontrollen, `hämtaAllaMA200()` uppdaterar diagram och signaler, signal-band display-konflikt åtgärdad, MA200-varning i mobilkort. UX: inline tickersök-modal (ersätter prompt-dialoger), manuell baslinje-badge i portföljvärde-kortet. Ny hjälpsektion "Kontrollräkna för hand". FAQ utökad (kassa + ombalanseringsformel). GitHub-avsnitt flyttat till separat dokument. Kursmaterial PowerPoint (13 bilder). Dokumentet "Strategiportföljen_Beskrivning_v300" med kontrollräkna-appendix.
