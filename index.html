@@ -1273,7 +1273,8 @@
       <div class="hjalp-p">Steg 2 förklarar nu exakt var siffrorna finns i Avanza (Min ekonomi → Sparande). Steg 3 visar en prioriterad beslutsgraf: ✅ Allt stämmer / ⚠️ Importera ny positionsfil / FX-kurser saknas / Kassadiff / Kontolista. Varje åtgärd har direkt handlingstext.</div>
 
       <div class="hjalp-h2">💡 Förbättrade nyckeltalskort</div>
-      <div class="hjalp-p">Nyckeltalskorten på Dashboard har fått ikoner, bättre ordning och en förklarande rad per kort som tydliggör vad varje mått faktiskt mäter.</div>
+      <div class="hjalp-p">Nyckeltalskorten på Dashboard har fått ikoner (💼 📈 💳 📊 🏦 🌱 ✅), bättre ordning och en förklarande rad per kort som tydliggör vad varje mått faktiskt mäter.</div>
+    </div><!-- /hk-nyheter v3.10 -->
 
     <!-- NYHETER v3.03 (historik) -->
     <div class="hjalp-kapitel">
@@ -1522,18 +1523,19 @@
       <div class="rutin-kort">
         <div class="rutin-header">⬆ Steg 2 — Importera i appen (2 min)</div>
         <div class="rutin-body"><ol>
-          <li>Gå till fliken <strong>Importera</strong></li>
-          <li>Tryck Positioner → välj positionsfilen</li>
-          <li>Tryck Transaktioner → välj transaktionsfilen</li>
-          <li>Kontrollera importloggen</li>
+          <li>Gå till fliken <strong>Importera</strong> — ordningsguiden visar status per steg</li>
+          <li>Tryck <strong>Transaktioner</strong> → välj transaktionsfilen (✅ blir grön)</li>
+          <li>Tryck <strong>Positioner</strong> → välj positionsfilen (✅ blir grön)</li>
+          <li>Kontrollera importloggen — titta på 💡-tipset om Avstämning</li>
         </ol></div>
       </div>
       <div class="rutin-kort">
-        <div class="rutin-header">📊 Steg 3 — Kontrollera signaler (2 min)</div>
+        <div class="rutin-header">📊 Steg 3 — Stäm av mot Avanza (2 min)</div>
         <div class="rutin-body"><ol>
+          <li>Gå till <strong>Avstämning</strong> — kontrollera att alla 6 kontons saldon stämmer</li>
+          <li>Klicka "Starta →" i diff-kontrollen och ange Avanzas "Totalt sparande"</li>
           <li>Kolla <strong>signalbandet</strong> på Dashboard — röda siffror = åtgärd krävs</li>
-          <li>Klicka bandet (eller gå till <strong>Signaler</strong>) för samlad lista</li>
-          <li>Kolla viktbalansen i Kategorier — Ombalans visas automatiskt</li>
+          <li>Kolla viktbalansen i <strong>Kategorier</strong> — Ombalans visas automatiskt</li>
         </ol></div>
       </div>
       <div class="rutin-kort">
@@ -1565,12 +1567,16 @@
       <div class="hjalp-ingress">Vad varje flik gör och hur du använder den.</div>
 
       <div class="hjalp-h2">🏠 Dashboard</div>
-      <div class="hjalp-p">Startskärmen med en samlad cockpit-vy. Innehåller nyckeltalskort, signalband, FX-exponering, kategoridonut, avkastningsstaplar per kategori, värdeutvecklingsdiagram och utdelningskalender.</div>
+      <div class="hjalp-p">Startskärmen med en samlad cockpit-vy. Längst upp: ett interaktivt portföljdiagram. Därunder: nyckeltalskort, signalband, FX-exponering, kategoridonut, avkastningsstaplar och utdelningskalender.</div>
+
+      <div class="hjalp-p"><strong>📈 Portföljutvecklingsdiagram (nytt i v3.10):</strong> Det första du möter är ett interaktivt diagram med egna periodknappar (default: i År). Välj dataserier via kryssrutor — <em>Portföljvärde</em>, <em>Nettoinsatt kapital</em>, <em>Nettoresultat</em> — och aktivera enskilda kategorilinjer för att jämföra deras utveckling. Byt mellan linjegraf och staplar.</div>
+
+      <div class="hjalp-p"><strong>💼 Nyckeltalskort:</strong> Sju kort med de viktigaste måtten. Varje kort har en förklaringsrad som tydliggör vad måttet mäter. Ordning: Portföljvärde · Avkastning · Nettoinsatt · Innehavens värde · Kassa · Utdelningar · Realiserat.</div>
+
       <div class="hjalp-p"><strong>Signalband:</strong> Ett rött band precis ovanför nyckeltalen visar antalet röda signaler, nödutgångar och ombalanseringsbehov. Klicka för att gå direkt till Signaler-fliken. Döljs om allt är OK.</div>
-      <div class="hjalp-p"><strong>Period-styrda nyckeltal:</strong> Avkastning uppdateras automatiskt för vald period. Avkastning mäts alltid från närmaste importerade historikpunkt (aldrig från alla insättningar sedan 2017). "▼ Visa beräkningsunderlag" visar exakt vilka tal som används.</div>
+      <div class="hjalp-p"><strong>Period-styrda nyckeltal:</strong> Avkastning uppdateras automatiskt för vald period. Mäts alltid från närmaste importerade historikpunkt. "▼ Visa beräkningsunderlag" visar exakt vilka tal som används.</div>
       <div class="hjalp-p"><strong>FX-exponering:</strong> Donut-diagram och färgade pills visar portföljens valutafördelning (SEK/USD/EUR etc.).</div>
-      <div class="hjalp-p"><strong>Kategori-nyckeltalskort (nytt i v3.01):</strong> I nyckeltal-griden visas ett litet kort per kategori — direkt till höger om de globala korttalen. Varje kort visar kategoriemoji, aktuellt värde, netto-avkastning i kr och %, samt om värdet gäller för vald period eller sedan köp. Korten uppdateras automatiskt när du byter period.</div>
-      <div class="hjalp-p"><strong>Kategoriutveckling-tabell (nytt i v3.01):</strong> En tabell direkt på Dashboard visar varje kategoris aktuella värde, förändring i kronor och procent, samt andel av portföljen. Sorteras efter störst absolut förändring. Visas alltid — om en vald period saknar historikdata används orealiserad vinst från GAV som fallback. En tunn färgstapel under kategorinamnet ger snabb visuell kontext.</div>
+      <div class="hjalp-p"><strong>Kategoriutveckling-tabell:</strong> Varje kategoris aktuella värde, förändring i kr och %, andel av portföljen. Sorteras efter störst absolut förändring.</div>
       <div class="hjalp-p"><strong>Utdelningskalender:</strong> Förväntade utdelningar de kommande 90 dagarna baserat på historiska utdelningsmånader.</div>
 
       <div class="hjalp-h2">🚦 Signaler</div>
@@ -1600,9 +1606,9 @@
       <div class="hjalp-p"><strong>📡 Tickers &amp; MA200 (kollapsbar sektion):</strong> Ange börssymboler per aktie och klicka "Uppdatera alla MA200" för automatisk hämtning via Alpha Vantage. Använd <strong>🔍-knappen</strong> per rad för att söka rätt ticker direkt i Alpha Vantages databas — välj rätt börs och valuta ur listan. API-nyckel anges en gång och sparas lokalt. Rött ⚠ varnar om hämtat värde verkar ha fel valuta.</div>
 
       <div class="hjalp-h2">⬆ Importera</div>
-      <div class="hjalp-p">Importera CSV-filer från Avanza. Positioner och Transaktioner accepterar flera filer på en gång (drag &amp; drop stöds). Bara de 6 konfigurerade kontona importeras — pension och okända konton filtreras automatiskt bort. Zomedica filtreras alltid bort.</div>
+      <div class="hjalp-p">Importera CSV-filer från Avanza. Positioner och Transaktioner accepterar flera filer på en gång (drag &amp; drop stöds). Bara de 6 konfigurerade kontona importeras — pension och okända konton filtreras automatiskt bort.</div>
+      <div class="hjalp-p"><strong>📋 Importordningsguide (nytt i v3.10):</strong> Överst på fliken visas en guide med de 4 importstegen och live-status (✅ klar · ⚠️ varning · ⬜ ej gjord). Rätt ordning: <em>1. Transaktioner → 2. Positioner → 3. Inköpskurser → 4. Backup</em>. Inköpskurser blockeras med ett tydligt felmeddelande om positioner saknas.</div>
       <div class="hjalp-p"><strong>Manuell baslinje:</strong> Ange ett datum + portföljvärde som fast startpunkt för avkastningsberäkningar.</div>
-      <div class="hjalp-p"><strong>Avstämningspanel:</strong> 4-stegs guidad jämförelse av portföljens siffror mot Avanzas totaler.</div>
       <div class="hjalp-p"><strong>Backup &amp; Återställning:</strong> Exportera/importera hela portföljen som Excel (7 ark). Använd vid byte av enhet.</div>
 
       <div class="hjalp-h2">🔄 Transaktioner</div>
@@ -1612,7 +1618,13 @@
       <div class="hjalp-p">Skriv veckoanteckningar om marknadsläget och dina beslut. Exportera loggen till Excel. Att dokumentera beslut är ett av de effektivaste sätten att bli en bättre investerare.</div>
 
       <div class="hjalp-h2">💰 Kassa</div>
-      <div class="hjalp-p">Registrera likvida medel manuellt som ska räknas in i portföljvärdet. Kassa-fliken innehåller även <strong>ISK-skatt</strong>-sektionen som beräknar schablonintäkt och förväntad skatt för innevarande år baserat på kvartalsvärden och insättningar.</div>
+      <div class="hjalp-p"><strong>Tillgängligt för köp per konto</strong> hämtas automatiskt från positionsfilen vid varje import (📄). Du kan skriva över ett enskilt konto manuellt via formuläret (✅). Sparkontot (Avanza sparande Martin) visas inte i Kassa-tabellen — det följs istället i Avstämning.</div>
+      <div class="hjalp-p">Kassa-fliken innehåller även <strong>ISK-skatt</strong>-sektionen som beräknar schablonintäkt och förväntad skatt för innevarande år baserat på kvartalsvärden och insättningar.</div>
+
+      <div class="hjalp-h2">📊 Avstämning</div>
+      <div class="hjalp-p">Fliken Avstämning visar alla 6 kontons saldon direkt från positionsfilen — inklusive sparkonto — och summerar dem till ett totalt portföljvärde som ska stämma mot Avanzas "Sparande".</div>
+      <div class="hjalp-p"><strong>🔍 Diff-kontroll mot Avanza (4-stegs wizard):</strong> Öppna panelen och klicka "Starta →" för att stämma av steg för steg. Steg 2 förklarar exakt var du hittar siffrorna i Avanza (Min ekonomi → Sparande → "Totalt sparande"). Steg 3 visar en prioriterad beslutsgraf med direkta åtgärdsförslag.</div>
+      <div class="hjalp-p"><strong>🏦 Kontoregister (nytt i v3.10):</strong> Om du byter namn på ett konto i Avanza uppdateras appen automatiskt vid nästa positionsimport. Tidigare namn visas med 🔁-indikator vid kontonamnet.</div>
     </div>
 
     <!-- STRATEGI -->
