@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Strategiportföljen">
   <meta name="theme-color" content="#1e3a5f">
-  <title>Strategiportföljen v3.11</title>
+  <title>Strategiportföljen v3.12</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231e3a5f'/%3E%3Cpolyline points='3,25 9,17 15,21 21,11 29,5' stroke='%230ea5e9' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='29' cy='5' r='2.5' fill='%234ade80'/%3E%3C/svg%3E">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
@@ -534,7 +534,7 @@
 <!-- ══ HEADER ══ -->
 <header>
   <div>
-    <h1>📈 Strategiportföljen <span class="header-badge">v3.11</span></h1>
+    <h1>📈 Strategiportföljen <span class="header-badge">v3.12</span></h1>
     <div class="header-subtitle">The Magnificent Martin's Money-Making Machine</div>
   </div>
   <div class="header-actions">
@@ -1300,9 +1300,17 @@
       </div>
     </div>
 
-    <!-- NYHETER v3.11 -->
+    <!-- NYHETER v3.12 -->
     <div class="hjalp-kapitel" id="hk-nyheter">
-      <div class="hjalp-rubrik">✨ Nyheter i version 3.11</div>
+      <div class="hjalp-rubrik">✨ Nyheter i version 3.12</div>
+      <div class="hjalp-ingress">Version 3.12 är en stabilitetsfixversion. Kontohanteringen är omskriven i grunden för att eliminera återkommande fel vid matchning av konton med liknande namn.</div>
+      <div class="hjalp-h2">🔧 Buggfix: kontonr som stabilt index för kontosaldon</div>
+      <div class="hjalp-p">Tidigare lagrades "Tillgängligt för köp" och kontovärden med kontonamnet som nyckel. Det orsakade problem när namn är likartade (t.ex. "1. Utländska Aktier 2025" och "2. Utländska Aktier 2025" — de normaliserades till samma sträng och blandades ihop). Nu används alltid kontonumret (t.ex. "7882604") som intern nyckel. Namn är bara för visning. Befintlig data migreras automatiskt vid första laddning.</div>
+    </div><!-- /hk-nyheter v3.12 -->
+
+    <!-- NYHETER v3.11 (historik) -->
+    <div class="hjalp-kapitel">
+      <div class="hjalp-rubrik">v3.11</div>
       <div class="hjalp-ingress">Version 3.11 introducerar en komplett ⚙️ Inställningar-sektion och förbättrar Kassa-tabellen med inline-inmatning per rad.</div>
       <div class="hjalp-h2">⚙️ Inställningar — ny sektion</div>
       <div class="hjalp-p">Samlar all appkonfiguration på ett ställe, nås via navigeringsmenyn. Sex delar: <strong>Kontokonfiguration</strong> (lägg till/redigera/ta bort Avanza-konton utan kodredigering), <strong>Kategori-editor</strong> (ersätter prompt()-dialoger — redigera namn, emoji, färg, vikter och signaltyp inline), <strong>Strategiparametrar</strong> (MA200-gränser, nödutgångsgräns, ombalanseringströskel, koncentrationsrisk), <strong>Profil & information</strong> (namn och strategi-titel i exporter), <strong>Värdepappersfilter</strong> (exkludera specifika VP och konton vid import) och <strong>Export/import av inställningar</strong> (flytta din strategikonfiguration mellan enheter som JSON-fil).</div>
@@ -1313,6 +1321,7 @@
     </div><!-- /hk-nyheter v3.11 -->
 
     <!-- NYHETER v3.10 (historik) -->
+
     <div class="hjalp-kapitel">
       <div class="hjalp-rubrik">v3.10</div>
       <div class="hjalp-ingress">Version 3.10 är en stor uppgradering med nytt interaktivt portföljdiagram, auto-synkroniserat kontoregister, strukturerad importguide och förbättrad avstämningswizard.</div>
@@ -2314,6 +2323,21 @@ function ladda() {
     data.kontokonfiguration = JSON.parse(JSON.stringify(DEFAULT_AVANZA_KONTON));
   }
   AVANZA_KONTON_LIST = data.kontokonfiguration;
+  // Migration v3.12: positionsKassa/positionsKontoVärden från namn-nyckel → kontonr-nyckel
+  (function migreraKontonTillNr() {
+    function konv(dict) {
+      const res = {};
+      Object.entries(dict || {}).forEach(([k, v]) => {
+        if (AVANZA_KONTON_LIST.some(a => a.nr === k)) { res[k] = v; return; }
+        const m = AVANZA_KONTON_LIST.find(a => a.namn === k) ||
+                  AVANZA_KONTON_LIST.find(a => k.includes(a.nr) || a.nr.includes(k));
+        res[m ? m.nr : k] = (res[m ? m.nr : k] || 0) + v;
+      });
+      return res;
+    }
+    data.positionsKassa = konv(data.positionsKassa);
+    data.positionsKontoVärden = konv(data.positionsKontoVärden);
+  })();
   if (!data.strategiParams) data.strategiParams = {...DEFAULT_STRATEGI_PARAMS};
   else { Object.keys(DEFAULT_STRATEGI_PARAMS).forEach(k=>{ if(data.strategiParams[k]===undefined) data.strategiParams[k]=DEFAULT_STRATEGI_PARAMS[k]; }); }
   STRATEGI_PARAMS = data.strategiParams;
@@ -2368,20 +2392,16 @@ function beräknaAvanzaKassaTotalt() {
 }
 function beräknaTillgängligLikviditet() { return beräknaKassasaldo() + beräknaAvanzaKassaTotalt(); }
 function beräknaAvanzaKassaPerKonto() {
-  // Primärkälla: positionsfilen — innehåller exakt "Tillgängligt för köp" per konto
-  // (likvida medel-rader sparas i data.positionsKassa vid positionsimport)
+  // positionsKassa är nycklat på kontonr (sedan v3.12)
   const result = {};
-  Object.entries(data.positionsKassa || {}).forEach(([k, v]) => {
-    result[k] = { belopp: v, källa: 'positionsfil' };
+  Object.entries(data.positionsKassa || {}).forEach(([nr, v]) => {
+    result[nr] = { belopp: v, källa: 'positionsfil' };
   });
-  // Manuell override: skriver över positionsfilens värde om användaren angett ett
-  Object.entries(data.kontoStartsaldo || {}).forEach(([k, v]) => {
-    const existKey = Object.keys(result).find(r => normNamn(r) === normNamn(k));
-    if (existKey) {
-      result[existKey] = { belopp: v, källa: 'manuell' };
-    } else {
-      result[k] = { belopp: v, källa: 'manuell' };
-    }
+  // kontoStartsaldo är nycklat på kontonamn (UI-facing) — lös upp till kontonr
+  Object.entries(data.kontoStartsaldo || {}).forEach(([namn, v]) => {
+    const info = avanzaKontoInfo(namn);
+    const nr = info?.nr || namn;
+    result[nr] = { belopp: v, källa: 'manuell' };
   });
   return result;
 }
@@ -3976,21 +3996,21 @@ function renderKassa() {
   const perKonto = beräknaAvanzaKassaPerKonto();
   // Kassa-tabellen: alla konton alltid, inline-inmatning per rad
   const iskKfDefinitioner = AVANZA_KONTON_LIST.filter(k=>k.typ!=='SPAR');
-  const sparKonton = AVANZA_KONTON_LIST.filter(k=>k.typ==='SPAR').map(k=>k.namn);
-  const total = iskKfDefinitioner.reduce((s,k)=>s+(perKonto[k.namn]?.belopp||0),0);
-  const radHtml = (k, dimmed) => {
-    const entry = perKonto[k];
+  const sparDefinitioner = AVANZA_KONTON_LIST.filter(k=>k.typ==='SPAR');
+  const total = iskKfDefinitioner.reduce((s,k)=>s+(perKonto[k.nr]?.belopp||0),0);
+  const radHtml = (kontoNr, kontoNamn, dimmed) => {
+    const entry = perKonto[kontoNr];
     const belopp = entry?.belopp ?? null;
     const källa = entry?.källa;
     const ikon = källa==='manuell' ? '✅' : källa==='positionsfil' ? '📄' : '⚠️';
     const inputVal = belopp !== null ? belopp : '';
     const suffix = dimmed ? ` <span style="font-size:0.72rem;color:var(--muted)">(sparkonto · ej inkl. i totalt)</span>` : '';
-    return `<tr${dimmed?' style="opacity:0.75"':''} data-konto="${k}"><td>${k}${suffix}</td><td><div style="display:flex;align-items:center;gap:6px"><input class="ks-inline-belopp input" type="number" step="any" value="${inputVal}" placeholder="—" inputmode="decimal" style="min-height:var(--touch);width:110px" onkeydown="if(event.key==='Enter')sparaKontoStartsaldoInline(this.closest('tr'))"><button class="btn btn-primary btn-sm" onclick="sparaKontoStartsaldoInline(this.closest('tr'))" style="min-height:var(--touch)">Spara</button><span style="font-size:1rem">${ikon}</span></div></td></tr>`;
+    return `<tr${dimmed?' style="opacity:0.75"':''} data-konto="${kontoNamn}"><td>${kontoNamn}${suffix}</td><td><div style="display:flex;align-items:center;gap:6px"><input class="ks-inline-belopp input" type="number" step="any" value="${inputVal}" placeholder="—" inputmode="decimal" style="min-height:var(--touch);width:110px" onkeydown="if(event.key==='Enter')sparaKontoStartsaldoInline(this.closest('tr'))"><button class="btn btn-primary btn-sm" onclick="sparaKontoStartsaldoInline(this.closest('tr'))" style="min-height:var(--touch)">Spara</button><span style="font-size:1rem">${ikon}</span></div></td></tr>`;
   };
   kassal.innerHTML = `<div class="tabell-wrap"><table><thead><tr><th>Konto</th><th>Tillgängligt för köp</th></tr></thead><tbody>${
-    iskKfDefinitioner.map(k=>radHtml(k.namn,false)).join('')
+    iskKfDefinitioner.map(k=>radHtml(k.nr, k.namn, false)).join('')
   }<tr style="font-weight:600;border-top:2px solid var(--border)"><td>Totalt tillgängligt för köp</td><td class="${total>=0?'pos':'neg'}">${total>=0?'+':''}${kr(total,2)}</td></tr>${
-    sparKonton.map(k=>radHtml(k,true)).join('')
+    sparDefinitioner.map(k=>radHtml(k.nr, k.namn, true)).join('')
   }</tbody></table></div>`;
   // Manuell kassa
   const s=beräknaKassasaldo();
@@ -4019,48 +4039,42 @@ function renderAvstemning() {
   const kt = document.getElementById('avst-konto-tabell');
   if (!kt) return;
 
-  const alleKonton = Object.keys(pkv);
-  if (alleKonton.length === 0) {
+  const alleKontonNr = Object.keys(pkv); // positionsKontoVärden är nycklat på kontonr (v3.12)
+  if (alleKontonNr.length === 0) {
     kt.innerHTML = '<p style="color:var(--muted);font-size:0.85rem">Inga kontodata tillgängliga — importera en positionsfil.</p>';
     document.getElementById('avst-total-tabell').innerHTML = '';
     return;
   }
 
-  // Slå samman pkv-konton med SPAR-konton ur listan (SPAR syns alltid, en gång)
-  const sparNamn = AVANZA_KONTON_LIST.filter(k => k.typ === 'SPAR').map(k => k.namn);
-  const alleKontonMedSpar = [...new Set([...alleKonton, ...sparNamn])];
-  const sorterade = sorteraKonton(alleKontonMedSpar);
+  // Slå samman importerade konton med SPAR-konton (SPAR syns alltid, en gång)
+  const sparNr = AVANZA_KONTON_LIST.filter(k => k.typ === 'SPAR').map(k => k.nr);
+  const alleNrMedSpar = [...new Set([...alleKontonNr, ...sparNr])];
+  const sorterade = sorteraKonton(alleNrMedSpar); // sorteraKonton matchar på k.nr
 
-  // positionsKassa: "Tillgängligt för köp" per ISK/KF-konto (normNamn-indexerat)
-  const poskNorm = {};
-  Object.entries(data.positionsKassa || {}).forEach(([k,v]) => { poskNorm[normNamn(k)] = v; });
+  // positionsKassa är nycklat på kontonr (v3.12) — direkt uppslag, ingen normNamn nödvändig
+  const kassaNr = data.positionsKassa || {};
 
   let totaltVärde = 0, totaltTillg = 0;
-  const rader = sorterade.map(dataNamn => {
-    const info = avanzaKontoInfo(dataNamn);
-    const visning = info ? info.namn : dataNamn;
-    const kontoNr = info ? info.nr : '';
+  const rader = sorterade.map(kontoNr => {
+    const info = AVANZA_KONTON_LIST.find(k => k.nr === kontoNr);
+    const visning = info ? info.namn : kontoNr;
     const erSpar = info?.typ === 'SPAR';
 
-    // Totalt kontovärde — sök med normNamn för att klara namnvarianter
-    const pkvKey = Object.keys(pkv).find(p => normNamn(p) === normNamn(dataNamn));
-    const belopp = pkvKey ? pkv[pkvKey] : 0;
+    const belopp = pkv[kontoNr] || 0; // direkt nr-uppslag
 
     totaltVärde += belopp;
 
     let subrad;
     if (erSpar) {
-      // Sparkonto: visa bara kontonummer, ingen "Tillgängligt för köp"
       subrad = kontoNr || 'Sparkonto';
     } else {
-      // ISK/KF: visa "Tillgängligt för köp" från positionsfilen
-      const tillg = poskNorm[normNamn(dataNamn)] || 0;
+      const tillg = kassaNr[kontoNr] || 0; // direkt nr-uppslag
       totaltTillg += tillg;
       subrad = [kontoNr, `Tillgängligt för köp: ${kr(tillg,0)}`].filter(Boolean).join(' · ');
     }
 
     // Namnhistorik från kontoregister
-    const regPost = kontoNr ? KONTO_REGISTER[kontoNr] : null;
+    const regPost = KONTO_REGISTER[kontoNr];
     const historiaHtml = regPost?.historia?.length > 0
       ? ` <span title="${regPost.historia.map(h=>`${h.namn} (t.o.m. ${h.till})`).join(', ')}" style="cursor:help;font-size:0.75rem;color:var(--muted)">🔁 ${regPost.historia.length} tidigare namn</span>`
       : '';
@@ -4635,15 +4649,15 @@ function importeraPositioner(text, filNamn='') {
     // Summera marknadsvärde per konto (för avstämning) — alla rader inkl. kassa
     if(erSenasteFil&&mv>0){
       const käntAvst=AVANZA_KONTON_LIST.find(k=>konto.includes(k.nr)||k.nr.includes(konto));
-      const kontoNamnAvst=kontonummerNamn[konto]||käntAvst?.namn||konto;
-      data.positionsKontoVärden[kontoNamnAvst]=(data.positionsKontoVärden[kontoNamnAvst]||0)+mv;
+      const kontoNr=käntAvst?.nr||konto;
+      data.positionsKontoVärden[kontoNr]=(data.positionsKontoVärden[kontoNr]||0)+mv;
     }
     if(erLiquid){
       if(erSenasteFil){
         const käntK=AVANZA_KONTON_LIST.find(k=>konto.includes(k.nr)||k.nr.includes(konto));
-        const kontoNamn=kontonummerNamn[konto]||käntK?.namn||konto;
-        data.positionsKassa[kontoNamn]=(data.positionsKassa[kontoNamn]||0)+mv;
-        loggImport('info',`Kassa ${kontoNamn}: ${kr(mv)}`);
+        const kontoNr=käntK?.nr||konto;
+        data.positionsKassa[kontoNr]=(data.positionsKassa[kontoNr]||0)+mv;
+        loggImport('info',`Kassa ${kontonummerNamn[konto]||käntK?.namn||konto}: ${kr(mv)}`);
       }
       // Uppdatera totalsumman för dashboard
       data.avanzaKassa=Object.values(data.positionsKassa).reduce((s,v)=>s+v,0);
