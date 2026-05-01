@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Strategiportföljen">
   <meta name="theme-color" content="#1e3a5f">
-  <title>Strategiportföljen v3.12</title>
+  <title>Strategiportföljen v3.13</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231e3a5f'/%3E%3Cpolyline points='3,25 9,17 15,21 21,11 29,5' stroke='%230ea5e9' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='29' cy='5' r='2.5' fill='%234ade80'/%3E%3C/svg%3E">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
@@ -534,7 +534,7 @@
 <!-- ══ HEADER ══ -->
 <header>
   <div>
-    <h1>📈 Strategiportföljen <span class="header-badge">v3.12</span></h1>
+    <h1>📈 Strategiportföljen <span class="header-badge">v3.13</span></h1>
     <div class="header-subtitle">The Magnificent Martin's Money-Making Machine</div>
   </div>
   <div class="header-actions">
@@ -1299,6 +1299,14 @@
         All data sparas lokalt i Safaris minne (localStorage). Om du rensar webbhistoriken eller cookies försvinner datan. <strong>Exportera Excel regelbundet</strong> som säkerhetskopia — knappen finns uppe till höger.
       </div>
     </div>
+
+    <!-- NYHETER v3.13 -->
+    <div class="hjalp-kapitel" id="hk-nyheter">
+      <div class="hjalp-rubrik">✨ Nyheter i version 3.13</div>
+      <div class="hjalp-ingress">Version 3.13 rättar ett fel i kontokonfigurationen som funnits sedan v3.03: Eget fondsparande pekade på fel kontonummer.</div>
+      <div class="hjalp-h2">🔧 Buggfix: Eget fondsparande fel kontonr</div>
+      <div class="hjalp-p">Kontot "Eget fondsparande" var konfigurerat med kontonr 6014837 (ett pensionskonto) i stället för 7346055 (det riktiga ISK-kontot). Pensionskontot exkluderas nu korrekt. Befintlig kontokonfiguration och exkluderingslista migreras automatiskt vid laddning.</div>
+    </div><!-- /hk-nyheter v3.13 -->
 
     <!-- NYHETER v3.12 -->
     <div class="hjalp-kapitel" id="hk-nyheter">
