@@ -2413,7 +2413,7 @@ function beräknaAvanzaKassaTotalt() {
   const perKonto = beräknaAvanzaKassaPerKonto();
   return Object.values(perKonto).reduce((s,v)=>s+v.belopp,0);
 }
-function beräknaTillgängligLikviditet() { return beräknaKassasaldo() + beräknaAvanzaKassaTotalt(); }
+function beräknaTillgängligLikviditet() { return beräknaAvanzaKassaTotalt(); }
 function beräknaAvanzaKassaPerKonto() {
   // positionsKassa är nycklat på kontonr (sedan v3.12)
   const result = {};
@@ -3340,7 +3340,7 @@ function renderDashboard() {
   document.getElementById('nk-innehav-sub').innerHTML=`Kostnadsbas: ${kr(kb)} &nbsp;<span class="${färg(orealiserad)}">(${orealiserad>=0?'+':''}${kr(orealiserad)})</span>`;
   const avanzaK=beräknaAvanzaKassaTotalt(), manuellK=beräknaKassasaldo();
   document.getElementById('nk-kassa').textContent=kr(kassa);
-  document.getElementById('nk-kassa-sub').textContent=avanzaK!==0?`Avanza: ${kr(avanzaK)}${manuellK!==0?` + manuell: ${kr(manuellK)}`:''}`:manuellK!==0?`Manuell kassa: ${kr(manuellK)}`:'Tillgängliga medel';
+  document.getElementById('nk-kassa-sub').textContent=avanzaK!==0?`Tillgängligt för köp i Avanza`:'Tillgängliga medel';
   // Period-medvetna nyckeltal
   const etikett=periodEtikett(); // null = Allt
   const startDatum=periodeStartDatum();
