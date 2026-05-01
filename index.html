@@ -2011,8 +2011,9 @@
 <section id="avstamning" class="sektion">
 
   <div class="card mb20">
-    <div class="card-titel"><span class="card-titel-text">🔍 Saldon per konto</span></div>
+    <div class="card-titel"><span class="card-titel-text">📊 Avstämning mot Avanza</span></div>
     <div id="avst-senast" style="font-size:0.82rem;color:var(--muted);margin-bottom:14px"></div>
+    <div id="avst-summary" style="display:flex;gap:32px;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--border)"></div>
     <div id="avst-konto-tabell" class="tabell-wrap"></div>
   </div>
 
@@ -4113,15 +4114,18 @@ function renderAvstemning() {
     </div>`;
   }).join('');
 
-  kt.innerHTML = `
-    ${rader}
-    <div class="avst-diff-rad" style="align-items:center;padding:10px 0;border-top:2px solid var(--border);margin-top:4px">
-      <div>
-        <div style="font-weight:700">Summa</div>
-        <div style="font-size:0.78rem;color:var(--muted);margin-top:2px">Tillgängligt för köp: ${kr(totaltTillg,0)}</div>
-      </div>
-      <strong style="font-size:1.1rem">${kr(totaltVärde)}</strong>
+  const summaryEl = document.getElementById('avst-summary');
+  if (summaryEl) summaryEl.innerHTML = `
+    <div>
+      <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">Totalt värde</div>
+      <div style="font-size:1.5rem;font-weight:700;color:var(--text)">${kr(totaltVärde,0)}</div>
+    </div>
+    <div>
+      <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">Tillgängligt för köp</div>
+      <div style="font-size:1.5rem;font-weight:700;color:var(--text)">${kr(totaltTillg,0)}</div>
     </div>`;
+
+  kt.innerHTML = rader;
 
   // ── Kontroll mot appens beräknade värden ──
   const appTotalt = beräknaTotalVärde();
