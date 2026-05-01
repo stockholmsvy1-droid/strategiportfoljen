@@ -101,37 +101,33 @@ def punkt(doc, text, prefix=None):
 
 sidbyte(new_doc)
 rubrik1(new_doc, "10. Nyheter i version 3.13")
-rubrik2(new_doc, "Inställningar-sektion och förbättrad Kassa")
+rubrik2(new_doc, "Avstämning mot Avanza — omarbetad")
 brödtext(new_doc,
-    "Version 3.13 introducerar en komplett administrationsfunktion via en ny ⚙️ Inställningar-sektion "
-    "och förbättrar Kassa-tabellen med inline-inmatning direkt per rad."
+    "Version 3.13 fokuserar på att göra Avstämning-fliken pålitlig och jämförbar med Avanzas "
+    "egna översiktsvy. Flera fel som funnits sedan v3.03 är nu rättade."
 )
+punkt(new_doc, "Ny rubrik 'Avstämning mot Avanza' och framträdande summaryrad med Totalt värde och Tillgängligt för köp — samma layout som Avanza.")
+punkt(new_doc, "Kontots totalt = investerat + tillgängligt för köp, vilket matchar Avanzas visning per konto.")
+punkt(new_doc, "Avanza sparande Martin (SPAR) visas nu med korrekt saldo i Avstämning.")
+punkt(new_doc, "Tillgängligt för köp per konto visade 0 kr trots inmatat värde — rättat.")
 
-rubrik2(new_doc, "Ny Inställningar-sektion")
+rubrik2(new_doc, "Buggfix: Eget fondsparande fel kontonr (sedan v3.03)")
 brödtext(new_doc,
-    "Alla konfigurerbara parametrar samlas nu i en dedikerad sektion i navigeringsmenyn. "
-    "Ingen kodredigering behövs för att anpassa appen."
+    "Kontot 'Eget fondsparande' var felaktigt kopplat till pensionskontot (9552-6014837) "
+    "i stället för det riktiga ISK-kontot (9557-7346055). Felet medförde att Avanza Zero "
+    "inte importerades korrekt och att kontovärdena var ~25 000 kr för låga."
 )
-punkt(new_doc, "Kontokonfiguration — lägg till, redigera, ta bort och ändra ordning på Avanza-konton via UI.")
-punkt(new_doc, "Kategori-editor — ersätter prompt()-dialoger med visuellt inline-formulär (emoji, färg, vikter, signal).")
-punkt(new_doc, "Strategiparametrar — exponerar MA200-gränser, nödutgångsgräns, ombalansering och koncentrationsrisk.")
-punkt(new_doc, "Profil & information — redigerbara fält för namn och strategi-titel (används i exporter).")
-punkt(new_doc, "Värdepappersfilter — lägg till/ta bort exkluderade värdepapper och konton från import.")
-punkt(new_doc, "Export/import av inställningar — flytta hela strategikonfigurationen mellan enheter som JSON.")
+punkt(new_doc, "Rätt kontonr: 9557-7346055 (ISK) — pensionskontot 9552-6014837 exkluderas nu korrekt.")
+punkt(new_doc, "Befintlig kontokonfiguration och exkluderingslista migreras automatiskt vid laddning.")
 
-rubrik2(new_doc, "Kassa — inline-inmatning per rad")
+rubrik2(new_doc, "Arkitektur: manuell kassa ingår inte i portföljvärdet")
 brödtext(new_doc,
-    "Kassa-tabellen visar nu alltid alla konton (inkl. de utan likvida medel i positionsfilen). "
-    "Varje rad har ett eget inmatningsfält och Spara-knapp — det separata formuläret är borttaget."
+    "Manuella insättningar och uttag (Kassa-sektionen) räknas inte längre in i portföljvärdet. "
+    "De används enbart för att beräkna nettoinsatt kapital och avkastning. "
+    "Eliminerar dubbelräkning när sparkontosaldo redan finns med i Avstämning."
 )
-punkt(new_doc, "Sparkontot (Avanza sparande Martin) visas som en separat rad, ej inkluderat i totalt tillgängligt för köp.")
-punkt(new_doc, "Konton utan positionsfildata visas med ⚠️-ikon tills värde anges manuellt eller importeras.")
-
-rubrik2(new_doc, "Buggfixar")
-brödtext(new_doc,
-    "Kontonummer för Avanza sparande Martin korrigerat till 0040080455 (visades utan ledande nollor i Avstämning). "
-    "Kassa-tabellen visade inte konton vars likvida medel saknades i positionsfilen."
-)
+punkt(new_doc, "beräknaTillgängligLikviditet() = bara Avanza-kassa (tillgängligt för köp från positionsfilen).")
+punkt(new_doc, "Nettoinsatt-kortet på Dashboard visar fortfarande summan av insättningar/uttag för avkastningsberäkning.")
 
 p = new_doc.add_paragraph()
 p.paragraph_format.space_before = Pt(20)
