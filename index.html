@@ -2134,7 +2134,7 @@ function uppdateraKontoRegister(kontonr, namn, datum) {
 laddaKontoRegister();
 
 // ── Hardkodade filter — exkluderas alltid ──
-const DEFAULT_EXKLUDERA_KONTON = ['9557-7346055'];
+const DEFAULT_EXKLUDERA_KONTON = ['9552-6014837'];
 const DEFAULT_EXKLUDERA_VP = ['zomedica'];
 let EXKLUDERA_KONTON = [...DEFAULT_EXKLUDERA_KONTON];
 let EXKLUDERA_VP = [...DEFAULT_EXKLUDERA_VP];
@@ -2152,7 +2152,7 @@ let STRATEGI_PARAMS = {...DEFAULT_STRATEGI_PARAMS};
 const DEFAULT_AVANZA_KONTON = [
   { namn: '1. Sverige nov 2025',      nr: '1914035',   typ: 'ISK'  },
   { namn: '2. Norden nov 2025',       nr: '1080302',   typ: 'ISK'  },
-  { namn: 'Eget fondsparande',        nr: '6014837',   typ: 'ISK'  },
+  { namn: 'Eget fondsparande',        nr: '7346055',   typ: 'ISK'  },
   { namn: '1. Utländska Aktier 2025', nr: '7882604',   typ: 'KF'   },
   { namn: '2. Utländska Aktier 2025', nr: '1913799',   typ: 'KF'   },
   { namn: 'Avanza sparande Martin',   nr: '0040080455', typ: 'SPAR' },
@@ -2323,6 +2323,20 @@ function ladda() {
     data.kontokonfiguration = JSON.parse(JSON.stringify(DEFAULT_AVANZA_KONTON));
   }
   AVANZA_KONTON_LIST = data.kontokonfiguration;
+  // Migration v3.13: Eget fondsparande kontonr 6014837→7346055, exkludera 9552-6014837 istället
+  (function migreraEgetFondsparande() {
+    const ef = data.kontokonfiguration.find(k => k.namn === 'Eget fondsparande' && k.nr === '6014837');
+    if (ef) {
+      ef.nr = '7346055';
+      AVANZA_KONTON_LIST = data.kontokonfiguration;
+      delete (data.positionsKassa || {})['6014837'];
+      delete (data.positionsKontoVärden || {})['6014837'];
+    }
+    if (data.exkluderaKonton?.includes('9552-6014837')) {
+      data.exkluderaKonton = data.exkluderaKonton.filter(k => k !== '9552-6014837').concat(['9552-6014837']);
+      EXKLUDERA_KONTON = data.exkluderaKonton;
+    }
+  })();
   // Migration v3.12: positionsKassa/positionsKontoVärden från namn-nyckel → kontonr-nyckel
   (function migreraKontonTillNr() {
     function konv(dict) {
@@ -2713,7 +2727,7 @@ function renderVPFilter() {
         <button class="btn btn-danger btn-sm" onclick="taBortExkluderaKonto(${i})" style="min-height:var(--touch)">✕</button>
       </div>`).join('')}
       <div style="display:flex;gap:8px;margin-top:10px">
-        <input id="ny-exkl-konto" class="input" placeholder="t.ex. 9557-7346055" style="flex:1;min-height:var(--touch)">
+        <input id="ny-exkl-konto" class="input" placeholder="t.ex. 9552-6014837" style="flex:1;min-height:var(--touch)">
         <button class="btn btn-primary btn-sm" onclick="laggTillExkluderaKonto()" style="min-height:var(--touch)">+ Lägg till</button>
       </div>
     </div>`;
@@ -4060,17 +4074,20 @@ function renderAvstemning() {
     const visning = info ? info.namn : kontoNr;
     const erSpar = info?.typ === 'SPAR';
 
-    const belopp = pkv[kontoNr] || 0; // direkt nr-uppslag
+    const investerat = pkv[kontoNr] || 0;
+    const kassaBelopp = perKonto[kontoNr]?.belopp || 0;
+    // ISK/KF: investerat + kassa = Avanza-total per konto. SPAR: bara manuellt saldo.
+    const belopp = erSpar ? (kassaBelopp || 0) : investerat + kassaBelopp;
 
     totaltVärde += belopp;
 
     let subrad;
     if (erSpar) {
-      subrad = kontoNr || 'Sparkonto';
+      const källa = perKonto[kontoNr]?.källa;
+      subrad = [kontoNr, källa === 'manuell' ? 'Manuellt angivet' : källa === 'positionsfil' ? '' : 'Ange saldo i Kassa'].filter(Boolean).join(' · ');
     } else {
-      const tillg = kassaNr[kontoNr] || 0; // direkt nr-uppslag
-      totaltTillg += tillg;
-      subrad = [kontoNr, `Tillgängligt för köp: ${kr(tillg,0)}`].filter(Boolean).join(' · ');
+      totaltTillg += kassaBelopp;
+      subrad = [kontoNr, `Tillgängligt för köp: ${kr(kassaBelopp,0)}`].filter(Boolean).join(' · ');
     }
 
     // Namnhistorik från kontoregister
@@ -4646,8 +4663,8 @@ function importeraPositioner(text, filNamn='') {
     const kurs=volym>0?mv/volym:0;
     // Detektera likvida medel (kassa) i positionsfilen
     const erLiquid=!isin&&(namn.toLowerCase().includes('likv')||namn===valuta||(mv>0&&Math.abs(kurs-1)<0.02&&valuta==='SEK'));
-    // Summera marknadsvärde per konto (för avstämning) — alla rader inkl. kassa
-    if(erSenasteFil&&mv>0){
+    // Summera investerat värde per konto — bara positioner, ej likvida medel (kassa läggs separat)
+    if(erSenasteFil&&mv>0&&!erLiquid){
       const käntAvst=AVANZA_KONTON_LIST.find(k=>konto.includes(k.nr)||k.nr.includes(konto));
       const kontoNr=käntAvst?.nr||konto;
       data.positionsKontoVärden[kontoNr]=(data.positionsKontoVärden[kontoNr]||0)+mv;
@@ -5660,7 +5677,7 @@ function laddaNedStrategi() {
 
 <div class="ruta ruta-varning">
   <div class="ruta-titel">🚫 Exkludering</div>
-  Pensionskontot (<code>9557-7346055</code>) och värdepapperet Zomedica exkluderas helt från all strategisk analys.
+  Pensionskontot (<code>9552-6014837</code>) och värdepapperet Zomedica exkluderas helt från all strategisk analys.
 </div>
 
 <h2>2. Tekniska regler — MA200 &amp; Gummibandet</h2>
@@ -5784,7 +5801,7 @@ Kongsberg, Leonardo. Tvådagarsregel gäller.
 Teman, turnarounds eller tillfälliga kryddor. Högre risk.
 Tvådagarsregel gäller.
 
-EXKLUDERING: Pensionskontot (9557-7346055) och Zomedica
+EXKLUDERING: Pensionskontot (9552-6014837) och Zomedica
 exkluderas helt från all strategisk analys.
 
 ================================================================
@@ -5928,7 +5945,7 @@ AUTOMATISKA FILTER
 ================================================================
 
 Följande exkluderas ALLTID automatiskt:
-  • Konto 9557-7346055 (pension) — filtreras ur transaktioner
+  • Konto 9552-6014837 (pension) — filtreras ur transaktioner
   • Zomedica — filtreras ur positioner
 
 ================================================================
