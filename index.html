@@ -848,30 +848,6 @@
       <button class="btn btn-ghost" onclick="avbrytRedigering()">✕ Rensa</button>
     </div>
   </div>
-  <!-- Ticker & MA200-autohämtning -->
-  <div class="card mb20">
-    <div class="card-titel" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-      <span class="card-titel-text">📡 Tickers & MA200-autohämtning</span>
-      <button class="btn btn-ghost btn-sm" onclick="växlaTickerVy()">▼ Visa / redigera tickers</button>
-    </div>
-    <div id="ticker-vy" style="display:none;margin-top:12px">
-      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px">Ange börssymboler för automatisk MA200-hämtning via Alpha Vantage (gratis, 25 anrop/dag). Format: svenska aktier <code>ERIC-B.STO</code> / <code>VOLV-B.STO</code>, amerikanska <code>NVDA</code> / <code>MSFT</code>.</p>
-      <div id="ticker-lista" style="margin-bottom:14px"></div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-        <button class="btn btn-primary" onclick="sparaTickers()">💾 Spara tickers</button>
-        <button class="btn btn-ghost" id="ma200-hämta-knapp" onclick="hämtaAllaMA200()" style="display:none">📡 Hämta MA200 för alla</button>
-        <span id="ma200-progress" style="font-size:0.8rem;color:var(--muted)"></span>
-      </div>
-      <div style="margin-top:14px;padding:10px 14px;background:#f9fafb;border-radius:8px;border:1px solid var(--border)">
-        <label style="font-size:0.78rem;font-weight:600;color:var(--muted);display:block;margin-bottom:6px">Alpha Vantage API-nyckel <a href="https://www.alphavantage.co/support/#api-key" target="_blank" style="color:var(--primary-mid);font-weight:400">(hämta gratis nyckel)</a></label>
-        <div style="display:flex;gap:8px">
-          <input id="av-api-key" type="password" class="input" placeholder="Ange din nyckel här" style="flex:1">
-          <button class="btn btn-ghost" onclick="sparaAPIKey()">Spara</button>
-        </div>
-        <div id="av-key-status" style="font-size:0.75rem;margin-top:6px;color:var(--muted)"></div>
-      </div>
-    </div>
-  </div>
 
   <div class="card">
     <div class="flex-between mb16">
@@ -1445,39 +1421,6 @@
       <div class="hjalp-h2">📉 Avkastningsstaplar per kategori</div>
       <div class="hjalp-p">Dashboard visar horisontella staplar med avkastning per kategori för vald period. Kräver historik med kategorivärden (sparas vid positionsimport). Gröna staplar = positiv, röda = negativ avkastning.</div>
 
-      <div class="hjalp-h2">📡 Tickers &amp; automatisk MA200-hämtning</div>
-      <div class="hjalp-p">Under <strong>📡 Tickers &amp; MA200</strong> i Innehav-fliken kan du ange börssymboler (tickers) per aktie. När du lagt in din Alpha Vantage API-nyckel (gratis) hämtas MA200 automatiskt för alla aktier med ticker — ingen manuell uppdatering längre.</div>
-
-      <div class="hjalp-h3">Hitta rätt ticker med 🔍-sökning</div>
-      <div class="hjalp-p">Varje rad i ticker-listan har en <strong>🔍-knapp</strong>. Klicka på den, skriv bolagsnamnet och välj rätt symbol ur listan som visas. Listan visar börs och valuta per träff — välj den som matchar hur aktien är registrerad i din portfölj.</div>
-      <ul class="steg-lista" style="margin:10px 0">
-        <li><div class="steg-nr">1</div><div class="steg-txt"><strong>Klicka 🔍</strong><span>Bredvid ticker-fältet för det innehav du vill söka.</span></div></li>
-        <li><div class="steg-nr">2</div><div class="steg-txt"><strong>Skriv bolagsnamn</strong><span>T.ex. "AstraZeneca" eller "Caterpillar" — Alpha Vantage söker i sin databas.</span></div></li>
-        <li><div class="steg-nr">3</div><div class="steg-txt"><strong>Välj rätt rad</strong><span>Titta på börs och valuta. Välj den som stämmer med din portfölj: <em>United States / USD</em> för amerikanska, <em>Stockholm / SEK</em> för svenska.</span></div></li>
-        <li><div class="steg-nr">4</div><div class="steg-txt"><strong>Spara</strong><span>Klicka "💾 Spara tickers" och sedan "📡 Hämta MA200 för alla".</span></div></li>
-      </ul>
-
-      <div class="hjalp-h3">Ticker-format</div>
-      <table class="hjalp-tabell">
-        <thead><tr><th>Typ</th><th>Ticker-format</th><th>Exempel</th></tr></thead>
-        <tbody>
-          <tr><td>Amerikanska aktier (NYSE/NASDAQ)</td><td><code>TICKER</code></td><td><code>NVDA</code>, <code>CAT</code>, <code>XOM</code></td></tr>
-          <tr><td>Svenska aktier (Nasdaq Sthlm)</td><td><code>NAMN.STO</code></td><td><code>SAAB-B.STO</code>, <code>VOLV-B.STO</code></td></tr>
-          <tr><td>Brittiska aktier (London)</td><td><code>NAMN.LON</code></td><td><code>AZN.LON</code> (i GBX)</td></tr>
-          <tr><td>Norska aktier (Oslo)</td><td><code>NAMN.OSL</code></td><td><code>EQNR.OSL</code></td></tr>
-        </tbody>
-      </table>
-
-      <div class="hjalp-ruta hjalp-ruta-varning">
-        <div class="hjalp-ruta-titel">⚠️ Viktig regel: valuta måste stämma</div>
-        MA200 jämförs mot kursens <em>lokala valuta</em>. Om aktien är registrerad som SEK i appen måste tickern returnera ett SEK-värde — annars blir signalen fel. Appen varnar med ett rött ⚠ om det hämtade MA200-värdet avviker mer än 10× från kursen.<br><br>
-        <strong>Svenska aktier på Alpha Vantage:</strong> Täckningen är begränsad — många svenska aktier saknas. Om sökningen inte ger en SEK-träff: ange MA200 manuellt istället (redigera innehav → fältet MA200).
-      </div>
-      <div class="hjalp-ruta hjalp-ruta-info">
-        <div class="hjalp-ruta-titel">API-nyckel och rate limit</div>
-        API-nyckeln (gratis på alphavantage.co) sparas i webbläsarens localStorage och behövs bara anges en gång. Gratis-planen tillåter 5 anrop per minut — appen väntar automatiskt 15 sekunder mellan anrop. Grön ✓ per innehav = MA200 uppdaterat. Rött ⚠ = fel ticker eller fel valuta.
-      </div>
-
       <div class="hjalp-h2">🧾 ISK/KF-skattesektion</div>
       <div class="hjalp-p">Under <strong>Kassa → ISK-skatt</strong> beräknar appen årets schablonintäkt och förväntad skatt baserat på kvartalsvärden ur historiken och H1-insättningar.</div>
       <ul class="hjalp-ul">
@@ -1636,8 +1579,8 @@
         </ol></div>
       </div>
       <div class="hjalp-ruta hjalp-ruta-tips">
-        <div class="hjalp-ruta-titel">💡 MA200 — automatisk uppdatering via Alpha Vantage</div>
-        Om du lagt in tickers under Innehav → 📡 Tickers &amp; MA200 och en Alpha Vantage API-nyckel kan du klicka "Uppdatera alla MA200" — appen hämtar aktuellt värde för varje aktie. Annars: uppdatera manuellt ca en gång i månaden. <strong>MA200 anges alltid i lokal valuta</strong> (USD för amerikanska, SEK för svenska).
+        <div class="hjalp-ruta-titel">💡 MA200 — manuell uppdatering</div>
+        Uppdatera MA200 manuellt ca en gång i månaden. Läs av värdet i Avanza och ange det via ✏️ Redigera på respektive innehav. <strong>MA200 anges alltid i lokal valuta</strong> (USD för amerikanska, GBP för brittiska, SEK för svenska).
       </div>
     </div>
 
@@ -1675,7 +1618,7 @@
           <tr><td>🔴 Röd</td><td>Säljsignal: 2+ dagar under MA200 (kat. 3–6)</td><td>Sälj enligt strategin.</td></tr>
           <tr><td>🛑 Hård stopp</td><td>Kurs under 90% av GAV (kat. 3–6)</td><td>Sälj omedelbart oavsett MA200.</td></tr>
           <tr><td>⚠️ Mjuk analys</td><td>Kurs under 90% av GAV (kat. 1–2)</td><td>Analysera situationen. Panikhandla inte.</td></tr>
-          <tr><td>⚪ Grå</td><td>MA200 inte angivet</td><td>Lägg in värdet eller ange ticker för auto-hämtning.</td></tr>
+          <tr><td>⚪ Grå</td><td>MA200 inte angivet</td><td>Lägg in MA200-värdet manuellt via ✏️ Redigera.</td></tr>
         </tbody>
       </table>
 
@@ -1683,7 +1626,7 @@
       <div class="hjalp-p">Alla aktier och fonder i en sorterbar tabell. Klicka på kolumnrubriken för att sortera efter Namn, Värde, Avkastning, Signal, Andel eller MA200-avstånd.</div>
       <div class="hjalp-p"><strong>Andel-kolumn:</strong> Varje innehavs procentandel av portföljvärdet. Gul vid &gt;8%, orange vid &gt;12%.</div>
       <div class="hjalp-p"><strong>Utdelningar:</strong> Kolumnen Utd. visar totalt mottagna utdelningar. Tryck 💰 för historik per datum.</div>
-      <div class="hjalp-p"><strong>📡 Tickers &amp; MA200 (kollapsbar sektion):</strong> Ange börssymboler per aktie och klicka "Uppdatera alla MA200" för automatisk hämtning via Alpha Vantage. Använd <strong>🔍-knappen</strong> per rad för att söka rätt ticker direkt i Alpha Vantages databas — välj rätt börs och valuta ur listan. API-nyckel anges en gång och sparas lokalt. Rött ⚠ varnar om hämtat värde verkar ha fel valuta.</div>
+      <div class="hjalp-p"><strong>MA200:</strong> Ange MA200 manuellt via ✏️ Redigera på respektive rad. Läs av värdet i Avanza och ange det i lokal valuta (USD för amerikanska, GBP för brittiska, SEK för svenska). Uppdatera ca en gång i månaden.</div>
 
       <div class="hjalp-h2">⬆ Importera</div>
       <div class="hjalp-p">Importera CSV-filer från Avanza. Positioner och Transaktioner accepterar flera filer på en gång (drag &amp; drop stöds). Bara de 6 konfigurerade kontona importeras — pension och okända konton filtreras automatiskt bort.</div>
@@ -1906,8 +1849,8 @@
       <table class="hjalp-tabell">
         <thead><tr><th>Fråga</th><th>Svar</th></tr></thead>
         <tbody>
-          <tr><td><strong>Kan appen hämta kurser automatiskt?</strong></td><td>Kurspriser hämtas via Avanzas positionsfil. Däremot kan <strong>MA200-värden</strong> hämtas automatiskt via Alpha Vantage API — ange ticker per aktie under Innehav → 📡 Tickers &amp; MA200, lägg in din (gratis) API-nyckel och klicka "Uppdatera alla MA200". Använd 🔍-knappen per aktie för att hitta rätt ticker.</td></tr>
-          <tr><td><strong>MA200-signalen ser helt fel ut (t.ex. +1000%)?</strong></td><td>Tickern returnerar troligen ett värde i fel valuta. Vanligaste fallet: en SEK-aktie med en USD-ticker. Klicka 🔍 bredvid aktien, sök på bolagsnamnet och välj en träff med rätt börs och valuta. Om ingen SEK-träff finns: ange MA200 manuellt i redigeringsformuläret.</td></tr>
+          <tr><td><strong>Kan appen hämta kurser automatiskt?</strong></td><td>Kurspriser hämtas via Avanzas positionsfil. MA200-värden anges manuellt — läs av värdet i Avanza och ange det i redigeringsformuläret för respektive aktie (fältet MA200, i lokal valuta).</td></tr>
+          <tr><td><strong>MA200-signalen ser helt fel ut?</strong></td><td>Kontrollera att MA200 är angett i rätt valuta — lokal valuta för aktien (USD för amerikanska, GBP för brittiska, SEK för svenska). Redigera innehav och korrigera värdet.</td></tr>
           <tr><td><strong>Synkroniseras data mellan iPad och dator?</strong></td><td>Nej, data sparas lokalt i respektive webbläsare. Använd Excel-export för att flytta data mellan enheter.</td></tr>
           <tr><td><strong>Kan jag använda appen utan internetanslutning?</strong></td><td>Appen fungerar offline efter att sidan laddats. Du behöver internet för att importera filer från Avanza och för att ladda ner diagrambiblioteket (Chart.js) första gången.</td></tr>
           <tr><td><strong>Varför stämmer inte avkastningen med Avanzas siffror?</strong></td><td>Appen beräknar (marknadsvärde − kostnadsbas) / kostnadsbas. Avanza kan använda tidsviktad avkastning. Båda är korrekta men mäter olika saker.</td></tr>
@@ -2031,25 +1974,6 @@
 </section>
 
 </main>
-
-<!-- Modal: Ticker-sökning -->
-<div class="modal-backdrop" id="modalTickerSok">
-  <div class="modal" style="max-width:560px">
-    <h3 id="ts-titel">🔍 Sök ticker</h3>
-    <div style="margin-bottom:12px">
-      <div style="display:flex;gap:8px">
-        <input id="ts-input" class="input" placeholder="Ange bolagsnamn eller förkortning…" style="flex:1" onkeydown="if(event.key==='Enter')utförTickerSökning()">
-        <button class="btn btn-primary" onclick="utförTickerSökning()">Sök</button>
-      </div>
-      <div id="ts-status" style="font-size:0.8rem;color:var(--muted);margin-top:6px"></div>
-    </div>
-    <div id="ts-resultat" style="max-height:320px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;display:none"></div>
-    <div class="modal-knappar" style="margin-top:14px">
-      <button class="btn btn-ghost" onclick="stangModal('modalTickerSok')">Stäng</button>
-    </div>
-    <input type="hidden" id="ts-hid">
-  </div>
-</div>
 
 <!-- Modal: Utdelning -->
 <div class="modal-backdrop" id="modalUtdelning">
@@ -2961,230 +2885,6 @@ function renderFXExponering() {
   });
 }
 
-// ══════════════════════════════════════════════════════════
-//  TICKER-HANTERING & ALPHA VANTAGE MA200 (2.5)
-// ══════════════════════════════════════════════════════════
-function sparaAPIKey() {
-  const key = (document.getElementById('av-api-key').value || '').trim();
-  if (!key) { alert('Ange en API-nyckel.'); return; }
-  localStorage.setItem('alphaVantageKey', key);
-  document.getElementById('av-api-key').value = '';
-  document.getElementById('av-key-status').textContent = '✓ Nyckel sparad.';
-  document.getElementById('av-key-status').style.color = 'var(--success)';
-  renderTickerLista();
-}
-function hämtaAPIKey() { return localStorage.getItem('alphaVantageKey') || ''; }
-
-function växlaTickerVy() {
-  const vy = document.getElementById('ticker-vy');
-  if (!vy) return;
-  const öppen = vy.style.display !== 'none';
-  vy.style.display = öppen ? 'none' : 'block';
-  if (!öppen) renderTickerLista();
-}
-
-function renderTickerLista() {
-  const lista = document.getElementById('ticker-lista');
-  const hämtaKnapp = document.getElementById('ma200-hämta-knapp');
-  const keyStatus = document.getElementById('av-key-status');
-  if (!lista) return;
-  const key = hämtaAPIKey();
-  if (keyStatus) {
-    keyStatus.textContent = key ? '✓ API-nyckel inlagd.' : 'Ingen nyckel sparad — hämtning av MA200 kräver nyckel.';
-    keyStatus.style.color = key ? 'var(--success)' : 'var(--muted)';
-    const keyInput = document.getElementById('av-api-key');
-    if (keyInput && !key) keyInput.placeholder = 'Ange din nyckel här';
-  }
-  if (hämtaKnapp) hämtaKnapp.style.display = key && data.innehav.length ? 'inline-flex' : 'none';
-  if (!data.innehav.length) { lista.innerHTML = '<p style="color:var(--muted);font-size:0.84rem">Inga innehav ännu.</p>'; return; }
-  lista.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:0.84rem">
-    <thead><tr>
-      <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);font-weight:600">Innehav</th>
-      <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);font-weight:600">Ticker</th>
-      <th style="padding:6px 8px;border-bottom:1px solid var(--border)"></th>
-    </tr></thead>
-    <tbody>
-    ${data.innehav.map(h => {
-      const hasTicker = !!(h.ticker && h.ticker.trim());
-      const harVarning = !!h.ma200Varning;
-      const harDatum = !!h.ma200Datum;
-      const indikator = harVarning
-        ? `<span style="color:#dc2626;font-weight:700" title="${h.ma200Varning}">⚠</span>`
-        : hasTicker && harDatum
-          ? `<span style="color:#16a34a;font-weight:700" title="MA200 hämtat ${h.ma200Datum}: ${h.ma200}">✓</span>`
-          : hasTicker
-            ? `<span style="color:#16a34a;font-weight:700" title="Ticker inlagd">✓</span>`
-            : `<span style="color:#d97706;font-weight:700" title="Saknar ticker — MA200 kan ej hämtas automatiskt">!</span>`;
-      const varningRad = harVarning
-        ? `<tr><td colspan="3" style="padding:2px 8px 6px;font-size:0.75rem;color:#dc2626">${h.ma200Varning}</td></tr>`
-        : '';
-      return `<tr>
-        <td style="padding:6px 8px">${h.namn}<br><span style="font-size:0.73rem;color:var(--muted)">${h.valuta||'SEK'} · Kat ${h.kategori||2}${harDatum&&!harVarning?' · MA200: '+h.ma200:''}</span></td>
-        <td style="padding:6px 8px;display:flex;gap:4px;align-items:center">
-          <input data-id="${h.id}" class="input ticker-input" value="${h.ticker||''}" placeholder="${h.valuta==='USD'?'t.ex. NVDA':'t.ex. ERIC-B.STO'}" style="width:130px;padding:5px 8px;font-size:0.83rem">
-          <button onclick="sökTicker('${h.id}')" title="Sök rätt ticker" style="padding:4px 7px;font-size:0.8rem;border:1px solid var(--border);border-radius:6px;background:var(--card);cursor:pointer;white-space:nowrap">🔍</button>
-        </td>
-        <td style="padding:6px 8px;text-align:center">${indikator}</td>
-      </tr>${varningRad}`;
-    }).join('')}
-    </tbody></table>`;
-}
-
-function sparaTickers() {
-  document.querySelectorAll('.ticker-input').forEach(input => {
-    const id = input.dataset.id;
-    const h = data.innehav.find(x => x.id === id);
-    if (h) h.ticker = input.value.trim();
-  });
-  spara();
-  renderTickerLista();
-  renderInnehav();
-  const prog = document.getElementById('ma200-progress');
-  if (prog) { prog.textContent = '✓ Tickers sparade.'; setTimeout(()=>prog.textContent='', 2500); }
-}
-
-let _ma200Köar = false;
-function sökTicker(hId) {
-  const key = hämtaAPIKey();
-  if (!key) {
-    const stEl = document.getElementById('ts-status');
-    // Öppna modalen ändå — visa felbeskrivning inuti
-    document.getElementById('ts-hid').value = hId;
-    const h = data.innehav.find(x => x.id === hId);
-    document.getElementById('ts-titel').textContent = `🔍 Sök ticker — ${h ? h.namn : ''}`;
-    document.getElementById('ts-input').value = h ? h.namn : '';
-    document.getElementById('ts-resultat').style.display = 'none';
-    document.getElementById('ts-status').textContent = '⚠️ Ange API-nyckel i fältet nedan för att kunna söka.';
-    öppnaModal('modalTickerSok');
-    return;
-  }
-  const h = data.innehav.find(x => x.id === hId);
-  if (!h) return;
-  document.getElementById('ts-hid').value = hId;
-  document.getElementById('ts-titel').textContent = `🔍 Sök ticker — ${h.namn}`;
-  document.getElementById('ts-input').value = h.namn;
-  document.getElementById('ts-resultat').style.display = 'none';
-  document.getElementById('ts-status').textContent = 'Tryck Sök eller Enter för att söka.';
-  öppnaModal('modalTickerSok');
-  // Autosök direkt med bolagsnamnet
-  setTimeout(utförTickerSökning, 80);
-}
-
-async function utförTickerSökning() {
-  const key = hämtaAPIKey();
-  if (!key) { document.getElementById('ts-status').textContent = '⚠️ API-nyckel saknas.'; return; }
-  const sökterm = (document.getElementById('ts-input')?.value || '').trim();
-  if (!sökterm) return;
-  const statusEl = document.getElementById('ts-status');
-  const resultatEl = document.getElementById('ts-resultat');
-  statusEl.textContent = 'Söker…';
-  resultatEl.style.display = 'none';
-  try {
-    const url = `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${encodeURIComponent(sökterm)}&apikey=${key}`;
-    const res = await fetch(url);
-    const json = await res.json();
-    const träffar = (json.bestMatches || []).slice(0, 10);
-    if (!träffar.length) {
-      statusEl.textContent = 'Inga träffar. Prova ett annat sökord.';
-      return;
-    }
-    statusEl.textContent = `${träffar.length} träffar — klicka för att välja:`;
-    resultatEl.style.display = 'block';
-    const hId = document.getElementById('ts-hid').value;
-    resultatEl.innerHTML = träffar.map(t => {
-      const symbol = t['1. symbol'];
-      const namn = t['2. name'];
-      const region = t['4. region'];
-      const valuta = t['8. currency'];
-      const matchSEK = valuta === 'SEK';
-      const matchUSD = valuta === 'USD';
-      const vBadge = matchSEK ? `<span style="background:#dcfce7;color:#15803d;font-size:0.7rem;padding:1px 5px;border-radius:4px;font-weight:700">SEK</span>`
-                   : matchUSD ? `<span style="background:#dbeafe;color:#1d4ed8;font-size:0.7rem;padding:1px 5px;border-radius:4px;font-weight:700">USD</span>`
-                   : `<span style="background:#f3f4f6;color:#6b7280;font-size:0.7rem;padding:1px 5px;border-radius:4px">${valuta}</span>`;
-      return `<div onclick="väljticker('${hId}','${symbol.replace(/'/g,"\\'")}',this)"
-        style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:8px"
-        onmouseover="this.style.background='var(--primary-light)'" onmouseout="this.style.background=''">
-        <div>
-          <strong style="font-size:0.92rem">${symbol}</strong>
-          <span style="color:var(--muted);font-size:0.82rem;margin-left:8px">${namn}</span>
-        </div>
-        <div style="display:flex;gap:6px;align-items:center;white-space:nowrap">
-          ${vBadge}
-          <span style="font-size:0.75rem;color:var(--muted)">${region}</span>
-        </div>
-      </div>`;
-    }).join('');
-  } catch(e) { statusEl.textContent = '❌ Sökning misslyckades. Kontrollera nätverksanslutningen.'; }
-}
-
-function väljticker(hId, symbol, radEl) {
-  const input = document.querySelector(`.ticker-input[data-id="${hId}"]`);
-  if (input) {
-    input.value = symbol;
-    input.dispatchEvent(new Event('input'));
-  }
-  // Markera vald rad
-  document.querySelectorAll('#ts-resultat div').forEach(d => d.style.background = '');
-  if (radEl) radEl.style.background = '#dcfce7';
-  document.getElementById('ts-status').textContent = `✓ "${symbol}" vald — klicka Stäng och spara tickers.`;
-  setTimeout(() => stangModal('modalTickerSok'), 900);
-}
-
-async function hämtaAllaMA200() {
-  if (_ma200Köar) return;
-  const key = hämtaAPIKey();
-  if (!key) { alert('Ange din Alpha Vantage API-nyckel nedan.'); return; }
-  const prog = document.getElementById('ma200-progress');
-  const knapp = document.getElementById('ma200-hämta-knapp');
-  const medTicker = data.innehav.filter(h => h.ticker && h.ticker.trim());
-  if (!medTicker.length) { if(prog) prog.textContent = 'Inga innehav med tickers.'; return; }
-  _ma200Köar = true;
-  if (knapp) knapp.disabled = true;
-  let ok = 0, fel = 0;
-  for (let i = 0; i < medTicker.length; i++) {
-    const h = medTicker[i];
-    if (prog) prog.textContent = `Hämtar ${i+1}/${medTicker.length}: ${h.namn}…`;
-    try {
-      const url = `https://www.alphavantage.co/query?function=SMA&symbol=${encodeURIComponent(h.ticker)}&interval=daily&time_period=200&series_type=close&apikey=${key}`;
-      const res = await fetch(url);
-      const json = await res.json();
-      const analys = json['Technical Analysis: SMA'];
-      if (analys) {
-        const senasteDag = Object.keys(analys).sort().reverse()[0];
-        const ma200Val = parseFloat(analys[senasteDag]['SMA']);
-        if (!isNaN(ma200Val) && ma200Val > 0) {
-          // Sanity check: om hämtat värde avviker mer än 10× från nuvarande kurs
-          // är det troligen fel valuta (t.ex. USD-ticker för en SEK-aktie)
-          const lokalKurs = lokalKursVärde(h);
-          const ratio = lokalKurs > 0 ? Math.max(ma200Val/lokalKurs, lokalKurs/ma200Val) : 1;
-          if (ratio > 10) {
-            h.ma200Varning = `⚠️ Misstänkt fel valuta: hämtat MA200 ${ma200Val.toFixed(2)} avviker ${ratio.toFixed(0)}× från kursen ${lokalKurs.toFixed(2)} — kontrollera ticker`;
-            fel++;
-          } else {
-            h.ma200 = ma200Val;
-            h.ma200Datum = senasteDag;
-            delete h.ma200Varning;
-            ok++;
-          }
-        } else { fel++; }
-      } else if (json['Note'] || json['Information']) {
-        if (prog) prog.textContent = '⚠️ API-gräns nådd — vänta en minut och försök igen.';
-        break;
-      } else { fel++; }
-    } catch(e) { fel++; }
-    // Vänta 15 sek mellan anrop (rate limit: 5/min på gratis-plan)
-    if (i < medTicker.length - 1) {
-      for (let s = 15; s > 0; s--) {
-        if (prog) prog.textContent = `Hämtat ${i+1}/${medTicker.length} (${ok} OK, ${fel} fel) — nästa om ${s}s…`;
-        await new Promise(r => setTimeout(r, 1000));
-      }
-    }
-  }
-  spara(); renderInnehav(); renderTickerLista(); renderKategorier(); renderSignaler(); ritaDiagram();
-  if (prog) prog.textContent = `✓ Klart: ${ok} uppdaterade, ${fel} misslyckades.`;
-  if (knapp) knapp.disabled = false;
-  _ma200Köar = false;
-}
 
 function ma200Signal(h) {
   if (!h.ma200||h.ma200===0) return 'okänd';
@@ -3758,7 +3458,7 @@ function renderKategorier() {
       const nöd=nödutgångSignal(h);
       const gb=gummibandZon(h);
       const gbFärger={grön:'#00c853',gul:'#d97706',orange:'#ea580c',under:'#dc2626'};
-      const sH=sig&&sig!=='okänd'?`<span class="signal-dot signal-${sig}" style="flex-shrink:0" title="${sig==='grön'?'Över MA200':sig==='gul'?(h.ma200&&h.aktuelKurs<h.ma200?'Dag 1 under MA200 (tvådagarsregel)':'Nära MA200'):'Säljsignal (2 dagar under MA200)'}"></span>`:sig==='okänd'?'<span style="color:var(--muted);font-size:0.8rem;flex-shrink:0" title="MA200 ej angivet">—</span>':'';
+      const sH=sig&&sig!=='okänd'?`<span class="signal-dot signal-${sig}" style="flex-shrink:0" title="${sig==='grön'?'Över MA200':sig==='gul'?(h.ma200&&lokalKursVärde(h)<h.ma200?'Dag 1 under MA200 (tvådagarsregel)':'Nära MA200'):'Säljsignal (2 dagar under MA200)'}"></span>`:sig==='okänd'?'<span style="color:var(--muted);font-size:0.8rem;flex-shrink:0" title="MA200 ej angivet">—</span>':'';
       const nödH=nöd==='hård'?`<span style="font-size:0.68rem;background:#fee2e2;color:#b91c1c;padding:1px 6px;border-radius:4px;font-weight:700;margin-left:4px">🛑 HÅRD STOPP</span>`:nöd==='mjuk'?`<span style="font-size:0.68rem;background:#fef3c7;color:#d97706;padding:1px 6px;border-radius:4px;font-weight:700;margin-left:4px">⚠️ MJUK ANALYS</span>`:'';
       const gbH=gb?`<span style="font-size:0.7rem;background:${gbFärger[gb.zon]}20;color:${gbFärger[gb.zon]};padding:1px 5px;border-radius:4px;font-weight:600;margin-left:2px" title="${gb.zon==='under'?'Under MA200: '+gb.label:'Gummiband: '+gb.label+' över MA200'}">${gb.label}</span>`:'';
       return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:0.87rem"><span style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">${sH}<strong>${h.namn}</strong>${nödH}${gbH}</span><span style="color:var(--muted)">${kr(mv)}</span></div>`;
@@ -3953,7 +3653,7 @@ function renderInnehav() {
     const kursVis=h.valuta&&h.valuta!=='SEK'
       ?`${kr(h.aktuelKurs,2)}<br><small style="color:var(--muted);font-size:0.72rem">${lokal.toFixed(2)}\u00a0${h.valuta}</small>`
       :kr(h.aktuelKurs,2);
-    const ma200Vis=h.ma200>0?`${h.ma200.toFixed(h.ma200>=10?0:2)}${gbH?'<br>'+gbH:''}`:'—';
+    const ma200Vis=h.ma200>0?(()=>{const s=h.ma200.toFixed(h.ma200>=10?0:2);const v=h.valuta&&h.valuta!=='SEK'?` <small style="color:var(--muted);font-size:0.72rem">${h.valuta}</small>`:'';return s+v+(gbH?'<br>'+gbH:'');})():'—';
     return `<tr><td><strong>${h.namn}</strong>${h.notat?`<br><small style="color:var(--muted)">${h.notat}</small>`:''}</td><td>${katBadge(h.kategori||2)}</td><td><span class="chip">${h.valuta||'SEK'}</span></td><td>${(+h.antal).toLocaleString('sv-SE',{maximumFractionDigits:4})}</td><td>${kr(h.köpkurs,2)}</td><td>${kursVis}</td><td>${ma200Vis}</td><td style="text-align:center">${sH}${nödH?'<br>'+nödH:''}</td><td>${kr(kb)}</td><td><strong>${kr(mv)}</strong></td><td class="${färg(vf)}">${(()=>{const d=beräknaVinstDekomponering(h);return d.hasFX?`${kr(vf)}<br><small style="color:var(--muted);font-size:0.72rem" title="Bolagsvinst: ${kr(d.bolag)} | Valutavinst: ${kr(d.valuta)}">🏢 ${kr(d.bolag,0)} 💱 ${kr(d.valuta,0)}</small>`:kr(vf);})()}</td><td><span class="badge ${vf>=0?'badge-pos':'badge-neg'}">${pct(vp)}</span></td><td style="${andelFärg}">${andel.toFixed(1)}%</td><td>${ud>0?kr(ud):'—'}</td><td style="white-space:nowrap"><button class="btn btn-primary btn-sm" onclick="redigeraInnehav('${h.id}')">✏️</button> <button class="btn btn-success btn-sm" onclick="öppnaUtdelning('${h.id}')">💰</button> <button class="btn btn-danger btn-sm" onclick="raderaInnehav('${h.id}')">✕</button></td></tr>`;
   }).join('');
   if(kl)kl.innerHTML=s.map(h=>{
@@ -3963,7 +3663,7 @@ function renderInnehav() {
     const kat=KATEGORIER[h.kategori]||KATEGORIER[2],sig=kat.signal==='ma200'?ma200Signal(h):null;
     const sT=sig==='grön'?'🟢':sig==='gul'?'🟡':sig==='röd'?'🔴':'';
     const udM=totalUtdelningFörInnehav(h);
-    return `<div class="mobil-kort"><div class="mobil-kort-header"><div><div class="mobil-kort-namn">${sT} ${h.namn}</div><div style="margin-top:5px">${katBadge(h.kategori||2)}</div></div><div class="${färg(vf)}" style="text-align:right;font-weight:700"><div style="font-size:0.85rem">${pct(vp)}</div><div>${kr(mv)}</div></div></div><div class="mobil-kort-rad"><span class="etikett">Antal</span><span>${(+h.antal).toLocaleString('sv-SE',{maximumFractionDigits:4})}</span></div><div class="mobil-kort-rad"><span class="etikett">GAV</span><span>${kr(h.köpkurs,2)}</span></div><div class="mobil-kort-rad"><span class="etikett">Akt. kurs</span><span>${kr(h.aktuelKurs,2)}</span></div>${h.ma200>0?`<div class="mobil-kort-rad"><span class="etikett">MA200</span><span>${kr(h.ma200,0)}</span></div>`:''}<div class="mobil-kort-rad"><span class="etikett">Vinst/Förlust</span><span class="${färg(vf)}">${kr(vf)}</span></div>${(andelM>8&&h.kategori!==1)?`<div class="mobil-kort-rad"><span class="etikett">Andel</span><span style="${andelMFärg}">${andelM.toFixed(1)}%</span></div>`:''}${udM>0?`<div class="mobil-kort-rad"><span class="etikett">Utdelningar</span><span style="color:var(--success)">${kr(udM)}</span></div>`:''}${h.ma200Varning?`<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;padding:6px 10px;margin:6px 0;font-size:0.77rem;color:#b91c1c">⚠ ${h.ma200Varning}</div>`:''}<div class="mobil-kort-åtgärder"><button class="btn btn-primary btn-sm" onclick="redigeraInnehav('${h.id}');window.scrollTo({top:0,behavior:'smooth'})">✏️ Redigera</button><button class="btn btn-success btn-sm" onclick="öppnaUtdelning('${h.id}')">💰</button><button class="btn btn-danger btn-sm" onclick="raderaInnehav('${h.id}')">✕</button></div></div>`;
+    return `<div class="mobil-kort"><div class="mobil-kort-header"><div><div class="mobil-kort-namn">${sT} ${h.namn}</div><div style="margin-top:5px">${katBadge(h.kategori||2)}</div></div><div class="${färg(vf)}" style="text-align:right;font-weight:700"><div style="font-size:0.85rem">${pct(vp)}</div><div>${kr(mv)}</div></div></div><div class="mobil-kort-rad"><span class="etikett">Antal</span><span>${(+h.antal).toLocaleString('sv-SE',{maximumFractionDigits:4})}</span></div><div class="mobil-kort-rad"><span class="etikett">GAV</span><span>${kr(h.köpkurs,2)}</span></div><div class="mobil-kort-rad"><span class="etikett">Akt. kurs</span><span>${kr(h.aktuelKurs,2)}</span></div>${h.ma200>0?`<div class="mobil-kort-rad"><span class="etikett">MA200</span><span>${h.ma200.toFixed(h.ma200>=10?0:2)}${h.valuta&&h.valuta!=='SEK'?' '+h.valuta:' kr'}</span></div>`:''}<div class="mobil-kort-rad"><span class="etikett">Vinst/Förlust</span><span class="${färg(vf)}">${kr(vf)}</span></div>${(andelM>8&&h.kategori!==1)?`<div class="mobil-kort-rad"><span class="etikett">Andel</span><span style="${andelMFärg}">${andelM.toFixed(1)}%</span></div>`:''}${udM>0?`<div class="mobil-kort-rad"><span class="etikett">Utdelningar</span><span style="color:var(--success)">${kr(udM)}</span></div>`:''}<div class="mobil-kort-åtgärder"><button class="btn btn-primary btn-sm" onclick="redigeraInnehav('${h.id}');window.scrollTo({top:0,behavior:'smooth'})">✏️ Redigera</button><button class="btn btn-success btn-sm" onclick="öppnaUtdelning('${h.id}')">💰</button><button class="btn btn-danger btn-sm" onclick="raderaInnehav('${h.id}')">✕</button></div></div>`;
   }).join('');
 }
 
