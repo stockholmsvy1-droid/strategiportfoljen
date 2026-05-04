@@ -86,17 +86,30 @@
     /* ── Header ── */
     header {
       background: var(--primary); color: white;
-      display: flex; align-items: flex-end; justify-content: space-between;
-      padding: 0 20px 10px;
-      padding-top: calc(10px + env(safe-area-inset-top));
+      display: flex; flex-direction: column;
+      padding: 0 20px;
+      padding-top: calc(8px + env(safe-area-inset-top));
       position: sticky; top: 0; z-index: 100;
       box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-      min-height: calc(54px + env(safe-area-inset-top));
     }
+    .header-row1 { display:flex; align-items:center; justify-content:space-between; padding-bottom:8px; }
+    .header-row2 { display:flex; align-items:center; gap:5px; padding:6px 0 9px; border-top:1px solid rgba(255,255,255,0.18); overflow-x:auto; scrollbar-width:none; }
+    .header-row2::-webkit-scrollbar { display:none; }
     header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.03em; display: flex; align-items: center; gap: 8px; margin: 0; line-height: 1.2; }
-    .header-subtitle { font-size: 0.68rem; font-weight: 400; font-style: italic; opacity: 0.75; letter-spacing: 0.02em; font-family: Georgia, 'Times New Roman', serif; margin-top: 4px; }
+    .header-subtitle { font-size: 0.68rem; font-weight: 400; font-style: italic; opacity: 0.75; letter-spacing: 0.02em; font-family: Georgia, 'Times New Roman', serif; margin-top: 2px; }
     .header-badge { font-size: 0.68rem; background: var(--accent); padding: 2px 8px; border-radius: 20px; font-weight: 600; }
-    .header-actions { display: flex; gap: 8px; }
+    .header-actions { display: flex; gap: 8px; align-items:center; }
+    .header-row2 .period-knapp { background:rgba(255,255,255,0.14); border:1px solid rgba(255,255,255,0.28); color:rgba(255,255,255,0.88); font-size:0.76rem; padding:3px 9px; min-height:30px; border-radius:6px; }
+    .header-row2 .period-knapp.aktiv { background:white; color:var(--primary); border-color:white; font-weight:700; }
+    .header-signal-pill { padding:3px 10px; border-radius:20px; font-size:0.73rem; font-weight:700; white-space:nowrap; margin-right:4px; }
+    .signal-pill-ok { background:rgba(0,200,83,0.22); color:#a7f3d0; }
+    .signal-pill-varning { background:rgba(239,68,68,0.35); color:#fca5a5; cursor:pointer; }
+    /* Desktop Mer-panel */
+    #desktopMerWrapper { position:relative; }
+    #desktopMerPanel { display:none; position:absolute; top:100%; right:0; z-index:200; background:white; border:1px solid var(--border); border-radius:10px; box-shadow:0 6px 24px rgba(0,0,0,0.13); min-width:210px; padding:6px 0; margin-top:4px; }
+    #desktopMerPanel.visa { display:block; }
+    .desktop-mer-item { display:block; width:100%; text-align:left; background:none; border:none; padding:11px 18px; font-size:0.88rem; cursor:pointer; color:var(--text); white-space:nowrap; }
+    .desktop-mer-item:hover { background:var(--primary-light); color:var(--primary); }
 
     /* ── Knappar ── */
     .btn {
@@ -304,12 +317,6 @@
     .nyckeltal.nk-neg  { border-left:3px solid var(--danger); }
 
     /* ── Global Period Strip ── */
-    #period-strip {
-      background: white; border-bottom: 1px solid var(--border);
-      padding: 7px 20px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-      position: sticky; top: calc(54px + env(safe-area-inset-top)); z-index: 90;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
     .period-strip-label { font-size: 0.71rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-right: 2px; }
 
     /* ── Kategori-kort ── */
@@ -533,64 +540,71 @@
 
 <!-- ══ HEADER ══ -->
 <header>
-  <div>
-    <h1>📈 Strategiportföljen <span class="header-badge">v3.13</span></h1>
-    <div class="header-subtitle">The Magnificent Martin's Money-Making Machine</div>
+  <div class="header-row1">
+    <div>
+      <h1>📈 Strategiportföljen <span class="header-badge">v3.15</span></h1>
+      <div class="header-subtitle">The Magnificent Martin's Money-Making Machine</div>
+    </div>
+    <div class="header-actions">
+      <span id="header-signal-pill" class="header-signal-pill signal-pill-ok" onclick="visaSektion('signaler',null);synkNavKnappar('signaler')" title="Signalstatus">🟢 OK</span>
+      <button class="btn btn-outline btn-sm" onclick="exporteraExcel()">⬇ Excel</button>
+      <button class="btn btn-white btn-sm" id="tema-knapp" onclick="växlaTema()" title="Byt tema">☀️</button>
+    </div>
   </div>
-  <div class="header-actions">
-    <button class="btn btn-outline btn-sm" onclick="exporteraExcel()">⬇ Excel</button>
-    <button class="btn btn-white btn-sm" id="tema-knapp" onclick="växlaTema()" title="Byt tema">☀️</button>
-    <button class="btn btn-white btn-sm" onclick="visaSektion('hjalp',null);synkNavKnappar('hjalp')">? Hjälp</button>
+  <div class="header-row2">
+    <span style="font-size:0.69rem;color:rgba(255,255,255,0.55);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-right:2px;white-space:nowrap">Period</span>
+    <button onclick="byttHistorikPeriod(1,this)" class="period-knapp">Idag</button>
+    <button onclick="byttHistorikPeriod(7,this)" class="period-knapp">Vecka</button>
+    <button onclick="byttHistorikPeriod(30,this)" class="period-knapp">30D</button>
+    <button onclick="byttHistorikPeriod(90,this)" class="period-knapp">90D</button>
+    <button onclick="byttHistorikPeriod(180,this)" class="period-knapp">6M</button>
+    <button onclick="byttHistorikPeriod(365,this)" class="period-knapp">1Å</button>
+    <button onclick="byttHistorikPeriod('år',this)" class="period-knapp aktiv">i År</button>
+    <button onclick="byttHistorikPeriod(0,this)" class="period-knapp">Allt</button>
   </div>
 </header>
 
 <!-- ══ DESKTOP NAV ══ -->
-<nav id="desktopNav">
-  <button class="aktiv" onclick="visaSektion('dashboard',this)">🏠 Dashboard</button>
-  <button onclick="visaSektion('kategorier',this)">🗂 Kategorier</button>
-  <button onclick="visaSektion('innehav',this)">📋 Innehav</button>
-  <button onclick="visaSektion('signaler',this)" id="navSignalerBtn">🚨 Signaler</button>
-  <button onclick="visaSektion('importera',this)">⬆ Importera</button>
-  <button onclick="visaSektion('transaktioner',this)">🔄 Transaktioner</button>
-  <button onclick="visaSektion('beslutslogg',this)">📓 Beslutslogg</button>
-  <button onclick="visaSektion('kassa',this)">💰 Kassa</button>
-  <button onclick="visaSektion('avstamning',this)">🔍 Avstämning</button>
-  <button onclick="visaSektion('installningar',this)">⚙️ Inställningar</button>
-  <button onclick="visaSektion('hjalp',this)">❓ Hjälp</button>
-</nav>
-
-<!-- ══ GLOBAL PERIOD STRIP ══ -->
-<div id="period-strip">
-  <span class="period-strip-label">Period</span>
-  <button onclick="byttHistorikPeriod(1,this)" class="period-knapp">Idag</button>
-  <button onclick="byttHistorikPeriod(7,this)" class="period-knapp">Vecka</button>
-  <button onclick="byttHistorikPeriod(30,this)" class="period-knapp">30D</button>
-  <button onclick="byttHistorikPeriod(90,this)" class="period-knapp aktiv">90D</button>
-  <button onclick="byttHistorikPeriod(180,this)" class="period-knapp">6M</button>
-  <button onclick="byttHistorikPeriod(365,this)" class="period-knapp">1Å</button>
-  <button onclick="byttHistorikPeriod('år',this)" class="period-knapp">i År</button>
-  <button onclick="byttHistorikPeriod(0,this)" class="period-knapp">Allt</button>
+<div style="position:relative">
+  <nav id="desktopNav">
+    <button class="aktiv" onclick="visaSektion('dashboard',this)">🏠 Cockpit</button>
+    <button onclick="visaSektion('kategorier',this)">📋 Portfölj</button>
+    <button onclick="visaSektion('signaler',this)" id="navSignalerBtn">⚡ Åtgärder</button>
+    <button onclick="visaSektion('transaktioner',this)">📈 Historik</button>
+    <div id="desktopMerWrapper">
+      <button onclick="öppnaDesktopMer(this)" id="desktopMerKnapp">⚙ Mer ▾</button>
+      <div id="desktopMerPanel">
+        <button class="desktop-mer-item" onclick="visaSektion('importera',null);synkNavKnappar('importera');stängDesktopMer()">📥 Importera CSV</button>
+        <button class="desktop-mer-item" onclick="visaSektion('kassa',null);synkNavKnappar('kassa');stängDesktopMer()">💰 Kassa &amp; saldo</button>
+        <button class="desktop-mer-item" onclick="visaSektion('beslutslogg',null);synkNavKnappar('beslutslogg');stängDesktopMer()">📓 Beslutslogg</button>
+        <button class="desktop-mer-item" onclick="visaSektion('installningar',null);synkNavKnappar('installningar');stängDesktopMer()">⚙️ Inställningar</button>
+        <button class="desktop-mer-item" onclick="visaSektion('hjalp',null);synkNavKnappar('hjalp');stängDesktopMer()">❓ Hjälp</button>
+        <button class="desktop-mer-item" onclick="visaSektion('avstamning',null);synkNavKnappar('avstamning');stängDesktopMer()">🔍 Avstämning</button>
+        <button class="desktop-mer-item" onclick="visaSektion('innehav',null);synkNavKnappar('innehav');stängDesktopMer()">📊 Alla innehav (tabell)</button>
+      </div>
+    </div>
+  </nav>
 </div>
 
 <!-- ══ MOBIL BOTTOM NAV ══ -->
 <div class="nav-bottom">
   <div class="nav-bottom-inner">
-    <button class="nav-bottom-knapp aktiv" onclick="mobilNav('dashboard',0)"><span class="nb-ikon">🏠</span>Start</button>
-    <button class="nav-bottom-knapp" onclick="mobilNav('kategorier',1)"><span class="nb-ikon">🗂</span>Kategorier</button>
-    <button class="nav-bottom-knapp" onclick="mobilNav('importera',2)"><span class="nb-ikon">⬆</span>Importera</button>
-    <button class="nav-bottom-knapp" onclick="mobilNav('innehav',3)"><span class="nb-ikon">📋</span>Innehav</button>
-    <button class="nav-bottom-knapp" onclick="växlaMerMeny()" id="merKnapp"><span class="nb-ikon">⋯</span>Mer</button>
+    <button class="nav-bottom-knapp aktiv" onclick="mobilNav('dashboard',0)"><span class="nb-ikon">🏠</span>Cockpit</button>
+    <button class="nav-bottom-knapp" onclick="mobilNav('kategorier',1)"><span class="nb-ikon">📋</span>Portfölj</button>
+    <button class="nav-bottom-knapp" onclick="mobilNav('signaler',2)"><span class="nb-ikon">⚡</span>Åtgärder</button>
+    <button class="nav-bottom-knapp" onclick="mobilNav('transaktioner',3)"><span class="nb-ikon">📈</span>Historik</button>
+    <button class="nav-bottom-knapp" onclick="växlaMerMeny()" id="merKnapp"><span class="nb-ikon">⚙</span>Mer</button>
   </div>
 </div>
 <div class="mer-meny-overlay" id="merOverlay" onclick="stängMerMeny()"></div>
 <div class="mer-meny" id="merMeny">
-  <button class="mer-meny-knapp" onclick="mobilNav('signaler',-1);stängMerMeny()"><span class="mm-ikon">🚨</span>Signaler</button>
-  <button class="mer-meny-knapp" onclick="mobilNav('transaktioner',-1);stängMerMeny()"><span class="mm-ikon">🔄</span>Transaktioner</button>
+  <button class="mer-meny-knapp" onclick="mobilNav('importera',-1);stängMerMeny()"><span class="mm-ikon">📥</span>Importera CSV</button>
+  <button class="mer-meny-knapp" onclick="mobilNav('kassa',-1);stängMerMeny()"><span class="mm-ikon">💰</span>Kassa &amp; saldo</button>
   <button class="mer-meny-knapp" onclick="mobilNav('beslutslogg',-1);stängMerMeny()"><span class="mm-ikon">📓</span>Beslutslogg</button>
-  <button class="mer-meny-knapp" onclick="mobilNav('kassa',-1);stängMerMeny()"><span class="mm-ikon">💰</span>Kassa</button>
-  <button class="mer-meny-knapp" onclick="mobilNav('avstamning',-1);stängMerMeny()"><span class="mm-ikon">🔍</span>Avstämning</button>
   <button class="mer-meny-knapp" onclick="mobilNav('installningar',-1);stängMerMeny()"><span class="mm-ikon">⚙️</span>Inställningar</button>
   <button class="mer-meny-knapp" onclick="mobilNav('hjalp',-1);stängMerMeny()"><span class="mm-ikon">❓</span>Hjälp</button>
+  <button class="mer-meny-knapp" onclick="mobilNav('avstamning',-1);stängMerMeny()"><span class="mm-ikon">🔍</span>Avstämning</button>
+  <button class="mer-meny-knapp" onclick="mobilNav('innehav',-1);stängMerMeny()"><span class="mm-ikon">📊</span>Alla innehav (tabell)</button>
 </div>
 
 <main>
@@ -2991,20 +3005,22 @@ function parseSE(str) { if(!str&&str!==0)return 0; return parseFloat(String(str)
 // ══════════════════════════════════════════════════════════
 function visaSektion(id, knapp) {
   document.querySelectorAll('.sektion').forEach(s=>s.classList.remove('aktiv'));
-  document.getElementById(id).classList.add('aktiv');
-  document.querySelectorAll('#desktopNav button').forEach(b=>b.classList.remove('aktiv'));
+  document.getElementById(id)?.classList.add('aktiv');
+  document.querySelectorAll('#desktopNav button:not(.desktop-mer-item)').forEach(b=>b.classList.remove('aktiv'));
   if (knapp) knapp.classList.add('aktiv');
-  if (id==='dashboard') ritaDiagram();
+  if (id==='dashboard') { renderDashboard(); ritaDiagram(); }
   if (id==='kategorier') { renderKategorier(); if (_aktivKatTab === 'jämför') renderKategoriJämförelse(); }
   if (id==='signaler') renderSignaler();
+  if (id==='innehav') renderInnehav();
+  if (id==='transaktioner') renderTransaktioner();
   if (id==='importera') { renderHistorikLista(); renderBaslinjeUI(); }
   if (id==='kassa') { initISKÅr(); renderISK(); }
   if (id==='avstamning') renderAvstemning();
 }
 
 function synkNavKnappar(id) {
-  document.querySelectorAll('#desktopNav button').forEach(b => {
-    if (b.textContent.includes('Hjälp') || b.getAttribute('onclick')?.includes(id)) b.classList.add('aktiv');
+  document.querySelectorAll('#desktopNav button:not(.desktop-mer-item)').forEach(b => {
+    if (b.getAttribute('onclick')?.includes("'"+id+"'")) b.classList.add('aktiv');
   });
 }
 
@@ -3014,6 +3030,32 @@ function mobilNav(id, idx) {
   if (idx >= 0) document.querySelectorAll('.nav-bottom-knapp')[idx]?.classList.add('aktiv');
   else document.getElementById('merKnapp')?.classList.add('aktiv');
   window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function öppnaDesktopMer(btn) {
+  const panel=document.getElementById('desktopMerPanel');
+  const öppen=panel.classList.contains('visa');
+  if(öppen){stängDesktopMer();return;}
+  panel.classList.add('visa');
+  setTimeout(()=>document.addEventListener('click',_stängDesktopMerVidKlick,{once:true}),0);
+}
+function stängDesktopMer() {
+  document.getElementById('desktopMerPanel')?.classList.remove('visa');
+}
+function _stängDesktopMerVidKlick(e) {
+  if(!document.getElementById('desktopMerWrapper')?.contains(e.target)) stängDesktopMer();
+}
+
+function uppdateraHeaderSignal() {
+  const pill=document.getElementById('header-signal-pill');
+  if(!pill)return;
+  const röda=data.innehav.filter(h=>{const kat=KATEGORIER[h.kategori]||KATEGORIER[2];return kat.signal==='ma200'&&ma200Signal(h)==='röd';});
+  const nöd=data.innehav.filter(h=>!!nödutgångSignal(h));
+  const katV=beräknaKategorivärden(),kassal=Math.max(0,beräknaTillgängligLikviditet()),tot=Object.values(katV).reduce((s,v)=>s+v,0)+kassal;
+  const ombal=Object.entries(KATEGORIER).filter(([k,kat])=>{const vp=tot>0?((katV[k]||0)/tot)*100:0;return Math.abs(vp-(kat.målMin+kat.målMax)/2)>STRATEGI_PARAMS.ombalanseringsGräns;});
+  const antal=röda.length+nöd.length+ombal.length;
+  if(antal===0){pill.textContent='🟢 OK';pill.className='header-signal-pill signal-pill-ok';}
+  else{const delar=[];if(röda.length)delar.push(`🔴 ${röda.length}`);if(nöd.length)delar.push(`🛑 ${nöd.length}`);if(ombal.length)delar.push(`⚖️ ${ombal.length}`);pill.textContent=delar.join(' · ');pill.className='header-signal-pill signal-pill-varning';}
 }
 
 function växlaMerMeny() {
@@ -3864,12 +3906,12 @@ function renderAvstemning() {
     </div>`;
 }
 
-function renderAllt() { renderDashboard(); renderFXExponering(); renderUtdelningskalender(); renderKategorier(); renderSignaler(); renderInnehav(); renderTransaktioner(); renderBeslutslogg(); renderKassa(); renderSenasteImport(); ritaDiagram(); renderKatNyckeltal(); renderAvstemning(); renderInstallningar(); }
+function renderAllt() { renderDashboard(); renderFXExponering(); renderUtdelningskalender(); renderKategorier(); renderSignaler(); renderInnehav(); renderTransaktioner(); renderBeslutslogg(); renderKassa(); renderSenasteImport(); ritaDiagram(); renderKatNyckeltal(); renderAvstemning(); renderInstallningar(); uppdateraHeaderSignal(); }
 
 // ══════════════════════════════════════════════════════════
 //  DIAGRAM
 // ══════════════════════════════════════════════════════════
-let chartK=null, chartH=null, historikPeriod=90;
+let chartK=null, chartH=null, historikPeriod='år';
 let chartHuvud=null, hdPeriod='år', hdTyp='line';
 let sorteringKolumn='kategori', sorteringRiktning=1;
 let diagramVy='total';
@@ -4037,7 +4079,11 @@ function byttHistorikPeriod(period, knapp) {
   renderFXExponering();
   renderKategorier();
   renderKatNyckeltal();
+  renderSignaler();
+  renderInnehav();
+  renderTransaktioner();
   if (_aktivKatTab === 'jämför') renderKategoriJämförelse();
+  uppdateraHeaderSignal();
 }
 const donutCenterPlugin = {
   id: 'centerText',
