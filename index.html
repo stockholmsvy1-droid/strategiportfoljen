@@ -320,6 +320,20 @@
     /* ── Global Period Strip ── */
     .period-strip-label { font-size: 0.71rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-right: 2px; }
 
+    /* ── Portfölj-accordion ── */
+    .pf-kat { background:var(--card); border-radius:var(--radius); border:1px solid var(--border); margin-bottom:10px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+    .pf-kat-header { display:flex; align-items:center; gap:10px; padding:11px 16px; cursor:pointer; user-select:none; }
+    .pf-kat-header:hover { background:#f9fafb; }
+    .pf-holding-row { display:flex; align-items:center; gap:10px; padding:9px 16px 9px 20px; cursor:pointer; border-top:1px solid var(--border); font-size:0.85rem; transition:background 0.1s; }
+    .pf-holding-row:hover { background:#f0f4ff; }
+    .pf-namn { font-weight:600; color:var(--primary-mid); text-decoration:underline; text-decoration-color:transparent; transition:text-decoration-color 0.15s; }
+    .pf-holding-row:hover .pf-namn { text-decoration-color:var(--primary-mid); }
+    .pf-inline-form { background:#f8faff; border-top:1px solid #dbeafe; padding:10px 16px 10px 20px; }
+    .pf-vikt-bar { flex:1; max-width:120px; height:5px; background:var(--border); border-radius:3px; overflow:hidden; }
+    .pf-signal-legend { display:flex; gap:14px; flex-wrap:wrap; font-size:0.72rem; color:var(--muted); padding:10px 0 14px; }
+    .pf-signal-legend span { display:flex; align-items:center; gap:4px; }
+    body.mörkt .pf-kat-header:hover, body.mörkt .pf-holding-row:hover { background:#1e293b; }
+    body.mörkt .pf-inline-form { background:#0f172a; border-color:#1e3a5f; }
     /* ── Kategori-kort ── */
     .kat-kort { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
     .kat-kort-header { padding: 16px 20px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
@@ -809,21 +823,32 @@
 
 <!-- ══ KATEGORIER ══ -->
 <section id="kategorier" class="sektion">
-  <!-- Sub-tabs: Grid | Jämför -->
-  <div style="display:flex;gap:6px;margin-bottom:16px;border-bottom:2px solid var(--border);padding-bottom:0">
-    <button id="kat-tab-grid" onclick="byttKatTab('grid')" style="padding:8px 16px;border:none;background:none;cursor:pointer;font-size:0.9rem;font-weight:700;color:var(--primary-mid);border-bottom:2px solid var(--primary-mid);margin-bottom:-2px">🗂 Kategorier</button>
-    <button id="kat-tab-jämför" onclick="byttKatTab('jämför')" style="padding:8px 16px;border:none;background:none;cursor:pointer;font-size:0.9rem;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px">📈 Jämför kategorier</button>
+  <!-- Sub-tabs: Portfölj | Vikter | Jämför -->
+  <div style="display:flex;gap:0;margin-bottom:18px;border-bottom:2px solid var(--border)">
+    <button id="kat-tab-portfölj" onclick="byttKatTab('portfölj')" style="padding:9px 18px;border:none;background:none;cursor:pointer;font-size:0.9rem;font-weight:700;color:var(--primary-mid);border-bottom:2px solid var(--primary-mid);margin-bottom:-2px">📋 Portfölj</button>
+    <button id="kat-tab-grid" onclick="byttKatTab('grid')" style="padding:9px 18px;border:none;background:none;cursor:pointer;font-size:0.9rem;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px">🗂 Kategoriöversikt</button>
+    <button id="kat-tab-jämför" onclick="byttKatTab('jämför')" style="padding:9px 18px;border:none;background:none;cursor:pointer;font-size:0.9rem;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px">📈 Jämför</button>
   </div>
-  <!-- Grid-vy -->
-  <div id="kat-vy-grid">
-    <div class="banner banner-info mb20">ℹ️ <span><strong>Grön</strong> = över MA200. <strong>Gul</strong> = nära MA200 (±5%) eller Tvådagarsvarning (1 dag under). <strong>Röd</strong> = Säljsignal (2 dagar under MA200, kat. 3–6). <strong>Hård stopp 🛑</strong> = kurs &lt; 90% av GAV (kat. 3–6). <strong>Mjuk analys ⚠️</strong> = kurs &lt; 90% av GAV (kat. 1–2). <strong>Gummiband</strong> visar avstånd till MA200: 🟢 0–15% · 🟡 15–40% · 🟠 &gt;40%.</span></div>
+  <!-- Portfölj-accordion (ny default-vy) -->
+  <div id="kat-vy-portfölj">
+    <div class="pf-signal-legend">
+      <span><span class="signal-dot signal-grön"></span> Grön = &gt;5% över MA200</span>
+      <span><span class="signal-dot signal-gul"></span> Gul = nära / dag 1 under MA200</span>
+      <span><span class="signal-dot signal-röd"></span> Röd = Säljsignal (dag 2+, kat 3–6)</span>
+      <span><span class="signal-dot" style="background:#d1d5db"></span> Grå = MA200 ej angivet</span>
+    </div>
+    <div id="pf-accordion"></div>
+  </div>
+  <!-- Grid-vy (Kategoriöversikt) -->
+  <div id="kat-vy-grid" style="display:none">
+    <div class="banner banner-info mb20">ℹ️ <span><strong>Grön</strong> = över MA200. <strong>Gul</strong> = nära MA200 (±5%) eller Tvådagarsvarning (1 dag under). <strong>Röd</strong> = Säljsignal (2 dagar under MA200, kat. 3–6). <strong>Hård stopp 🛑</strong> = kurs &lt; 90% av GAV (kat. 3–6). <strong>Gummiband</strong> visar avstånd till MA200: 🟢 0–15% · 🟡 15–40% · 🟠 &gt;40%.</span></div>
     <div id="kategori-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;"></div>
     <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn btn-primary btn-sm" onclick="läggTillKategori()">+ Ny kategori</button>
       <button class="btn btn-outline btn-sm" onclick="återställKategorier()">↩ Återställ standard</button>
     </div>
   </div>
-  <!-- Jämför-vy (4.2) -->
+  <!-- Jämför-vy -->
   <div id="kat-vy-jämför" style="display:none">
     <div class="card">
       <div class="card-titel" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
@@ -3010,7 +3035,7 @@ function visaSektion(id, knapp) {
   document.querySelectorAll('#desktopNav button:not(.desktop-mer-item)').forEach(b=>b.classList.remove('aktiv'));
   if (knapp) knapp.classList.add('aktiv');
   if (id==='dashboard') { renderDashboard(); ritaDiagram(); }
-  if (id==='kategorier') { renderKategorier(); if (_aktivKatTab === 'jämför') renderKategoriJämförelse(); }
+  if (id==='kategorier') { if(_aktivKatTab==='portfölj') renderPortföljAccordion(); else if(_aktivKatTab==='grid') renderKategorier(); else if(_aktivKatTab==='jämför') renderKategoriJämförelse(); }
   if (id==='signaler') renderSignaler();
   if (id==='innehav') renderInnehav();
   if (id==='transaktioner') renderTransaktioner();
@@ -3406,18 +3431,126 @@ function renderDashboard() {
 // ══════════════════════════════════════════════════════════
 //  KATEGORI-JÄMFÖRELSE (4.2)
 // ══════════════════════════════════════════════════════════
-let _aktivKatTab = 'grid';
+let _aktivKatTab = 'portfölj';
+let pfÖppnaKat = new Set();
 function byttKatTab(tab) {
   _aktivKatTab = tab;
+  document.getElementById('kat-vy-portfölj').style.display = tab === 'portfölj' ? 'block' : 'none';
   document.getElementById('kat-vy-grid').style.display = tab === 'grid' ? 'block' : 'none';
   document.getElementById('kat-vy-jämför').style.display = tab === 'jämför' ? 'block' : 'none';
-  const tGrid = document.getElementById('kat-tab-grid');
-  const tJäm = document.getElementById('kat-tab-jämför');
+  const tabs = ['portfölj','grid','jämför'];
+  const ids = ['kat-tab-portfölj','kat-tab-grid','kat-tab-jämför'];
   const aktiv = 'font-weight:700;color:var(--primary-mid);border-bottom:2px solid var(--primary-mid);margin-bottom:-2px';
   const inaktiv = 'font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px';
-  if (tGrid) tGrid.style.cssText = `padding:8px 16px;border:none;background:none;cursor:pointer;font-size:0.9rem;${tab==='grid'?aktiv:inaktiv}`;
-  if (tJäm) tJäm.style.cssText = `padding:8px 16px;border:none;background:none;cursor:pointer;font-size:0.9rem;${tab==='jämför'?aktiv:inaktiv}`;
+  ids.forEach((id,i) => {
+    const b = document.getElementById(id);
+    if (b) b.style.cssText = `padding:9px 18px;border:none;background:none;cursor:pointer;font-size:0.9rem;${tabs[i]===tab?aktiv:inaktiv}`;
+  });
+  if (tab === 'portfölj') renderPortföljAccordion();
+  if (tab === 'grid') renderKategorier();
   if (tab === 'jämför') renderKategoriJämförelse();
+}
+
+function renderPortföljAccordion() {
+  const el = document.getElementById('pf-accordion');
+  if (!el) return;
+  // Initiera alla öppna om set är tomt
+  if (pfÖppnaKat.size === 0) Object.keys(KATEGORIER).forEach(k => pfÖppnaKat.add(Number(k)));
+  const katV = beräknaKategorivärden();
+  const kassal = Math.max(0, beräknaTillgängligLikviditet());
+  const tot = Object.values(katV).reduce((s,v)=>s+v,0) + kassal;
+  const fS = v => v >= 0 ? '+' : '';
+  el.innerHTML = Object.entries(KATEGORIER).map(([k, kat]) => {
+    const inneh = data.innehav.filter(h => String(h.kategori) === k);
+    const v = katV[k] || 0;
+    const vp = tot > 0 ? (v/tot)*100 : 0;
+    const mm = (kat.målMin + kat.målMax) / 2;
+    const avv = vp - mm;
+    const öppen = pfÖppnaKat.has(Number(k));
+    const fw = Math.min(100, (vp / Math.max(kat.målMax, vp)) * 100);
+    const bFärg = Math.abs(avv) <= 2 ? 'var(--success)' : Math.abs(avv) <= 5 ? 'var(--warning)' : 'var(--danger)';
+    const avvTxt = avv > 2 ? `↑ Övervikt ${avv.toFixed(1)}%` : avv < -2 ? `↓ Undervikt ${Math.abs(avv).toFixed(1)}%` : '✓ OK';
+    const avvFärg = Math.abs(avv) <= 2 ? 'var(--success)' : 'var(--warning)';
+    const holdingRows = inneh.map(h => {
+      const mv = h.antal * h.aktuelKurs;
+      const kb = h.antal * h.köpkurs;
+      const vf = mv - kb;
+      const vp_h = kb > 0 ? (vf / kb) * 100 : 0;
+      const sig = h.ma200 && h.ma200 > 0 ? ma200Signal(h) : (kat.signal === 'ma200' ? 'okänd' : null);
+      const lokal = lokalKursVärde(h);
+      const ma200avst = h.ma200 > 0 ? ((lokal - h.ma200) / h.ma200 * 100) : null;
+      const sigTitel = sig==='grön'?'Över MA200 (>5%)':sig==='gul'?'Nära eller dag 1 under MA200':sig==='röd'?'Säljsignal (2+ dagar under MA200)':sig==='okänd'?'MA200 ej angivet — klicka för att ange':'';
+      const sigHTML = sig && sig !== 'okänd' ? `<span class="signal-dot signal-${sig}" title="${sigTitel}" style="flex-shrink:0"></span>`
+        : sig === 'okänd' ? `<span class="signal-dot" style="background:#d1d5db;flex-shrink:0" title="${sigTitel}"></span>` : '';
+      const ma200HTML = h.ma200 > 0
+        ? `<span style="font-size:0.73rem;color:var(--muted);white-space:nowrap">MA200: ${h.ma200.toFixed(h.ma200>=10?0:2)}${h.valuta&&h.valuta!=='SEK'?' '+h.valuta:''} <span class="${färg(ma200avst)}">(${ma200avst>=0?'+':''}${ma200avst.toFixed(1)}%)</span></span>`
+        : `<span style="font-size:0.73rem;color:var(--primary-mid);cursor:pointer;white-space:nowrap">+ Ange MA200</span>`;
+      return `<div class="pf-holding" id="pf-h-${h.id}">
+        <div class="pf-holding-row" onclick="öppnaInlineEdit('${h.id}')">
+          <span style="display:flex;align-items:center;gap:6px;flex:1;min-width:0;overflow:hidden">${sigHTML}<span class="pf-namn">${h.namn}</span>${h.notat?`<span style="font-size:0.7rem;color:var(--muted);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${h.notat}</span>`:''}</span>
+          <span style="font-size:0.82rem;color:var(--muted);white-space:nowrap">${kr(mv)}</span>
+          <span style="font-size:0.82rem;font-weight:600;white-space:nowrap;min-width:52px;text-align:right" class="${färg(vf)}">${fS(vp_h)}${vp_h.toFixed(1)}%</span>
+          ${ma200HTML}
+          <span style="font-size:0.75rem;color:var(--muted)">✏️</span>
+        </div>
+        <div class="pf-inline-form" id="pf-form-${h.id}" style="display:none">
+          <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+            <div><label style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:3px">MA200 (${h.valuta||'SEK'})</label><input id="pf-ma200i-${h.id}" type="number" step="any" value="${h.ma200||''}" placeholder="0.00" style="width:110px;padding:7px 9px;border:1.5px solid var(--border);border-radius:6px;font-size:0.88rem" inputmode="decimal"></div>
+            <div style="flex:1;min-width:140px"><label style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:3px">Notat</label><input id="pf-notat-${h.id}" type="text" value="${h.notat||''}" placeholder="Valfritt" style="width:100%;padding:7px 9px;border:1.5px solid var(--border);border-radius:6px;font-size:0.88rem"></div>
+            <div style="display:flex;gap:6px;padding-bottom:1px"><button class="btn btn-primary btn-sm" onclick="sparaInlineMa200('${h.id}');event.stopPropagation()">💾 Spara</button><button class="btn btn-ghost btn-sm" onclick="stängInlineEdit('${h.id}');event.stopPropagation()">✕</button><button class="btn btn-ghost btn-sm" onclick="redigeraInnehav('${h.id}');visaSektion('innehav',null);event.stopPropagation()" style="font-size:0.75rem;color:var(--muted)">Alla fält →</button></div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    return `<div class="pf-kat" style="border-left:3px solid ${kat.färg}">
+      <div class="pf-kat-header" onclick="togglePfKat(${k})">
+        <span style="font-size:1.1rem;flex-shrink:0">${kat.emoji}</span>
+        <span style="font-weight:700;flex:1;min-width:0">${kat.namn}</span>
+        <div class="pf-vikt-bar"><div style="height:100%;width:${fw}%;background:${bFärg};border-radius:3px"></div></div>
+        <span style="font-size:0.85rem;font-weight:700;min-width:44px;text-align:right">${vp.toFixed(1)}%</span>
+        <span style="font-size:0.72rem;color:var(--muted);min-width:72px;text-align:right">Mål ${kat.målMin}–${kat.målMax}%</span>
+        <span style="font-size:0.72rem;font-weight:600;min-width:80px;text-align:right;color:${avvFärg}">${avvTxt}</span>
+        <span style="font-size:0.8rem;color:var(--muted);margin-left:4px">${öppen?'▲':'▼'}</span>
+      </div>
+      <div id="pf-body-${k}" style="display:${öppen?'block':'none'}">
+        ${inneh.length===0?'<div style="padding:12px 16px;color:var(--muted);font-size:0.84rem;font-style:italic">Inga innehav i denna kategori.</div>':holdingRows}
+        <div style="padding:8px 16px;border-top:1px solid var(--border)"><button class="btn btn-ghost btn-sm" onclick="visaSektion('innehav',null);event.stopPropagation()" style="font-size:0.78rem">+ Lägg till innehav →</button></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function togglePfKat(k) {
+  const n = Number(k);
+  const body = document.getElementById('pf-body-'+k);
+  const arrow = body?.previousElementSibling?.querySelector('span:last-child');
+  if (pfÖppnaKat.has(n)) { pfÖppnaKat.delete(n); if(body)body.style.display='none'; if(arrow)arrow.textContent='▼'; }
+  else { pfÖppnaKat.add(n); if(body)body.style.display='block'; if(arrow)arrow.textContent='▲'; }
+}
+
+function öppnaInlineEdit(id) {
+  document.querySelectorAll('.pf-inline-form').forEach(f=>{ if(f.id!=='pf-form-'+id) f.style.display='none'; });
+  const form = document.getElementById('pf-form-'+id);
+  if (!form) return;
+  const isOpen = form.style.display !== 'none';
+  form.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) setTimeout(()=>document.getElementById('pf-ma200i-'+id)?.focus(), 50);
+}
+
+function stängInlineEdit(id) {
+  const f = document.getElementById('pf-form-'+id);
+  if (f) f.style.display = 'none';
+}
+
+function sparaInlineMa200(id) {
+  const h = data.innehav.find(x => x.id === id);
+  if (!h) return;
+  h.ma200 = parseFloat(document.getElementById('pf-ma200i-'+id)?.value || '0') || 0;
+  h.notat = document.getElementById('pf-notat-'+id)?.value || '';
+  spara();
+  stängInlineEdit(id);
+  renderPortföljAccordion();
+  uppdateraHeaderSignal();
 }
 
 function renderKategoriJämförelse() {
@@ -4080,6 +4213,7 @@ function byttHistorikPeriod(period, knapp) {
   renderFXExponering();
   renderKategorier();
   renderKatNyckeltal();
+  if (_aktivKatTab === 'portfölj') renderPortföljAccordion();
   renderSignaler();
   renderInnehav();
   renderTransaktioner();
