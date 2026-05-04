@@ -3127,6 +3127,15 @@ function visaHjalpKapitel(id, knapp) {
 //  RENDER — DASHBOARD
 // ══════════════════════════════════════════════════════════
 let _oversiktDonutChart = null;
+function _katSignalFärg(k, kat) {
+  if (kat.signal !== 'ma200') return null; // kat 1-2: ingen MA200-regel
+  const inneh = data.innehav.filter(h => String(h.kategori) === String(k) && h.ma200 > 0);
+  if (!inneh.length) return '#d1d5db'; // grå = MA200 ej angivet
+  const sigs = inneh.map(h => ma200Signal(h));
+  if (sigs.includes('röd'))  return '#ef4444';
+  if (sigs.includes('gul'))  return '#f59e0b';
+  return '#22c55e';
+}
 function renderÖversiktDonut() {
   const canvas = document.getElementById('oversikt-donut');
   const legend = document.getElementById('oversikt-donut-legend');
@@ -3134,18 +3143,32 @@ function renderÖversiktDonut() {
   const katV = beräknaKategorivärden();
   const kassal = Math.max(0, beräknaTillgängligLikviditet());
   const tot = Object.values(katV).reduce((s,v)=>s+v,0) + kassal;
-  const labels = [], data2 = [], colors = [];
-  Object.entries(KATEGORIER).forEach(([k,kat]) => {
+  const rader = [];
+  Object.entries(KATEGORIER).forEach(([k, kat]) => {
     const v = katV[k] || 0;
-    if (v > 0) { labels.push(kat.namn); data2.push(parseFloat((v/tot*100).toFixed(1))); colors.push(kat.färg); }
+    if (v > 0) rader.push({ k, kat, pct: parseFloat((v/tot*100).toFixed(1)) });
   });
   if (_oversiktDonutChart) { _oversiktDonutChart.destroy(); _oversiktDonutChart = null; }
   _oversiktDonutChart = new Chart(canvas, {
-    type:'doughnut',
-    data:{ labels, datasets:[{ data:data2, backgroundColor:colors, borderWidth:2, borderColor:'#fff' }] },
-    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: ctx => ` ${ctx.label}: ${ctx.parsed}%` } } }, cutout:'68%' }
+    type: 'doughnut',
+    data: {
+      labels: rader.map(r => r.kat.namn),
+      datasets: [{ data: rader.map(r => r.pct), backgroundColor: rader.map(r => r.kat.färg), borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: ctx => ` ${ctx.label}: ${ctx.parsed}%` } } }, cutout:'68%' }
   });
-  if (legend) legend.innerHTML = labels.map((l,i)=>`<div style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:2px;background:${colors[i]};flex-shrink:0;display:inline-block"></span><span style="color:var(--muted)">${l}</span><span style="font-weight:700;margin-left:auto">${data2[i]}%</span></div>`).join('');
+  if (legend) legend.innerHTML = rader.map(r => {
+    const sigFärg = _katSignalFärg(r.k, r.kat);
+    const sigDot = sigFärg
+      ? `<span style="width:8px;height:8px;border-radius:50%;background:${sigFärg};flex-shrink:0;display:inline-block;border:1px solid rgba(0,0,0,0.08)"></span>`
+      : '';
+    return `<div style="display:flex;align-items:center;gap:5px">
+      <span style="width:9px;height:9px;border-radius:2px;background:${r.kat.färg};flex-shrink:0;display:inline-block"></span>
+      <span style="color:var(--muted);flex:1">${r.kat.namn}</span>
+      ${sigDot}
+      <span style="font-weight:700">${r.pct}%</span>
+    </div>`;
+  }).join('');
 }
 
 function renderKategoriStatusRad() {
