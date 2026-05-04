@@ -101,9 +101,10 @@
     .header-actions { display: flex; gap: 8px; align-items:center; }
     .header-row2 .period-knapp { background:rgba(255,255,255,0.14); border:1px solid rgba(255,255,255,0.28); color:rgba(255,255,255,0.88); font-size:0.76rem; padding:3px 9px; min-height:30px; border-radius:6px; }
     .header-row2 .period-knapp.aktiv { background:white; color:var(--primary); border-color:white; font-weight:700; }
-    .header-signal-pill { padding:3px 10px; border-radius:20px; font-size:0.73rem; font-weight:700; white-space:nowrap; margin-right:4px; }
-    .signal-pill-ok { background:rgba(0,200,83,0.22); color:#a7f3d0; }
-    .signal-pill-varning { background:rgba(239,68,68,0.35); color:#fca5a5; cursor:pointer; }
+    .header-signal-pill { width:14px; height:14px; border-radius:50%; display:inline-block; cursor:pointer; border:2px solid rgba(255,255,255,0.4); margin-right:8px; flex-shrink:0; transition:transform 0.15s; }
+    .header-signal-pill:hover { transform:scale(1.25); }
+    .signal-pill-ok { background:#22c55e; }
+    .signal-pill-varning { background:#ef4444; box-shadow:0 0 6px rgba(239,68,68,0.7); }
     /* Desktop Mer-panel */
     #desktopMerWrapper { position:relative; }
     #desktopMerPanel { display:none; position:absolute; top:100%; right:0; z-index:200; background:white; border:1px solid var(--border); border-radius:10px; box-shadow:0 6px 24px rgba(0,0,0,0.13); min-width:210px; padding:6px 0; margin-top:4px; }
@@ -546,7 +547,7 @@
       <div class="header-subtitle">The Magnificent Martin's Money-Making Machine</div>
     </div>
     <div class="header-actions">
-      <span id="header-signal-pill" class="header-signal-pill signal-pill-ok" onclick="visaSektion('signaler',null);synkNavKnappar('signaler')" title="Signalstatus">🟢 OK</span>
+      <span id="header-signal-pill" class="header-signal-pill signal-pill-ok" onclick="const b=document.querySelector('#desktopNav button[onclick*=signaler]');visaSektion('signaler',b)" title="Allt OK — inga åtgärder krävs"></span>
       <button class="btn btn-outline btn-sm" onclick="exporteraExcel()">⬇ Excel</button>
       <button class="btn btn-white btn-sm" id="tema-knapp" onclick="växlaTema()" title="Byt tema">☀️</button>
     </div>
@@ -3054,8 +3055,8 @@ function uppdateraHeaderSignal() {
   const katV=beräknaKategorivärden(),kassal=Math.max(0,beräknaTillgängligLikviditet()),tot=Object.values(katV).reduce((s,v)=>s+v,0)+kassal;
   const ombal=Object.entries(KATEGORIER).filter(([k,kat])=>{const vp=tot>0?((katV[k]||0)/tot)*100:0;return Math.abs(vp-(kat.målMin+kat.målMax)/2)>STRATEGI_PARAMS.ombalanseringsGräns;});
   const antal=röda.length+nöd.length+ombal.length;
-  if(antal===0){pill.textContent='🟢 OK';pill.className='header-signal-pill signal-pill-ok';}
-  else{const delar=[];if(röda.length)delar.push(`🔴 ${röda.length}`);if(nöd.length)delar.push(`🛑 ${nöd.length}`);if(ombal.length)delar.push(`⚖️ ${ombal.length}`);pill.textContent=delar.join(' · ');pill.className='header-signal-pill signal-pill-varning';}
+  if(antal===0){pill.className='header-signal-pill signal-pill-ok';pill.title='Allt OK — inga åtgärder krävs';}
+  else{const delar=[];if(röda.length)delar.push(`${röda.length} säljsignal${röda.length>1?'er':''}`);if(nöd.length)delar.push(`${nöd.length} nödutgång${nöd.length>1?'ar':''}`);if(ombal.length)delar.push(`${ombal.length} kategori${ombal.length>1?'er':''} utanför mål`);pill.title='Åtgärder krävs: '+delar.join(', ')+' — klicka för detaljer';pill.className='header-signal-pill signal-pill-varning';}
 }
 
 function växlaMerMeny() {
