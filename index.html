@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Strategiportföljen">
   <meta name="theme-color" content="#1e3a5f">
-  <title>Strategiportföljen v3.13</title>
+  <title>Strategiportföljen v3.15</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231e3a5f'/%3E%3Cpolyline points='3,25 9,17 15,21 21,11 29,5' stroke='%230ea5e9' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='29' cy='5' r='2.5' fill='%234ade80'/%3E%3C/svg%3E">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
@@ -1316,8 +1316,26 @@
       </div>
     </div>
 
-    <!-- NYHETER v3.13 -->
+    <!-- NYHETER v3.15 -->
     <div class="hjalp-kapitel" id="hk-nyheter">
+      <div class="hjalp-rubrik">✨ Nyheter i version 3.15</div>
+      <div class="hjalp-ingress">Version 3.15 introducerar en helt ny Översikt-flik som ersätter den gamla Dashboard-startsidan — ett cockpit med de viktigaste signalerna samlade på ett ställe.</div>
+      <div class="hjalp-h2">📊 Ny Översikt-flik</div>
+      <div class="hjalp-p">Fem flikar i navigeringen: Översikt, Portfölj, Signaler, Kategorier och Mer. Översikt är startsida med global period-väljare (1D / 7D / 30D / 90D / 6M / 1Å / i År / Allt) som påverkar hela appen.</div>
+      <div class="hjalp-h2">🎛️ Cockpit — 4 nyckeltal</div>
+      <div class="hjalp-p">Översta raden på Översikt visar: Totalt portföljvärde, Periodens avkastning, Nettoinsatt kapital och Tillgänglig likviditet. Siffrorna uppdateras per vald period.</div>
+      <div class="hjalp-h2">📋 Portfölj-accordion</div>
+      <div class="hjalp-p">Alla innehav listade per kategori i ett fällbart accordion. MA200-värden kan redigeras direkt i listan — klicka på siffran, skriv nytt värde, tryck Enter.</div>
+      <div class="hjalp-h2">🟢 Signal-pills</div>
+      <div class="hjalp-p">Varje innehav visar en färgad signal-pill (grön/gul/röd) med tooltip som förklarar statusen. Signalerna följer tvådagarsregeln för kat. 3–6.</div>
+      <div class="hjalp-h2">🍩 Kategori-donut med viktbalans</div>
+      <div class="hjalp-p">Donut-diagrammet på Översikt visar portföljens fördelning per kategori. Legenden visar signalcirkel, kategorinamn, pil och procentandel. En viktbalans-signal visas om kategorin avviker från målintervallet.</div>
+      <div class="hjalp-h2">🔧 Fix: interna Avanza-överföringar</div>
+      <div class="hjalp-p">Interna kontoöverföringar mellan Avanza-konton räknas inte längre som insatt kapital. Nettoinsatt visas nu korrekt utan dubbelräkning av flytt mellan egna konton.</div>
+    </div><!-- /hk-nyheter v3.15 -->
+
+    <!-- NYHETER v3.13 -->
+    <div class="hjalp-kapitel">
       <div class="hjalp-rubrik">✨ Nyheter i version 3.13</div>
       <div class="hjalp-ingress">Version 3.13 är en genomgripande förbättring av Avstämning-fliken — layout, datakvalitet och korrekt hantering av kassa och sparkonto.</div>
       <div class="hjalp-h2">📊 Avstämning — ny layout</div>

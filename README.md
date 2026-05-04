@@ -171,48 +171,34 @@ Alla 46 testfall i `Testprotokoll_Strategiportfoljen_v208.xlsx` analyserade mot 
 
 ## Version
 
-**v3.13** — maj 2026
+**v3.15** — maj 2026
 
 Byggt för Martin · Strategi från januari 2026
 
 ---
 
-## Senaste version — v3.13
+## Senaste version — v3.15
 
-### Avstämning mot Avanza
+### Ny Översikt-flik
 
-Fliken är omarbetad för att ge en pålitlig jämförelse mot Avanzas egna översikt.
+v3.15 bygger om appens startsida till ett cockpit med de viktigaste signalerna samlade på ett ställe. Navigeringen har fem flikar: Översikt, Portfölj, Signaler, Kategorier och Mer.
 
-- **Ny layout** — rubrik "Avstämning mot Avanza", framträdande summaryrad med Totalt värde och Tillgängligt för köp (samma stil som Avanza)
-- **Korrekt kontototal** — investerat + tillgängligt för köp = samma summa som Avanza visar per konto
-- **Avanza sparande Martin (SPAR)** — visas nu med korrekt saldo från manuellt angivet värde
-- **Tillgängligt för köp** — visades felaktigt som 0 kr trots inmatat värde, nu rättat
+- **Global period-väljare** — 1D / 7D / 30D / 90D / 6M / 1Å / i År / Allt, påverkar hela appen
+- **Cockpit med 4 nyckeltal** — Totalt portföljvärde, Periodens avkastning, Nettoinsatt kapital och Tillgänglig likviditet
+- **Portfölj-accordion** — alla innehav per kategori, fällbara sektioner, inline MA200-redigering direkt i listan
+- **Signal-pills** — färgade gröna/gula/röda prickar med tooltip per innehav; följer tvådagarsregeln för kat. 3–6
+- **Kategori-donut** — fördelningsdiagram med signalcirkel, pil och viktbalans-signal i legenden
 
-### Buggfix: Eget fondsparande (sedan v3.03)
+### Fix: interna Avanza-överföringar
 
-Kontot "Eget fondsparande" var kopplat till fel kontonummer sedan version 3.03.
-
-| | Fel (t.o.m. v3.12) | Rätt (v3.13) |
-|---|---|---|
-| Kontonr i appen | 9552-6014837 | 9557-7346055 |
-| Vad det är | Pensionskonto | Eget fondsparande ISK |
-
-Pensionskontot exkluderas nu korrekt. Befintlig kontokonfiguration och exkluderingslista migreras automatiskt vid laddning — ingen manuell åtgärd krävs.
-
-### Arkitektur: manuell kassa ingår inte i portföljvärdet
-
-Manuella insättningar och uttag (Kassa-sektionen) räknas inte längre in i portföljvärdet. De används enbart för att beräkna nettoinsatt kapital och avkastning — de är aldrig "pengar" i sig utan historik.
-
-**Före:** Portföljvärde = innehav + Avanza-kassa + manuella insättningar *(dubbelräknade om sparkonto är separat registrerat)*
-
-**Efter:** Portföljvärde = innehav + Avanza-kassa *(korrekt, ingen dubbelräkning)*
-
-Nettoinsatt-kortet på Dashboard fungerar som förut och visar insättningshistoriken.
+Överföringar mellan egna Avanza-konton filtreras nu bort och räknas inte som insatt kapital. Nettoinsatt visas korrekt utan dubbelräkning av interna flytt.
 
 ---
 
 ### Ändringslogg
 
+- **v3.15** — Ny Översikt-flik ersätter Dashboard som startsida: global period-väljare (1D–Allt), cockpit med 4 nyckeltal (portföljvärde, periodsavkastning, nettoinsatt, likviditet), portfölj-accordion med inline MA200-redigering, signal-pills (grön/gul/röd) med tooltip per innehav, kategori-donut med signalcirkel och viktbalans-signal i legend. Navigering ombyggd till 5 flikar: Översikt, Portfölj, Signaler, Kategorier, Mer. Fix: interna Avanza-kontoöverföringar filtreras nu bort ur nettoinsatt kapital — eliminerar dubbelräkning vid flytt mellan egna konton.
+- **v3.14** — Ta bort Alpha Vantage-ticker-sökning; MA200 anges nu manuellt.
 - **v3.13** — Avstämning omarbetad: ny rubrik "Avstämning mot Avanza", framträdande summaryrad med Totalt värde och Tillgängligt för köp i Avanzas stil. Buggfix: Eget fondsparande pekade på fel kontonr (pensionskonto 9552-6014837 → rätt ISK-konto 9557-7346055) sedan v3.03 — automatisk migration. Buggfix: Avanza sparande Martin (SPAR) visade inte sitt värde i Avstämning. Buggfix: Tillgängligt för köp visade 0 kr trots inmatat värde. Buggfix: kontots totalt i Avstämning summerar nu investerat + kassa (matchar Avanzas visning). Arkitekturfix: manuella insättningar/uttag ingår inte längre i portföljvärdet — de används enbart för nettoinsatt-historik och avkastningsberäkning, eliminerar dubbelräkning mot sparkontot.
 - **v3.12** — Stabilitetsfixversion: kontohanteringen omskriven för att använda kontonummer (t.ex. "7882604") som intern nyckel i stället för kontonamn. Eliminerar ett återkommande fel där "1. Utländska Aktier 2025" och "2. Utländska Aktier 2025" normaliserades till samma sträng och blandades ihop i Kassa och Avstämning. positionsKassa och positionsKontoVärden lagras nu alltid med kontonr som nyckel. Befintlig data migreras automatiskt vid start. Buggfix: beräknaAvanzaKassaPerKonto() löser nu upp kontoStartsaldo-namn till kontonr korrekt.
 - **v3.11** — Ny ⚙️ Inställningar-sektion: Kontokonfiguration (add/edit/delete Avanza-konton från UI), Kategori-editor (ersätter prompt()-dialoger med visuellt inline-formulär för alla fält), Strategiparametrar (MA200-gränser, nödutgång, ombalansering, konc.risk), Profil & information, Värdepappersfilter (exkludera VP/konton vid import), Export/import av inställningar som JSON. Kassa-tabellen visar nu alla konton med inline-inmatning per rad (inkl. sparkonto som separat rad). Buggfix: kontonummer för Avanza sparande Martin korrigerat till 0040080455; Kassa visade inte konton utan likvida medel i positionsfilen.
