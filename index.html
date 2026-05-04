@@ -626,10 +626,12 @@
 
 <!-- ══ DASHBOARD ══ -->
 <section id="dashboard" class="sektion aktiv">
-  <div id="signal-band" style="margin-bottom:16px;padding:10px 16px;border-radius:8px;background:#fef2f2;border:1px solid #fca5a5;cursor:pointer;display:none;justify-content:space-between;align-items:center" onclick="visaSektion('signaler')">
+  <div id="signal-band" style="margin-bottom:14px;padding:10px 16px;border-radius:8px;background:#fef2f2;border:1px solid #fca5a5;cursor:pointer;display:none;justify-content:space-between;align-items:center" onclick="const b=document.querySelector('#desktopNav button[onclick*=signaler]');visaSektion('signaler',b)">
     <div id="signal-band-text" style="font-size:0.87rem;font-weight:600;color:#b91c1c"></div>
-    <span style="font-size:0.8rem;color:#b91c1c;font-weight:700">Visa signaler →</span>
+    <span style="font-size:0.8rem;color:#b91c1c;font-weight:700">Visa åtgärder →</span>
   </div>
+  <!-- Kategori-statusrad -->
+  <div id="kategori-status-rad" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px"></div>
   <div id="dashboard-fx-status" style="display:none;font-size:0.78rem;color:var(--muted);margin-bottom:10px;padding:6px 4px;display:flex;gap:12px;flex-wrap:wrap;align-items:center"></div>
 
   <!-- ══ HUVUD-DIAGRAM ══ -->
@@ -639,22 +641,12 @@
         <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;font-weight:700">Portföljutveckling</div>
         <div id="hd-rubrik" style="font-size:1rem;font-weight:700;color:var(--primary)">i År</div>
       </div>
-      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-        <div style="display:flex;gap:3px;flex-wrap:wrap">
-          <button onclick="byttHDPeriod(30,this)"    class="hd-knapp">30D</button>
-          <button onclick="byttHDPeriod(90,this)"    class="hd-knapp">90D</button>
-          <button onclick="byttHDPeriod(180,this)"   class="hd-knapp">6M</button>
-          <button onclick="byttHDPeriod(365,this)"   class="hd-knapp">1Å</button>
-          <button onclick="byttHDPeriod('år',this)"  class="hd-knapp aktiv">i År</button>
-          <button onclick="byttHDPeriod(0,this)"     class="hd-knapp">Allt</button>
-        </div>
-        <div style="display:flex;gap:3px;border-left:1px solid var(--border);padding-left:6px">
-          <button onclick="byttHDTyp('line',this)" id="hd-typ-linje"  class="hd-knapp aktiv" title="Linjegraf">📈 Linje</button>
-          <button onclick="byttHDTyp('bar',this)"  id="hd-typ-stapel" class="hd-knapp"       title="Staplar">📊 Stapel</button>
-        </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button onclick="byttHDTyp('line',this)" id="hd-typ-linje"  class="hd-knapp aktiv" title="Linjegraf">📈 Linje</button>
+        <button onclick="byttHDTyp('bar',this)"  id="hd-typ-stapel" class="hd-knapp"       title="Staplar">📊 Stapel</button>
       </div>
     </div>
-    <div style="position:relative;height:290px"><canvas id="huvud-diagram"></canvas></div>
+    <div style="position:relative;height:240px"><canvas id="huvud-diagram"></canvas></div>
     <!-- Serier -->
     <div class="hd-serie-rad">
       <label><input type="checkbox" id="hd-cb-portfölj"     checked onchange="ritaHuvudDiagram()"><span class="hd-linje" style="background:#2563eb"></span>Portföljvärde</label>
@@ -681,21 +673,21 @@
       <div class="sub" id="nk-avkastning-sub"></div>
       <div class="nk-hint">Värdeökning exkl. insättningar och uttag</div>
     </div>
-    <div class="nyckeltal">
+    <div class="nyckeltal" style="display:none">
       <div class="nk-icon">💳</div>
       <div class="label" id="nk-nettoinsatt-label">Nettoinsatt kapital</div>
       <div class="value" id="nk-nettoinsatt">— kr</div>
       <div class="sub" id="nk-nettoinsatt-sub"></div>
       <div class="nk-hint">Insatt − uttaget kapital totalt</div>
     </div>
-    <div class="nyckeltal">
+    <div class="nyckeltal" style="display:none">
       <div class="nk-icon">📊</div>
       <div class="label">Innehavens värde</div>
       <div class="value" id="nk-innehav">— kr</div>
       <div class="sub" id="nk-innehav-sub"></div>
       <div class="nk-hint">Orealiserad vinst/förlust vs kostnadsbas</div>
     </div>
-    <div class="nyckeltal">
+    <div class="nyckeltal" style="display:none">
       <div class="nk-icon">🏦</div>
       <div class="label">Tillgänglig likviditet</div>
       <div class="value" id="nk-kassa">— kr</div>
@@ -715,8 +707,8 @@
       <div class="nk-hint">Vinster och förluster vid försäljning</div>
     </div>
   </div>
-  <!-- Periodutveckling-kort -->
-  <div class="card mb20" id="periodutveckling-kort">
+  <!-- Periodutveckling-kort (dold i Cockpit — detaljdata) -->
+  <div class="card mb20" id="periodutveckling-kort" style="display:none">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:14px">
       <div>
         <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;font-weight:700">Periodutveckling</div>
@@ -752,7 +744,6 @@
     </div>
   </div>
 
-  <!-- Kategoriutveckling-tabell (ny, v3.01) -->
   <div class="card mb20" id="kat-utveckling-kort" style="display:none">
     <div class="card-titel" style="margin-bottom:12px">
       <span class="card-titel-text" id="kat-utveckling-rubrik">Kategoriutveckling</span>
@@ -776,44 +767,14 @@
     <div id="kat-utveckling-mobil" class="mobil-kort-lista" style="display:none"></div>
   </div>
 
-  <div id="utdelningskalender-kort" class="card mb20" style="display:none">
-    <div class="card-titel"><span class="card-titel-text">📅 Förväntade utdelningar — nästa 90 dagar</span></div>
-    <div id="utdelningskalender-innehall" style="font-size:0.84rem"></div>
-  </div>
-
-  <div class="diagram-grid mb20">
-    <div class="card"><div class="card-titel"><span class="card-titel-text">Fördelning per kategori</span></div><div class="diagram-wrap"><canvas id="diagramKategori"></canvas></div></div>
-    <div class="card" id="fx-diagram-kort" style="display:none">
-      <div class="card-titel"><span class="card-titel-text">Valutaexponering</span></div>
-      <div id="fx-band" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;font-size:0.82rem"></div>
-      <div class="diagram-wrap"><canvas id="diagramFX"></canvas></div>
-    </div>
-  </div>
-  <div class="card mb20">
-    <div class="card-titel" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-      <span class="card-titel-text">Värdeutveckling</span>
-      <div style="display:flex;gap:4px">
-        <button onclick="växlaDiagramVy('total',this)" id="dv-knapp-total" class="period-knapp aktiv">Totalvärde</button>
-        <button onclick="växlaDiagramVy('justerat',this)" id="dv-knapp-just" class="period-knapp">Exkl. insättningar</button>
-      </div>
-    </div>
-    <div class="diagram-wrap" style="height:280px"><canvas id="diagramHistorik"></canvas></div>
-  </div>
-  <div class="card mb20" id="kat-avkastning-kort" style="display:none">
-    <div class="card-titel"><span class="card-titel-text" id="kat-avkastning-rubrik">Kategoriavkastning</span></div>
-    <div id="kat-avkastning-staplar" style="padding:4px 0"></div>
-  </div>
-  <div class="card mb20"><div class="card-titel"><span class="card-titel-text">Kategorivikter vs mål</span></div><div id="dashboard-vikter"></div></div>
-  <div class="card">
-    <div class="card-titel"><span class="card-titel-text">Innehav – översikt</span></div>
-    <div class="tabell-wrap">
-      <table id="tabellDashboard">
-        <thead><tr><th>Namn</th><th>Kategori</th><th>Antal</th><th>GAV (SEK)</th><th>Akt. kurs</th><th>Värde</th><th>Vinst/Förlust</th><th>%</th></tr></thead>
-        <tbody></tbody>
-      </table>
-      <div class="mobil-kort-lista" id="dashKortLista"></div>
-    </div>
-  </div>
+  <!-- Dessa element behålls för JS-referenser men visas ej på Cockpit -->
+  <div id="utdelningskalender-kort" style="display:none"><div id="utdelningskalender-innehall"></div></div>
+  <div style="display:none"><canvas id="diagramKategori"></canvas></div>
+  <div style="display:none" id="fx-diagram-kort"><div id="fx-band"></div><canvas id="diagramFX"></canvas></div>
+  <div style="display:none"><canvas id="diagramHistorik"></canvas><button id="dv-knapp-total"></button><button id="dv-knapp-just"></button></div>
+  <div style="display:none" id="kat-avkastning-kort"><div id="kat-avkastning-rubrik"></div><div id="kat-avkastning-staplar"></div></div>
+  <div style="display:none"><div id="dashboard-vikter"></div></div>
+  <div style="display:none"><table id="tabellDashboard"><tbody></tbody></table><div id="dashKortLista"></div></div>
 </section>
 
 <!-- ══ SIGNALER ══ -->
@@ -3104,6 +3065,33 @@ function visaHjalpKapitel(id, knapp) {
 // ══════════════════════════════════════════════════════════
 //  RENDER — DASHBOARD
 // ══════════════════════════════════════════════════════════
+function renderKategoriStatusRad() {
+  const el = document.getElementById('kategori-status-rad');
+  if (!el) return;
+  const katV = beräknaKategorivärden();
+  const kassal = Math.max(0, beräknaTillgängligLikviditet());
+  const tot = Object.values(katV).reduce((s,v)=>s+v,0) + kassal;
+  el.innerHTML = Object.entries(KATEGORIER).map(([k, kat]) => {
+    const v = katV[k] || 0;
+    const vp = tot > 0 ? (v/tot)*100 : 0;
+    const avv = vp - (kat.målMin + kat.målMax) / 2;
+    const inneh = data.innehav.filter(h => String(h.kategori) === k);
+    let sigDot = '';
+    if (kat.signal === 'ma200' && inneh.length > 0) {
+      const röda = inneh.filter(h => h.ma200 > 0 && ma200Signal(h) === 'röd').length;
+      const gula = inneh.filter(h => h.ma200 > 0 && ma200Signal(h) === 'gul').length;
+      sigDot = röda > 0 ? ' <span style="color:#ef4444;font-size:0.7rem">●</span>' : gula > 0 ? ' <span style="color:#f59e0b;font-size:0.7rem">●</span>' : ' <span style="color:#22c55e;font-size:0.7rem">●</span>';
+    }
+    const bFärg = Math.abs(avv) <= 2 ? '#16a34a' : '#d97706';
+    const avvTxt = avv > 2 ? ' ↑' : avv < -2 ? ' ↓' : '';
+    const tooltip = `${kat.namn}: ${vp.toFixed(1)}% (mål ${kat.målMin}–${kat.målMax}%)${avv>2?' — Övervikt':avv<-2?' — Undervikt':''}`;
+    return `<div onclick="const b=document.querySelector('#desktopNav button[onclick*=kategorier]');visaSektion('kategorier',b)" title="${tooltip}" style="display:flex;align-items:center;gap:4px;padding:5px 10px;background:var(--card);border:1px solid var(--border);border-radius:8px;font-size:0.8rem;cursor:pointer;transition:background 0.15s" onmouseover="this.style.background='#f0f4ff'" onmouseout="this.style.background='var(--card)'">
+      <span>${kat.emoji}</span>
+      <span style="font-weight:700;color:${bFärg}">${vp.toFixed(0)}%${avvTxt}</span>${sigDot}
+    </div>`;
+  }).join('');
+}
+
 function renderDashboard() {
   const iv=beräknaInnehavVärde(), kassa=beräknaTillgängligLikviditet(), kb=beräknaKostnadsbas();
   const total=iv+kassa, orealiserad=iv-kb, orealiserad_pct=kb>0?(orealiserad/kb)*100:0;
@@ -4040,7 +4028,7 @@ function renderAvstemning() {
     </div>`;
 }
 
-function renderAllt() { renderDashboard(); renderFXExponering(); renderUtdelningskalender(); renderKategorier(); renderSignaler(); renderInnehav(); renderTransaktioner(); renderBeslutslogg(); renderKassa(); renderSenasteImport(); ritaDiagram(); renderKatNyckeltal(); renderAvstemning(); renderInstallningar(); uppdateraHeaderSignal(); }
+function renderAllt() { renderDashboard(); renderFXExponering(); renderUtdelningskalender(); renderKategorier(); renderSignaler(); renderInnehav(); renderTransaktioner(); renderBeslutslogg(); renderKassa(); renderSenasteImport(); ritaDiagram(); renderKatNyckeltal(); renderAvstemning(); renderInstallningar(); uppdateraHeaderSignal(); renderKategoriStatusRad(); }
 
 // ══════════════════════════════════════════════════════════
 //  DIAGRAM
@@ -4219,6 +4207,7 @@ function byttHistorikPeriod(period, knapp) {
   renderTransaktioner();
   if (_aktivKatTab === 'jämför') renderKategoriJämförelse();
   uppdateraHeaderSignal();
+  renderKategoriStatusRad();
 }
 const donutCenterPlugin = {
   id: 'centerText',
