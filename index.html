@@ -2948,33 +2948,57 @@ function beräknaVinstDekomponering(h) {
   return { total: totalSEK, bolag, valuta: totalSEK - bolag, hasFX: true };
 }
 
-// Nettoinsatt kapital (insättningar − uttag från transaktionsfilen + kassa)
+// Identifierar interna Avanza-överföringar (uttag från ett konto + insättning till annat, samma dag, samma belopp ±1 kr)
+// Dessa ska INTE räknas in i nettoinsatt — de är inte externa kapitalflöden.
+function internaTxIdx() {
+  const tx = data.avanzaTransaktioner;
+  const intern = new Set();
+  const matched = new Set();
+  tx.forEach((u, ui) => {
+    if (u.typ !== 'Uttag') return;
+    const utB = Math.abs(parseSE(u.belopp));
+    tx.forEach((inp, ii) => {
+      if (matched.has(ii) || ii === ui || inp.typ !== 'Insättning') return;
+      const inpB = Math.abs(parseSE(inp.belopp));
+      if (Math.abs(utB - inpB) <= 1 && u.datum === inp.datum) {
+        intern.add(ui); intern.add(ii); matched.add(ii);
+      }
+    });
+  });
+  return intern;
+}
+
+// Nettoinsatt kapital — exkluderar interna Avanza-kontoöverföringar
 function beräknaNettoInsatt() {
-  const txIns = data.avanzaTransaktioner.filter(t=>t.typ==='Insättning').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
-  const txUt = data.avanzaTransaktioner.filter(t=>t.typ==='Uttag').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
+  const intern = internaTxIdx();
+  const txIns = data.avanzaTransaktioner.filter((t,i)=>!intern.has(i)&&t.typ==='Insättning').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
+  const txUt  = data.avanzaTransaktioner.filter((t,i)=>!intern.has(i)&&t.typ==='Uttag').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
   const kassaIns = data.kassaTransaktioner.filter(t=>t.typ==='insättning').reduce((s,t)=>s+t.belopp,0);
-  const kassaUt = data.kassaTransaktioner.filter(t=>t.typ==='uttag').reduce((s,t)=>s+t.belopp,0);
+  const kassaUt  = data.kassaTransaktioner.filter(t=>t.typ==='uttag').reduce((s,t)=>s+t.belopp,0);
   return txIns - txUt + kassaIns - kassaUt;
 }
 function beräknaNettoInsattMellan(frånDatum, tillDatum) {
-  const txIns = data.avanzaTransaktioner.filter(t=>t.datum>=frånDatum&&t.datum<=tillDatum&&t.typ==='Insättning').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
-  const txUt  = data.avanzaTransaktioner.filter(t=>t.datum>=frånDatum&&t.datum<=tillDatum&&t.typ==='Uttag').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
+  const intern = internaTxIdx();
+  const txIns = data.avanzaTransaktioner.filter((t,i)=>!intern.has(i)&&t.datum>=frånDatum&&t.datum<=tillDatum&&t.typ==='Insättning').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
+  const txUt  = data.avanzaTransaktioner.filter((t,i)=>!intern.has(i)&&t.datum>=frånDatum&&t.datum<=tillDatum&&t.typ==='Uttag').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
   const kassaIns = data.kassaTransaktioner.filter(t=>t.datum>=frånDatum&&t.datum<=tillDatum&&t.typ==='insättning').reduce((s,t)=>s+t.belopp,0);
   const kassaUt  = data.kassaTransaktioner.filter(t=>t.datum>=frånDatum&&t.datum<=tillDatum&&t.typ==='uttag').reduce((s,t)=>s+t.belopp,0);
   return txIns - txUt + kassaIns - kassaUt;
 }
 function beräknaNettoInsattUnderPeriod(frånDatum) {
-  const txIns = data.avanzaTransaktioner.filter(t=>t.datum>=frånDatum&&t.typ==='Insättning').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
-  const txUt  = data.avanzaTransaktioner.filter(t=>t.datum>=frånDatum&&t.typ==='Uttag').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
+  const intern = internaTxIdx();
+  const txIns = data.avanzaTransaktioner.filter((t,i)=>!intern.has(i)&&t.datum>=frånDatum&&t.typ==='Insättning').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
+  const txUt  = data.avanzaTransaktioner.filter((t,i)=>!intern.has(i)&&t.datum>=frånDatum&&t.typ==='Uttag').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
   const kassaIns = data.kassaTransaktioner.filter(t=>t.datum>=frånDatum&&t.typ==='insättning').reduce((s,t)=>s+t.belopp,0);
   const kassaUt  = data.kassaTransaktioner.filter(t=>t.datum>=frånDatum&&t.typ==='uttag').reduce((s,t)=>s+t.belopp,0);
   return txIns - txUt + kassaIns - kassaUt;
 }
 function beräknaNettoInsattTillDatum(datum) {
-  const txIns = data.avanzaTransaktioner.filter(t=>t.datum<=datum&&t.typ==='Insättning').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
-  const txUt = data.avanzaTransaktioner.filter(t=>t.datum<=datum&&t.typ==='Uttag').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
+  const intern = internaTxIdx();
+  const txIns = data.avanzaTransaktioner.filter((t,i)=>!intern.has(i)&&t.datum<=datum&&t.typ==='Insättning').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
+  const txUt  = data.avanzaTransaktioner.filter((t,i)=>!intern.has(i)&&t.datum<=datum&&t.typ==='Uttag').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
   const kassaIns = data.kassaTransaktioner.filter(t=>t.datum<=datum&&t.typ==='insättning').reduce((s,t)=>s+t.belopp,0);
-  const kassaUt = data.kassaTransaktioner.filter(t=>t.datum<=datum&&t.typ==='uttag').reduce((s,t)=>s+t.belopp,0);
+  const kassaUt  = data.kassaTransaktioner.filter(t=>t.datum<=datum&&t.typ==='uttag').reduce((s,t)=>s+t.belopp,0);
   return txIns - txUt + kassaIns - kassaUt;
 }
 
@@ -3193,8 +3217,9 @@ function renderDashboard() {
     // ── Beräkningsunderlag (debug) ──
     const debugEl=document.getElementById('pu-debug');
     if(debugEl){
-      const txIns=data.avanzaTransaktioner.filter(t=>t.datum>=startH.datum&&t.typ==='Insättning').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
-      const txUt=data.avanzaTransaktioner.filter(t=>t.datum>=startH.datum&&t.typ==='Uttag').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
+      const _intern=internaTxIdx();
+      const txIns=data.avanzaTransaktioner.filter((t,i)=>!_intern.has(i)&&t.datum>=startH.datum&&t.typ==='Insättning').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
+      const txUt=data.avanzaTransaktioner.filter((t,i)=>!_intern.has(i)&&t.datum>=startH.datum&&t.typ==='Uttag').reduce((s,t)=>s+Math.abs(parseSE(t.belopp)),0);
       const kassaIns=data.kassaTransaktioner.filter(t=>t.datum>=startH.datum&&t.typ==='insättning').reduce((s,t)=>s+t.belopp,0);
       const kassaUt=data.kassaTransaktioner.filter(t=>t.datum>=startH.datum&&t.typ==='uttag').reduce((s,t)=>s+t.belopp,0);
       debugEl.innerHTML=`<table style="width:100%;border-collapse:collapse">
