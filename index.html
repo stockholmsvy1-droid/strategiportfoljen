@@ -320,6 +320,30 @@
     /* ── Global Period Strip ── */
     .period-strip-label { font-size: 0.71rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-right: 2px; }
 
+    /* ── Översikt-layout ── */
+    .oversikt-grid { display:grid; grid-template-columns:1fr 240px; gap:16px; margin-bottom:18px; align-items:start; }
+    .oversikt-donut-kort { display:flex; flex-direction:column; }
+    .oversikt-donut-kort canvas { max-height:180px; }
+    #nyckeltal-grid { grid-template-columns:repeat(4,1fr) !important; }
+    /* Kategori-chips */
+    .kat-chip { display:flex; align-items:center; gap:6px; padding:7px 13px; background:var(--card); border:1px solid var(--border); border-radius:10px; font-size:0.82rem; cursor:pointer; transition:box-shadow 0.15s,background 0.15s; white-space:nowrap; }
+    .kat-chip:hover { background:#f0f4ff; box-shadow:0 2px 8px rgba(37,99,235,0.10); }
+    .kat-chip .kat-chip-pct { font-weight:800; font-size:0.88rem; }
+    .kat-chip .kat-chip-avv { font-size:0.7rem; font-weight:600; }
+    .kat-chip .kat-chip-sig { font-size:0.72rem; line-height:1; }
+    /* Nyckeltal-kompakt */
+    .nyckeltal .label { font-size:0.68rem; }
+    .nyckeltal .value { font-size:1.35rem; }
+    .nk-hint { display:none; }
+    /* Signal-band dold — ersatt av pill i header */
+    #signal-band { display:none !important; }
+    @media (max-width:1024px) {
+      .oversikt-grid { grid-template-columns:1fr; }
+      #nyckeltal-grid { grid-template-columns:repeat(2,1fr) !important; }
+    }
+    @media (max-width:480px) {
+      #nyckeltal-grid { grid-template-columns:1fr 1fr !important; }
+    }
     /* ── Portfölj-accordion ── */
     .pf-kat { background:var(--card); border-radius:var(--radius); border:1px solid var(--border); margin-bottom:10px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
     .pf-kat-header { display:flex; align-items:center; gap:10px; padding:11px 16px; cursor:pointer; user-select:none; }
@@ -582,7 +606,7 @@
 <!-- ══ DESKTOP NAV ══ -->
 <div style="position:relative">
   <nav id="desktopNav">
-    <button class="aktiv" onclick="visaSektion('dashboard',this)">🏠 Cockpit</button>
+    <button class="aktiv" onclick="visaSektion('dashboard',this)">🏠 Översikt</button>
     <button onclick="visaSektion('kategorier',this)">📋 Portfölj</button>
     <button onclick="visaSektion('signaler',this)" id="navSignalerBtn">⚡ Åtgärder</button>
     <button onclick="visaSektion('transaktioner',this)">📈 Historik</button>
@@ -604,7 +628,7 @@
 <!-- ══ MOBIL BOTTOM NAV ══ -->
 <div class="nav-bottom">
   <div class="nav-bottom-inner">
-    <button class="nav-bottom-knapp aktiv" onclick="mobilNav('dashboard',0)"><span class="nb-ikon">🏠</span>Cockpit</button>
+    <button class="nav-bottom-knapp aktiv" onclick="mobilNav('dashboard',0)"><span class="nb-ikon">🏠</span>Översikt</button>
     <button class="nav-bottom-knapp" onclick="mobilNav('kategorier',1)"><span class="nb-ikon">📋</span>Portfölj</button>
     <button class="nav-bottom-knapp" onclick="mobilNav('signaler',2)"><span class="nb-ikon">⚡</span>Åtgärder</button>
     <button class="nav-bottom-knapp" onclick="mobilNav('transaktioner',3)"><span class="nb-ikon">📈</span>Historik</button>
@@ -626,34 +650,43 @@
 
 <!-- ══ DASHBOARD ══ -->
 <section id="dashboard" class="sektion aktiv">
-  <div id="signal-band" style="margin-bottom:14px;padding:10px 16px;border-radius:8px;background:#fef2f2;border:1px solid #fca5a5;cursor:pointer;display:none;justify-content:space-between;align-items:center" onclick="const b=document.querySelector('#desktopNav button[onclick*=signaler]');visaSektion('signaler',b)">
-    <div id="signal-band-text" style="font-size:0.87rem;font-weight:600;color:#b91c1c"></div>
-    <span style="font-size:0.8rem;color:#b91c1c;font-weight:700">Visa åtgärder →</span>
-  </div>
+  <!-- Signal-band dolt — ersatt av pill i headern -->
+  <div id="signal-band" style="display:none"><div id="signal-band-text"></div></div>
+  <div id="dashboard-fx-status" style="display:none"></div>
+
   <!-- Kategori-statusrad -->
   <div id="kategori-status-rad" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px"></div>
-  <div id="dashboard-fx-status" style="display:none;font-size:0.78rem;color:var(--muted);margin-bottom:10px;padding:6px 4px;display:flex;gap:12px;flex-wrap:wrap;align-items:center"></div>
 
-  <!-- ══ HUVUD-DIAGRAM ══ -->
-  <div class="card mb20" id="huvud-diagram-kort">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:14px">
-      <div>
-        <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;font-weight:700">Portföljutveckling</div>
-        <div id="hd-rubrik" style="font-size:1rem;font-weight:700;color:var(--primary)">i År</div>
+  <!-- Chart + Donut side-by-side -->
+  <div class="oversikt-grid">
+    <!-- Portföljutveckling-diagram -->
+    <div class="card" id="huvud-diagram-kort">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div>
+          <div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;font-weight:700">Portföljutveckling</div>
+          <div id="hd-rubrik" style="font-size:0.92rem;font-weight:700;color:var(--primary)">i År</div>
+        </div>
+        <div style="display:flex;gap:5px">
+          <button onclick="byttHDTyp('line',this)" id="hd-typ-linje"  class="hd-knapp aktiv" title="Linje">📈</button>
+          <button onclick="byttHDTyp('bar',this)"  id="hd-typ-stapel" class="hd-knapp"       title="Stapel">📊</button>
+        </div>
       </div>
-      <div style="display:flex;align-items:center;gap:6px">
-        <button onclick="byttHDTyp('line',this)" id="hd-typ-linje"  class="hd-knapp aktiv" title="Linjegraf">📈 Linje</button>
-        <button onclick="byttHDTyp('bar',this)"  id="hd-typ-stapel" class="hd-knapp"       title="Staplar">📊 Stapel</button>
+      <div style="position:relative;height:200px"><canvas id="huvud-diagram"></canvas></div>
+      <div class="hd-serie-rad" style="margin-top:8px">
+        <label><input type="checkbox" id="hd-cb-portfölj" checked onchange="ritaHuvudDiagram()"><span class="hd-linje" style="background:#2563eb"></span>Portföljvärde</label>
+        <label><input type="checkbox" id="hd-cb-nettoinsatt" onchange="ritaHuvudDiagram()"><span class="hd-linje-dashed" style="border-color:#94a3b8"></span>Nettoinsatt</label>
+        <label><input type="checkbox" id="hd-cb-nettoresultat" onchange="ritaHuvudDiagram()"><span class="hd-linje" style="background:#16a34a"></span>Nettoresultat</label>
+        <span style="color:var(--border);margin:0 2px">│</span>
+        <span id="hd-kat-rad" style="display:contents"></span>
       </div>
     </div>
-    <div style="position:relative;height:240px"><canvas id="huvud-diagram"></canvas></div>
-    <!-- Serier -->
-    <div class="hd-serie-rad">
-      <label><input type="checkbox" id="hd-cb-portfölj"     checked onchange="ritaHuvudDiagram()"><span class="hd-linje" style="background:#2563eb"></span>Portföljvärde</label>
-      <label><input type="checkbox" id="hd-cb-nettoinsatt"          onchange="ritaHuvudDiagram()"><span class="hd-linje-dashed" style="border-color:#94a3b8"></span>Nettoinsatt</label>
-      <label><input type="checkbox" id="hd-cb-nettoresultat"        onchange="ritaHuvudDiagram()"><span class="hd-linje" style="background:#16a34a"></span>Nettoresultat</label>
-      <span style="color:var(--border);margin:0 2px">│</span>
-      <span id="hd-kat-rad" style="display:contents"></span>
+    <!-- Kategorifördelning-donut -->
+    <div class="card oversikt-donut-kort">
+      <div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;font-weight:700;margin-bottom:8px">Fördelning</div>
+      <div style="position:relative;flex:1;min-height:150px;max-height:180px">
+        <canvas id="oversikt-donut"></canvas>
+      </div>
+      <div id="oversikt-donut-legend" style="margin-top:10px;font-size:0.71rem;display:flex;flex-direction:column;gap:4px"></div>
     </div>
   </div>
 
@@ -3089,6 +3122,28 @@ function visaHjalpKapitel(id, knapp) {
 // ══════════════════════════════════════════════════════════
 //  RENDER — DASHBOARD
 // ══════════════════════════════════════════════════════════
+let _oversiktDonutChart = null;
+function renderÖversiktDonut() {
+  const canvas = document.getElementById('oversikt-donut');
+  const legend = document.getElementById('oversikt-donut-legend');
+  if (!canvas) return;
+  const katV = beräknaKategorivärden();
+  const kassal = Math.max(0, beräknaTillgängligLikviditet());
+  const tot = Object.values(katV).reduce((s,v)=>s+v,0) + kassal;
+  const labels = [], data2 = [], colors = [];
+  Object.entries(KATEGORIER).forEach(([k,kat]) => {
+    const v = katV[k] || 0;
+    if (v > 0) { labels.push(kat.namn); data2.push(parseFloat((v/tot*100).toFixed(1))); colors.push(kat.färg); }
+  });
+  if (_oversiktDonutChart) { _oversiktDonutChart.destroy(); _oversiktDonutChart = null; }
+  _oversiktDonutChart = new Chart(canvas, {
+    type:'doughnut',
+    data:{ labels, datasets:[{ data:data2, backgroundColor:colors, borderWidth:2, borderColor:'#fff' }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: ctx => ` ${ctx.label}: ${ctx.parsed}%` } } }, cutout:'68%' }
+  });
+  if (legend) legend.innerHTML = labels.map((l,i)=>`<div style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:2px;background:${colors[i]};flex-shrink:0;display:inline-block"></span><span style="color:var(--muted)">${l}</span><span style="font-weight:700;margin-left:auto">${data2[i]}%</span></div>`).join('');
+}
+
 function renderKategoriStatusRad() {
   const el = document.getElementById('kategori-status-rad');
   if (!el) return;
@@ -3100,20 +3155,23 @@ function renderKategoriStatusRad() {
     const vp = tot > 0 ? (v/tot)*100 : 0;
     const avv = vp - (kat.målMin + kat.målMax) / 2;
     const inneh = data.innehav.filter(h => String(h.kategori) === k);
-    let sigDot = '';
+    let sigHTML = '';
     if (kat.signal === 'ma200' && inneh.length > 0) {
       const röda = inneh.filter(h => h.ma200 > 0 && ma200Signal(h) === 'röd').length;
       const gula = inneh.filter(h => h.ma200 > 0 && ma200Signal(h) === 'gul').length;
-      sigDot = röda > 0 ? ' <span style="color:#ef4444;font-size:0.7rem">●</span>' : gula > 0 ? ' <span style="color:#f59e0b;font-size:0.7rem">●</span>' : ' <span style="color:#22c55e;font-size:0.7rem">●</span>';
+      const sigCol = röda > 0 ? '#ef4444' : gula > 0 ? '#f59e0b' : '#22c55e';
+      sigHTML = `<span class="kat-chip-sig" style="color:${sigCol}">●</span>`;
     }
-    const bFärg = Math.abs(avv) <= 2 ? '#16a34a' : '#d97706';
-    const avvTxt = avv > 2 ? ' ↑' : avv < -2 ? ' ↓' : '';
-    const tooltip = `${kat.namn}: ${vp.toFixed(1)}% (mål ${kat.målMin}–${kat.målMax}%)${avv>2?' — Övervikt':avv<-2?' — Undervikt':''}`;
-    return `<div onclick="const b=document.querySelector('#desktopNav button[onclick*=kategorier]');visaSektion('kategorier',b)" title="${tooltip}" style="display:flex;align-items:center;gap:4px;padding:5px 10px;background:var(--card);border:1px solid var(--border);border-radius:8px;font-size:0.8rem;cursor:pointer;transition:background 0.15s" onmouseover="this.style.background='#f0f4ff'" onmouseout="this.style.background='var(--card)'">
+    const pctCol = Math.abs(avv) <= 2 ? 'var(--success)' : Math.abs(avv) <= 5 ? 'var(--warning)' : 'var(--danger)';
+    const avvHTML = avv > 2 ? `<span class="kat-chip-avv" style="color:var(--warning)">↑</span>` : avv < -2 ? `<span class="kat-chip-avv" style="color:var(--warning)">↓</span>` : '';
+    const tooltip = `${kat.namn}: ${vp.toFixed(1)}% — Mål ${kat.målMin}–${kat.målMax}%${avv>2?' (Övervikt)':avv<-2?' (Undervikt)':''}`;
+    return `<div class="kat-chip" onclick="const b=document.querySelector('#desktopNav button[onclick*=kategorier]');visaSektion('kategorier',b)" title="${tooltip}" style="border-left:3px solid ${kat.färg}">
       <span>${kat.emoji}</span>
-      <span style="font-weight:700;color:${bFärg}">${vp.toFixed(0)}%${avvTxt}</span>${sigDot}
+      <span class="kat-chip-pct" style="color:${pctCol}">${vp.toFixed(1)}%</span>
+      ${avvHTML}${sigHTML}
     </div>`;
   }).join('');
+  renderÖversiktDonut();
 }
 
 function renderDashboard() {
@@ -4053,7 +4111,7 @@ function renderAvstemning() {
     </div>`;
 }
 
-function renderAllt() { renderDashboard(); renderFXExponering(); renderUtdelningskalender(); renderKategorier(); renderSignaler(); renderInnehav(); renderTransaktioner(); renderBeslutslogg(); renderKassa(); renderSenasteImport(); ritaDiagram(); renderKatNyckeltal(); renderAvstemning(); renderInstallningar(); uppdateraHeaderSignal(); renderKategoriStatusRad(); }
+function renderAllt() { renderDashboard(); renderFXExponering(); renderUtdelningskalender(); renderKategorier(); renderSignaler(); renderInnehav(); renderTransaktioner(); renderBeslutslogg(); renderKassa(); renderSenasteImport(); ritaDiagram(); renderKatNyckeltal(); renderAvstemning(); renderInstallningar(); uppdateraHeaderSignal(); renderKategoriStatusRad(); renderÖversiktDonut(); }
 
 // ══════════════════════════════════════════════════════════
 //  DIAGRAM
@@ -4234,6 +4292,7 @@ function byttHistorikPeriod(period, knapp) {
   uppdateraHeaderSignal();
   renderKategoriStatusRad();
 }
+// renderÖversiktDonut anropas från renderKategoriStatusRad
 const donutCenterPlugin = {
   id: 'centerText',
   afterDraw(chart) {
